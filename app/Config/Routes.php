@@ -39,7 +39,8 @@ $routes->group('auth', function ($routes) {
 $routes->get('/home', 'Home::home');
 
 $routes->group('home', function ($routes) {
-	$routes->add('files', 'Utils\TypeFiles');
+	$routes->add('recent', 'Home::home');
+	$routes->add('files', 'Utils\TypeFile');
 	$routes->add('texts', 'Utils\TypeText');
 	$routes->add('trash', 'Utils\TypeTrash');
 });

@@ -10,6 +10,7 @@
 	<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico')?>">
 
     <link href="<?php echo base_url('assets/summernote/summernote.min.css')?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
 
     <!-- App css -->
 	<link href="<?php echo base_url('assets/css/icons.min.css')?>" rel="stylesheet" type="text/css" />

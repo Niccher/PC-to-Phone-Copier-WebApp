@@ -38,27 +38,27 @@
                                             </a>
 										</div>
 									</div>
-									<div class="email-menu-list mt-3">
-										<a href="<?php echo base_url('home/recent'); ?>" class="list-group-item border-0">
+                                    <div class="email-menu-list mt-3">
+                                        <a href="<?php echo base_url('home/recent'); ?>" class="list-group-item border-0">
                                             <i class="mdi mdi-history font-18 align-middle me-2"></i>
                                             Recent
                                         </a>
-                                        <a href="<?php echo base_url('home/files'); ?>" class="list-group-item border-0">
+                                        <a href="<?php echo base_url('home/files'); ?>" class="list-group-item border-0  fw-bolder text-primary">
                                             <i class="mdi mdi-folder-outline font-18 align-middle me-2"></i>
                                             My Files
-                                        </a>
-										<a href="<?php echo base_url('home/texts'); ?>" class="list-group-item border-0 fw-bolder text-primary">
-                                            <i class="mdi mdi-text-box-multiple font-18 align-middle me-2"></i>
-                                            Text Data
                                             <span class="badge bg-primary float-end">
                                                 <i class="mdi mdi-check-all"></i>
                                             </span>
                                         </a>
-										<a href="<?php echo base_url('home/trashed'); ?>" class="list-group-item border-0">
+                                        <a href="<?php echo base_url('home/texts'); ?>" class="list-group-item border-0">
+                                            <i class="mdi mdi-text-box-multiple font-18 align-middle me-2"></i>
+                                            Text Data
+                                        </a>
+                                        <a href="<?php echo base_url('home/trashed'); ?>" class="list-group-item border-0">
                                             <i class="mdi mdi-trash-can font-18 align-middle me-2"></i>
                                             Trash Files
                                         </a>
-									</div>
+                                    </div>
 									<div class="mt-5">
 										<h6 class="text-uppercase mt-3">Storage</h6>
 										<div class="progress my-2 progress-sm">
@@ -72,10 +72,38 @@
                                     <div class="mt-3">
                                         <h5 class="mb-3">Create a text to copy</h5>
                                         <div class="tab-content">
-                                            <form method="post">
-                                                <textarea id="please_type_here" name="please_type_here_data"></textarea>
+                                            <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews"    data-upload-preview-template="#uploadPreviewTemplate">
+                                                <div class="fallback">
+                                                    <input name="file" type="file" multiple />
+                                                </div>
+                                                <div class="dz-message needsclick">
+                                                    <i class="h1 text-muted dripicons-cloud-upload"></i>
+                                                    <h3>Drop files here or click to upload.</h3>
+                                                </div>
                                             </form>
-                                            <!-- end preview-->
+                                            <!-- Preview -->
+                                            <div class="dropzone-previews mt-3" id="file-previews"></div>
+                                            <!-- file preview template -->
+                                            <div class="d-none" id="uploadPreviewTemplate">
+                                                <div class="card mt-1 mb-0 shadow-none border">
+                                                    <div class="p-2">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-auto">
+                                                                <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
+                                                            </div>
+                                                            <div class="col ps-0">
+                                                                <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
+                                                                <p class="mb-0" data-dz-size></p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                                                                    <i class="dripicons-cross"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- end .mt-3-->
