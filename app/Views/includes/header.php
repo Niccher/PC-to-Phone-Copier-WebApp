@@ -8,7 +8,10 @@
 	<meta content="Niccher Inc" name="author" />
 	<!-- App favicon -->
 	<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico')?>">
-	<!-- App css -->
+
+    <link href="<?php echo base_url('assets/summernote/summernote.min.css')?>" rel="stylesheet" type="text/css" />
+
+    <!-- App css -->
 	<link href="<?php echo base_url('assets/css/icons.min.css')?>" rel="stylesheet" type="text/css" />
 	<link href="<?php echo base_url('assets/css/app.min.css')?>" rel="stylesheet" type="text/css" id="light-style" />
 	<link href="<?php echo base_url('assets/css/app-dark.min.css')?>" rel="stylesheet" type="text/css" id="dark-style" />

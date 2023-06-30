@@ -5,19 +5,19 @@
 		<!-- LOGO -->
 		<a href="<?php echo base_url('home')?>" class="logo text-center logo-light">
 				<span class="logo-lg">
-				<img src="assets/images/logo.png" alt="" height="16">
+				<img src="<?php echo base_url('assets/images/logo.png')?>" alt="" height="16">
 				</span>
 			<span class="logo-sm">
-				<img src="assets/images/logo_sm.png" alt="" height="16">
+				<img src="<?php echo base_url('assets/images/logo_sm.png')?>" alt="" height="16">
 				</span>
 		</a>
 		<!-- LOGO -->
 		<a href="<?php echo base_url('home')?>" class="logo text-center logo-dark">
 				<span class="logo-lg">
-				<img src="assets/images/logo-dark.png" alt="" height="16">
+				<img src="<?php echo base_url('assets/images/logo-dark.png')?>" alt="" height="16">
 				</span>
 			<span class="logo-sm">
-				<img src="assets/images/logo_sm_dark.png" alt="" height="16">
+				<img src="<?php echo base_url('assets/images/logo_sm_dark.png')?>" alt="" height="16">
 				</span>
 		</a>
 		<div class="h-100" id="leftside-menu-container" data-simplebar>
@@ -59,7 +59,7 @@
             <div class="navbar-custom">
                 <ul class="list-unstyled topbar-menu float-end mb-0">
                     <li class="dropdown notification-list d-lg-none">
-                        <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="apps-file-manager.html#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <i class="dripicons-search noti-icon"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-animated dropdown-lg p-0">
@@ -70,9 +70,9 @@
                     </li>
 
                     <li class="notification-list">
-                        <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="apps-file-manager.html#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <span class="account-user-avatar">
-                                <img src="assets/images/barcode.png" alt="user-image" class="rounded-circle">
+                                <img src="<?php echo base_url('assets/images/barcode.png')?>" alt="user-image" class="rounded-circle">
                             </span>
                             <span>
                                 <span class="account-user-name">More actions</span>

@@ -31,9 +31,9 @@
 										</div>
 									</div>
 									<div class="email-menu-list mt-3">
-										<a href="#" class="list-group-item border-0"><i class="mdi mdi-folder-outline font-18 align-middle me-2"></i>My Files</a>
-										<a href="#" class="list-group-item border-0"><i class="mdi mdi-text-box-multiple font-18 align-middle me-2"></i>Text Data</a>
-										<a href="#" class="list-group-item border-0"><i class="mdi mdi-trash-can font-18 align-middle me-2"></i>Trash Files</a>
+										<a href="<?php echo base_url('home/files'); ?>" class="list-group-item border-0"><i class="mdi mdi-folder-outline font-18 align-middle me-2"></i>My Files</a>
+										<a href="<?php echo base_url('home/texts'); ?>" class="list-group-item border-0"><i class="mdi mdi-text-box-multiple font-18 align-middle me-2"></i>Text Data</a>
+										<a href="<?php echo base_url('home/trash'); ?>" class="list-group-item border-0"><i class="mdi mdi-trash-can font-18 align-middle me-2"></i>Trash Files</a>
 									</div>
 									<div class="mt-5">
 										<h6 class="text-uppercase mt-3">Storage</h6>

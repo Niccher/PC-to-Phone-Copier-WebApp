@@ -38,6 +38,12 @@ $routes->group('auth', function ($routes) {
 
 $routes->get('/home', 'Home::home');
 
+$routes->group('home', function ($routes) {
+	$routes->add('files', 'Utils\TypeFiles');
+	$routes->add('texts', 'Utils\TypeText');
+	$routes->add('trash', 'Utils\TypeTrash');
+});
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing
