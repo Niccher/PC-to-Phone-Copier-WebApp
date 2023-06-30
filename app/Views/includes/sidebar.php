@@ -1,3 +1,15 @@
+<?php
+
+    function is_in_dashboard($passed){
+        $dash_pages = array("file", "text", "recent");
+        if (in_array($passed, $dash_pages)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+?>
+
 <!-- Begin page -->
 <div class="wrapper">
 	<!-- ========== Left Sidebar Start ========== -->
@@ -24,19 +36,24 @@
 			<!--- Sidemenu -->
 			<ul class="side-nav">
 				<li class="side-nav-title side-nav-item">Home</li>
-                <li class="side-nav-item">
-                    <a href="<?php echo base_url('home')?>" class="side-nav-link">
-                        <i class="uil-home-alt"></i>
-                        <span> Dashboard </span>
-                    </a>
-                </li>
+
+				<?php
+				    echo "<li class='side-nav-item'>";
+				    $url_home = base_url('home');
+
+                    if ( is_in_dashboard($title)) {
+	                    echo '<a href="'.$url_home.'" class="side-nav-link fw-bolder text-white">';
+                    }else{
+	                    echo '<a href="'.$url_home.'" class="side-nav-link fw-bolder text-muted">';
+                    }
+                    $url_home = base_url('home');
+                    echo '
+                            <i class="uil-home"></i>
+                            <span> Dash </span>
+                        </a>
+                    </li>';
+				?>
 				<li class="side-nav-title side-nav-item">Others</li>
-				<li class="side-nav-item">
-					<a href="<?php echo base_url('home/profile')?>" class="side-nav-link">
-						<i class="uil-calender"></i>
-						<span> Profile </span>
-					</a>
-				</li>
 				<li class="side-nav-item">
 					<a href="<?php echo base_url('auth/logout')?>" class="side-nav-link">
 						<i class="uil-comments-alt"></i>

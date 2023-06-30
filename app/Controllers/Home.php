@@ -10,8 +10,9 @@ class Home extends BaseController
     }
 
 	public function home(){
+		$title['title'] = "recent";
 		return view('includes/header')
-			.view('includes/sidebar')
+			.view('includes/sidebar', $title)
 			.view('home/home')
 			.view('includes/footer');
 	}
