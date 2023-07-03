@@ -8,6 +8,10 @@ use CodeIgniter\API\ResponseTrait;
 class Auth extends BaseController{
 	use ResponseTrait;
 
+	public function landing(){
+		return view('auth/landing');
+	}
+
 	public function login(){
 		return view('includes/header_auth')
 			.view('auth/login')
