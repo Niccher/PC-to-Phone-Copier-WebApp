@@ -16,7 +16,7 @@
     </head>
     <body class="loading" data-layout-config='{"darkMode":false}'>
         <!-- NAVBAR START -->
-        <nav class="navbar navbar-expand-lg py-lg-3 navbar-dark">
+        <nav class="navbar navbar-expand-lg py-lg-3 navbar-dark bg-secondary">
             <div class="container">
                 <!-- logo -->
                 <a href="<?php echo base_url('')?>" class="navbar-brand me-lg-5">
@@ -46,10 +46,10 @@
         </nav>
         <!-- NAVBAR END -->
         <!-- START HERO -->
-        <section class="hero-section">
+        <section class="bg-secondary pt-2 pb-5">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="mt-md-4">
                             <h2 class="text-white fw-normal mb-2 mt-1 hero-title">
                                 P2P Copier
@@ -62,48 +62,70 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-5 offset-md-2 bg-light">
-                        <div class="text-md-end mt-3 mt-md-0">
-                            <div class="tab-content">
-                                <div class="tab-pane show active" id="default-tabs-preview">
-                                    <ul class="nav nav-tabs mb-3">
-                                        <li class="nav-item">
-                                            <a href="#part_code" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
-                                                <i class="mdi mdi-home-variant d-md-none d-block"></i>
-                                                <span class="d-none d-md-block">Code</span>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="#part_qr" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-                                                <i class="mdi mdi-account-circle d-md-none d-block"></i>
-                                                <span class="d-none d-md-block">QR</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane active" id="part_code">
-                                            <p>Text Here</p>
-                                        </div>
-                                        <div class="tab-pane show" id="part_qr">
-                                            <p>QR code here</p>
+                    <div class="col-md-8 bg-secondary">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <h1 class="mt-0"><i class="mdi mdi-frequently-asked-questions"></i></h1>
+                                    <h3>Get Started <span class="text-primary">Questions</span></h3>
+                                    <p class="text-muted mt-2">A little description is here.
+                                    </p>
+                                </div>
+                                <ul class="nav nav-tabs nav-bordered mb-3">
+                                    <li class="nav-item">
+                                        <a href="#part_Code" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                            Code
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#part_QR" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
+                                            Scan QR
+                                        </a>
+                                    </li>
+                                </ul>
+                                <!-- end nav-->
+                                <div class="tab-content">
+                                    <div class="tab-pane show" id="part_Code">
+                                        <div class="row">
+                                            <div class="card-body text-center">
+                                                <i class="card-pricing-icon dripicons-briefcase text-primary"></i>
+                                                <h2 class="card-pricing-price">
+                                                    <span class="text-primary">CODE HERE</span>
+                                                    <span>/ License</span>
+                                                </h2>
+                                                <ul class="card-pricing-features">
+                                                    <li>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
+                                    <!-- end preview-->
+                                    <div class="tab-pane active" id="part_QR">
+                                        <div class="row">
+                                            <div class="col-lg-7">
+                                                <img src="<?php echo base_url('assets/images/features-2.svg')?>" class="img-fluid" alt="">
+                                            </div>
+                                            <div class="col-lg-5 pt-4">
+                                                <h3 class="fw-normal">Inbuilt applications and pages</h3>
+                                                <p class="text-muted mt-3">Hyper comes with a variety of ready-to-use the development</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end preview code-->
                                 </div>
-                                <!-- end preview-->
-                                <div class="tab-pane" id="default-tabs-code">
-                                    <pre class="mb-0"></pre>
-                                    <!-- end highlight-->
-                                </div>
-                                <!-- end preview code-->
+                                <!-- end tab-content-->
                             </div>
+                            <!-- end card-body -->
                         </div>
+
                     </div>
                 </div>
             </div>
         </section>
         <!-- END HERO -->
         <!-- START FAQ -->
-        <section class="py-5" id="section_faqs">
+        <section class="py-3" id="section_faqs">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
@@ -163,7 +185,7 @@
         </section>
         <!-- END FAQ -->
         <!-- START CONTACT -->
-        <section class="py-5 bg-light-lighten border-top border-bottom border-light"  id="section_contact">
+        <section class="py-3 bg-light-lighten border-top border-bottom border-light"  id="section_contact">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
