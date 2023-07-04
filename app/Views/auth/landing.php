@@ -103,10 +103,13 @@
                                     <!-- end preview-->
                                     <div class="tab-pane active" id="part_QR">
                                         <div class="row">
-                                            <div class="col-lg-7">
-                                                <img src="<?php echo base_url('assets/images/features-2.svg')?>" class="img-fluid" alt="">
+                                            <div class="col-lg-6">
+                                                <?php
+                                                    $qr_url =  base_url($filepath);
+                                                ?>
+                                                <img src="<?php echo base_url($filepath); ?>" class="img-fluid" alt="Here">
                                             </div>
-                                            <div class="col-lg-5 pt-4">
+                                            <div class="col-lg-6 pt-4">
                                                 <h3 class="fw-normal">Inbuilt applications and pages</h3>
                                                 <p class="text-muted mt-3">Hyper comes with a variety of ready-to-use the development</p>
                                             </div>
