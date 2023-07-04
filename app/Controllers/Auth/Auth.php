@@ -13,9 +13,10 @@ class Auth extends BaseController{
 		//QR_Scan
 		$this->qr_scan = new QR_Generator();
 
-		$data =  random_string('alnum', 16);
+		$data_alphanum =  random_string('alnum', 16);
+		$data_num =  random_string('numeric', 8);
 
-		$hex_data   = bin2hex($data);
+		$hex_data   = bin2hex($data_alphanum);
 		$save_name  = $hex_data . '.png';
 
 		/* QR Code File Directory Initialize */
@@ -34,11 +35,12 @@ class Auth extends BaseController{
 		$this->qr_scan->initialize($config);
 
 		/* QR Data  */
-		$params['data']     = $data;
+		$params['data']     = $data_alphanum;
 		$params['level']    = 'M'; // L M Q H
 		$params['size']     = 10; // 1 2 3 4 5 6 7 8 9 10
 		$params['savename'] = FCPATH . $config['imagedir'] . $save_name;
 		$params['filepath'] =  $config['imagedir'] . $save_name;
+		$params['data_num'] =  $data_num;
 		$this->qr_scan->generate($params);
 
 		return view('auth/landing', $params);

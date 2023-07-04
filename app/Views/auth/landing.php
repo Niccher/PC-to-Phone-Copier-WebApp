@@ -54,31 +54,33 @@
                             <h2 class="text-white fw-normal mb-2 mt-1 hero-title">
                                 P2P Copier
                             </h2>
-                            <p class="mb-4 font-16 text-white-50">Hyper is a fully featured dashboard and admin template
-                                comes with tones of well designed UI elements, components, widgets and pages.
+                            <p class="mb-4 font-16 text-white">
+                                This service is a great way to stay connected and organized no matter where you are. With this service, you can easily copy text and files from your computer to your phone, or vice versa, with just a few clicks. This makes it easy to access important documents, photos, and other files on the go. You can also share files with friends and family quickly and securely. This service is perfect for those who need to stay connected and organized while on the go. With this service, you can easily copy text and files from your computer to your phone, or vice versa, with just a few clicks.
                             </p>
-                            <a href="#"  class="btn btn-success">
-                                Get Started <i class="mdi mdi-arrow-right ms-1"></i>
-                            </a>
+                            <p class="mb-4 font-16 text-white">
+                                This makes it easy to access important documents, photos, and other files on the go. You can also share files with friends and family quickly and securely. This service is perfect for those who need to stay connected and organized while on the go. It's also great for those who need to collaborate with others on projects, as it allows for easy sharing of documents and files. Plus, it's secure and reliable, so you can trust that your data is safe. With this service, you can stay connected and organized no matter where you are.
+                            </p>
                         </div>
                     </div>
                     <div class="col-md-8 bg-secondary">
                         <div class="card">
                             <div class="card-body">
                                 <div class="text-center">
-                                    <h1 class="mt-0"><i class="mdi mdi-frequently-asked-questions"></i></h1>
+                                    <h1 class="mt-0"><i class="mdi mdi-lock-alert"></i></h1>
                                     <h3>Get Started <span class="text-primary">Questions</span></h3>
-                                    <p class="text-muted mt-2">A little description is here.
+                                    <p class="text-muted mt-2">You need to create a session to be able to sync your data and prevent it mixing with unwanted.
                                     </p>
                                 </div>
                                 <ul class="nav nav-tabs nav-bordered mb-3">
                                     <li class="nav-item">
                                         <a href="#part_Code" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                            <i class="mdi mdi-counter text-primary"></i>
                                             Code
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="#part_QR" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
+                                            <i class="mdi mdi-qrcode text-primary"></i>
                                             Scan QR
                                         </a>
                                     </li>
@@ -88,13 +90,15 @@
                                     <div class="tab-pane show" id="part_Code">
                                         <div class="row">
                                             <div class="card-body text-center">
-                                                <i class="card-pricing-icon dripicons-briefcase text-primary"></i>
-                                                <h2 class="card-pricing-price">
-                                                    <span class="text-primary">CODE HERE</span>
-                                                    <span>/ License</span>
-                                                </h2>
+                                                <span class="text-center text-black-50 h3">Activation Code</span>
+                                                <div class="row">
+                                                    <div class="col-sm-10 offset-1">
+                                                        <input type="text" class="form-control form-control-lg text-primary text-center fw-bolder" placeholder="Activation Code Here" value="<?php echo $data_num; ?>">
+                                                    </div>
+                                                </div>
                                                 <ul class="card-pricing-features">
-                                                    <li>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                                    <li class="text-muted fw-bolder h4 mt-4">
+                                                        Using the code above to activate your phone is easy and straightforward. Once the code is accepted, your phone will be activated and ready to use. If you have any questions or need help with the activation process.
                                                     </li>
                                                 </ul>
                                             </div>
@@ -103,15 +107,12 @@
                                     <!-- end preview-->
                                     <div class="tab-pane active" id="part_QR">
                                         <div class="row">
-                                            <div class="col-lg-6">
-                                                <?php
-                                                    $qr_url =  base_url($filepath);
-                                                ?>
-                                                <img src="<?php echo base_url($filepath); ?>" class="img-fluid" alt="Here">
+                                            <div class="col-lg-5">
+                                                <img src="<?php echo base_url($filepath); ?>" class="img-fluid rounded border" alt="Here">
                                             </div>
-                                            <div class="col-lg-6 pt-4">
-                                                <h3 class="fw-normal">Inbuilt applications and pages</h3>
-                                                <p class="text-muted mt-3">Hyper comes with a variety of ready-to-use the development</p>
+                                            <div class="col-lg-7 d-flex align-items-center">
+                                                <p class="text-muted fw-bolder h4">
+                                                    Using your phone to scan this, will allow you to proceed with the next step. Simply open your phone's camera and point it at the code. Your phone should automatically recognize the code and prompt you to take the next step. Thank you for taking the time to.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -196,18 +197,14 @@
                             <h3>Get In <span class="text-primary">Touch</span></h3>
                             <p class="text-muted mt-2">Please fill out the following form and we will get back to you shortly. For more
                                 <br>information please contact us.
+                                <br>
+                                <span class="fw-bold">Email Address:</span> <span class="d-block mt-1">info@mail.com</span>
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="row align-items-center mt-3">
-                    <div class="col-md-4">
-                        <p class="text-muted"><span class="fw-bold">Customer Support:</span><br> <span class="d-block mt-1">+1 234 56 7894</span></p>
-                        <p class="text-muted mt-4"><span class="fw-bold">Email Address:</span><br> <span class="d-block mt-1">info@gmail.com</span></p>
-                        <p class="text-muted mt-4"><span class="fw-bold">Office Address:</span><br> <span class="d-block mt-1">4461 Cedar Street Moro, AR 72368</span></p>
-                        <p class="text-muted mt-4"><span class="fw-bold">Office Time:</span><br> <span class="d-block mt-1">9:00AM To 6:00PM</span></p>
-                    </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 offset-2">
                         <form>
                             <div class="row mt-4">
                                 <div class="col-lg-6">
@@ -241,8 +238,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-12 text-end">
-                                    <button class="btn btn-primary">Send a Message <i
-                                                class="mdi mdi-telegram ms-1"></i> </button>
+                                    <button class="btn btn-primary">Send a Message <i class="mdi mdi-telegram ms-1"></i> </button>
                                 </div>
                             </div>
                         </form>
