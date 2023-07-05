@@ -42,7 +42,7 @@ class App extends BaseConfig
      * something else. If you are using mod_rewrite to remove the page set this
      * variable so that it is blank.
      */
-    public string $indexPage = 'index.php';
+    public string $indexPage = '';//'index.php';
 
     /**
      * --------------------------------------------------------------------------
@@ -160,7 +160,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Session::$cookieName  instead.
      */
-    public string $sessionCookieName = 'ci_session';
+    public string $sessionCookieName = 'p2p_sess';
 
     /**
      * --------------------------------------------------------------------------
@@ -172,7 +172,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Session::$expiration instead.
      */
-    public int $sessionExpiration = 7200;
+    public int $sessionExpiration = 14400;
 
     /**
      * --------------------------------------------------------------------------
@@ -353,7 +353,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $tokenName property instead of using this property.
      */
-    public string $CSRFTokenName = 'csrf_test_name';
+    public string $CSRFTokenName = 'p2p_csrf_name';
 
     /**
      * --------------------------------------------------------------------------
@@ -364,7 +364,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $headerName property instead of using this property.
      */
-    public string $CSRFHeaderName = 'X-CSRF-TOKEN';
+    public string $CSRFHeaderName = 'P2P-X-CSRF-TOKEN';
 
     /**
      * --------------------------------------------------------------------------
@@ -375,7 +375,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $cookieName property instead of using this property.
      */
-    public string $CSRFCookieName = 'csrf_cookie_name';
+    public string $CSRFCookieName = 'p2p_csrf_cookie_name';
 
     /**
      * --------------------------------------------------------------------------
@@ -386,7 +386,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $expire property instead of using this property.
      */
-    public int $CSRFExpire = 7200;
+    public int $CSRFExpire = 14400;
 
     /**
      * --------------------------------------------------------------------------

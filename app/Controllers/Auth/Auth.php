@@ -3,6 +3,7 @@
 namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
+use App\Models\ModVisitors;
 use CodeIgniter\API\ResponseTrait;
 use App\Libraries\QR_Generator;
 
@@ -42,6 +43,35 @@ class Auth extends BaseController{
 		$params['filepath'] =  $config['imagedir'] . $save_name;
 		$params['data_num'] =  $data_num;
 		$this->qr_scan->generate($params);
+
+		$mod_visitors = new ModVisitors();
+		$dated = date('Y-m-d H:i:s');
+
+		$agent = $this->request->getUserAgent();
+
+		$visitor_data = [
+			'visitor_time'          => $dated,
+			'visitor_ip'            => $this->request->getIPAddress(),
+			'visitor_user_agent'    => $agent, //$agent->getAgentString()
+			'visitor_browser'       => ($agent->isBrowser()) ? $agent->getBrowser() . ' ' . $agent->getVersion() : 'Unknown',
+			'visitor_robot'         => ($agent->isRobot()) ? $agent->getRobot(): 'Unknown',
+			'visitor_is_mobile'     => ($agent->isMobile()) ? $agent->getMobile() : 'Unknown',
+			'visitor_OS'            =>  $agent->getPlatform(),
+			'visitor_referrer'      => ($agent->isReferral()) ? $agent->referrer() : 'Unknown',
+			'visitor_method'        =>  $this->request->getMethod(),
+		];
+		$data_alphanum =  random_string('alnum', 16);
+		$data_num =
+
+		$auth_data = [
+			'auth_created_at'           => $dated,
+			'auth_text_code'            => $data_num,
+			'auth_qr_code'              => $data_alphanum,
+			'auth_qr_image_name'        => $save_name,
+		];
+
+		$mod_visitors->vistor_register($visitor_data);
+		$mod_visitors->auth_codes_register($auth_data);
 
 		return view('auth/landing', $params);
 	}
