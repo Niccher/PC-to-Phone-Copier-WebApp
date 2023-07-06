@@ -26,10 +26,10 @@ class Database extends Config
      */
     public array $default = [
         'DSN'      => '',
-        'hostname' => '127.0.0.1',
-        'username' => 'root',
-        'password' => '',
-        'database' => 'P2P_Copier',
+        'hostname' => 'localhost',
+        'username' => 'chegecac_p2p',
+        'password' => 'uWKV^U3!FY5K',
+        'database' => 'chegecac_p2p_copier',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,

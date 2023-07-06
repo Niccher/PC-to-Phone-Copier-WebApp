@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Auth;
+namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\ModVisitors;
@@ -80,6 +80,27 @@ class Auth extends BaseController{
 		return view('includes/header_auth')
 			.view('auth/login')
 			.view('includes/footer_auth');
+	}
+
+	public function register(){
+		$dated = date('Y-m-d H:i:s');
+
+		if ($this->request->getPost()){
+			$u_type = $this->request->getVar('var_auth_type');
+			$u_code = $this->request->getVar('var_auth_code');
+			$u_dev_id = $this->request->getVar('var_dev_uuid');
+			return $this->respond([
+				'auth_status' => "True",
+				'auth_message' => " - ". $u_type. " - ". $u_code. " - ". $u_dev_id,
+				'auth_time' => $dated
+			]);
+		}else{
+			return $this->respond([
+				'auth_status' => "False",
+				'auth_message' => "Not a POST request",
+				'auth_time' => $dated
+			]);
+		}
 	}
 
 	public function user_logout(){

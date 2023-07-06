@@ -30,11 +30,17 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 #$routes->get('/', 'Home::index');
-$routes->get('/', 'Auth\Auth::landing');
+$routes->get('/', 'Auth::landing');
 
 $routes->group('auth', function ($routes) {
-	$routes->add('login', 'Auths::login');
-	$routes->add('logout', 'Auths::user_logout');
+	$routes->add('login', 'Auth::login');
+	$routes->add('register', 'Auth::register');
+	$routes->add('logout', 'Auth::user_logout');
+});
+
+$routes->group('device', function ($routes) {
+	$routes->add('check', 'Device::check');
+	$routes->add('register', 'Device::device_register');
 });
 
 $routes->get('/home', 'Home::home');
