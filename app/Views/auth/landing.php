@@ -264,5 +264,27 @@
         <!-- END FOOTER -->
         <script src="<?php echo base_url('assets/js/vendor.min.js')?>"></script>
         <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
+        <script>
+            $(document).ready(function(){
+                console.log( "ready!" );
+                var num_code = "<?php echo $data_codes; ?>";
+
+                function getState(){
+                    $.ajax({
+                        url: "<?php echo base_url('home/check');?>",
+                        type: 'POST',
+                        data: {a_num_code: num_code},
+                        success: function (response) {
+                            if (response == 'valid') {
+                                window.location.replace("<?php echo base_url('home'); ?>");
+                            } else {
+                                console.log("Not Verified");
+                            }
+                        }
+                    });
+                }
+                setInterval(getState, 5000);
+            });
+        </script>
     </body>
 </html>

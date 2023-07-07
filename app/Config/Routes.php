@@ -43,7 +43,10 @@ $routes->group('device', function ($routes) {
 	$routes->add('register', 'Device::device_register');
 });
 
-$routes->get('/home', 'Home::home');
+$routes->group('home', function ($routes) {
+	$routes->add('/', 'Home::home');
+	$routes->add('check', 'Home::home_ajax_code_check');
+});
 
 $routes->group('home', function ($routes) {
 	$routes->add('recent', 'Home::home');
