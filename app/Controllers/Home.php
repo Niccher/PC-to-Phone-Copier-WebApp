@@ -33,17 +33,13 @@ class Home extends BaseController
 		];
 
 		$get_auth_id = ($mod_visitors->auth_codes_get_uuid($code_data))[0]->auth_id;
-
-//		echo "auth_codes_num as ". $auth_codes[0];
-//		echo "<br>auth_codes_qr as ". $auth_codes[1];
-//		echo "<br>auth_codes_ id as ". $get_auth_id;
 		
 		if (!empty($get_auth_id)){
 			$code_data_is_valid = [
 				'checked_auth_code_id'=> $get_auth_id,
 				'checked_is_valid'=> "valid",
 			];
-			$is_code_validated = ($mod_visitors->auth_codes_has_tested_valid($code_data_is_valid));
+			$is_code_validated = count($mod_visitors->auth_codes_has_tested_valid($code_data_is_valid));
 			echo ($is_code_validated > 0) ? "valid" : "invalid";
 		}
 	}

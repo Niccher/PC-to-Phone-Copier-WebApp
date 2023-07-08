@@ -55,6 +55,10 @@ $routes->group('home', function ($routes) {
 	$routes->add('trash', 'Utils\TypeTrash');
 });
 
+$routes->group('home', function ($routes) {
+	$routes->add('file/upload', 'Upload::file_uploaded');
+});
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

@@ -72,9 +72,9 @@
                                     <div class="mt-3">
                                         <h5 class="mb-3">Create a text to copy</h5>
                                         <div class="tab-content">
-                                            <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews"    data-upload-preview-template="#uploadPreviewTemplate">
+                                            <form action="/home/file/upload" enctype="multipart/form-data" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
                                                 <div class="fallback">
-                                                    <input name="file" type="file" multiple />
+                                                    <input name="my_up_loaded_files" type="file" />
                                                 </div>
                                                 <div class="dz-message needsclick">
                                                     <i class="h1 text-muted dripicons-cloud-upload"></i>
