@@ -74,168 +74,8 @@
 									</div>
 									<div class="mt-3">
 										<h5 class="mb-2">Quick Access</h5>
-										<div class="row mx-n1 g-0">
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder-zip font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Hyper-sketch.zip</a>
-																<p class="mb-0 font-13">2.3 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Compile Version</a>
-																<p class="mb-0 font-13">87.2 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-primary-lighten text-primary rounded">
-																			<i class="mdi mdi-folder-zip-outline font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">admin.zip</a>
-																<p class="mb-0 font-13">45.1 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-file-pdf-outline font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Docs.pdf</a>
-																<p class="mb-0 font-13">7.5 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-file-pdf-outline font-18"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">License-details.pdf</a>
-																<p class="mb-0 font-13">784 KB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder-account font-18"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Purchase Verification</a>
-																<p class="mb-0 font-13">2.2 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder-account font-18"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Hyper Integrations</a>
-																<p class="mb-0 font-13">874 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
+										<div class="row mx-n1 g-0 recent_files" id="recent_files">
+											<?php echo $file_list; ?>
 										</div>
 										<!-- end row-->
 									</div>
@@ -247,26 +87,13 @@
 												<thead class="table-light">
 												<tr>
 													<th class="border-0">Name</th>
+													<th class="border-0">Source</th>
 													<th class="border-0">Size</th>
 													<th class="border-0">Action</th>
 												</tr>
 												</thead>
-												<tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <span class="fw-semibold">
-                                                                <a href="javascript: void(0);" class="text-reset">App Design & Development</a>
-                                                            </span>
-                                                            <br>
-                                                            <span class="font-12">Date()</span>
-                                                        </td>
-                                                        <td>128 MB</td>
-                                                        <td class="">
-                                                            <a href="#"><i class="mdi mdi-link widget-icon"></i></a>
-                                                            <a href="#"><i class="mdi mdi-download widget-icon"></i></a>
-                                                            <a href="#"><i class="mdi mdi-trash-can widget-icon"></i></a>
-                                                        </td>
-                                                    </tr>
+												<tbody class="all_files" id="all_files">
+                                                    <?php echo $file_list_all ;?>
 												</tbody>
 											</table>
 										</div>

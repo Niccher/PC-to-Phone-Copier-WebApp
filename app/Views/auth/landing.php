@@ -266,7 +266,7 @@
         <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
         <script>
             $(document).ready(function(){
-                console.log( "ready!" );
+                //console.log( "ready!" );
                 var num_code = "<?php echo $data_codes; ?>";
 
                 function getState(){

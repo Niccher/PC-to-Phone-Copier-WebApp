@@ -46,6 +46,8 @@ $routes->group('device', function ($routes) {
 $routes->group('home', function ($routes) {
 	$routes->add('/', 'Home::home');
 	$routes->add('check', 'Home::home_ajax_code_check');
+	$routes->add('get_files_recent', 'Home::home_ajax_get_file_recent_uploaded');
+	$routes->add('get_files_all', 'Home::home_ajax_get_file_all_uploaded');
 });
 
 $routes->group('home', function ($routes) {
@@ -56,7 +58,8 @@ $routes->group('home', function ($routes) {
 });
 
 $routes->group('home', function ($routes) {
-	$routes->add('file/upload', 'Upload::file_uploaded');
+	$routes->add('file/upload', 'Upload::file_uploaded_by_browser');
+	$routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
 });
 
 /*
