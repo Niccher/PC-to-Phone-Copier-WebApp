@@ -108,4 +108,28 @@ class Upload extends BaseController
 			]);
 		}
 	}
+
+	public function file_uploaded_by_phone_session(){
+		$mod_upload = new ModUpload();
+
+		$dated = date('Y-m-d H:i:s');
+
+		$phone_dev_id = $this->request->getVar('var_dev_uuid');
+		$phone_sess_id = $this->request->getVar('var_auth_code_id');
+
+		$uploaded_files_by_session_and_devid = $mod_upload->file_get_uploaded_files_by_session_and_devid($phone_sess_id, $phone_dev_id);
+
+		if (!empty($uploaded_files_by_session_and_devid)){
+			return $this->respond([
+				'status' => 1,
+				'time' => $dated,
+				'file_info' => $uploaded_files_by_session_and_devid,
+			]);
+		}else{
+			return $this->respond([
+				'status' => 2,
+				'time' => $dated,
+			]);
+		}
+	}
 }

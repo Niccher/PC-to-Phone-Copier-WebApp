@@ -107,104 +107,13 @@
                                         </div>
                                     </div>
                                     <!-- end .mt-3-->
-									<div class="mt-3">
-										<h5 class="mb-2">Quick Access</h5>
-										<div class="row mx-n1 g-0">
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder-zip font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Hyper-sketch.zip</a>
-																<p class="mb-0 font-13">2.3 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-folder font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Compile Version</a>
-																<p class="mb-0 font-13">87.2 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-primary-lighten text-primary rounded">
-																			<i class="mdi mdi-folder-zip-outline font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">admin.zip</a>
-																<p class="mb-0 font-13">45.1 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-											<div class="col-xxl-3 col-lg-6">
-												<div class="card m-1 shadow-none border">
-													<div class="p-2">
-														<div class="row align-items-center">
-															<div class="col-auto">
-																<div class="avatar-sm">
-																			<span class="avatar-title bg-light text-secondary rounded">
-																			<i class="mdi mdi-file-pdf-outline font-16"></i>
-																			</span>
-																</div>
-															</div>
-															<div class="col ps-0">
-																<a href="javascript:void(0);" class="text-muted fw-bold">Docs.pdf</a>
-																<p class="mb-0 font-13">7.5 MB</p>
-															</div>
-														</div>
-														<!-- end row -->
-													</div>
-													<!-- end .p-2-->
-												</div>
-												<!-- end col -->
-											</div>
-											<!-- end col-->
-										</div>
-										<!-- end row-->
-									</div>
+                                    <div class="mt-3">
+                                        <h5 class="mb-2">Quick Access</h5>
+                                        <div class="row mx-n1 g-0 recent_files" id="recent_files">
+											<?php echo $file_list; ?>
+                                        </div>
+                                        <!-- end row-->
+                                    </div>
 									<!-- end .mt-3-->
 								</div>
 								<!-- end inbox-rightbar-->

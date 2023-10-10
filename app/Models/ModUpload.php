@@ -25,4 +25,14 @@ class ModUpload extends Model
 			->get();
 		return $get_all->getResult();
 	}
+
+	public function file_get_uploaded_files_by_session_and_devid($sess_id, $devid){
+		$builder = $this->db->table('tbl_files_uploaded');
+		$get_all = $builder
+			->orderBy('up_file_count', 'DESC')
+			->where('up_file_session_id', $sess_id)
+			->where('up_file_dev_id', $devid)
+			->get();
+		return $get_all->getResult();
+	}
 }
