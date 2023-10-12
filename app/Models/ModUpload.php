@@ -35,4 +35,15 @@ class ModUpload extends Model
 			->get();
 		return $get_all->getResult();
 	}
+
+	public function file_uploaded_by_phone_session_download($phone_file_id,$phone_sess_id, $phone_dev_id){
+		$builder = $this->db->table('tbl_files_uploaded');
+		$get_all = $builder
+			->orderBy('up_file_count', 'DESC')
+			->where('up_file_uuid', $phone_file_id)
+			->where('up_file_session_id', $phone_sess_id)
+			->where('up_file_dev_id', $phone_dev_id)
+			->get();
+		return $get_all->getResult()[0];
+	}
 }
