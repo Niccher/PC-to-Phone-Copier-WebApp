@@ -22,7 +22,7 @@ class Upload extends BaseController
 			$uploaded_file_info = [
 				'up_file_uuid' =>  $uuid,
 				'up_file_session_id' =>  $this->session->get('sess_id'),
-				//'up_file_dev_id' =>  $file_dev_id,
+				'up_file_dev_id' =>  $this->session->get('phone_id'),
 				'up_file_Name' =>  $uploaded_File->getName(),
 				'up_file_Orig_Name' =>  $uploaded_File->getClientName(),
 				'up_file_Type'  => $uploaded_File->getClientMimeType(),

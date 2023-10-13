@@ -22,6 +22,14 @@ class ModVisitors extends Model
 		return $get_all->getResult();
 	}
 
+	public function auth_codes_get_phone_by_auth_code_id($auth_code_id){
+		$builder = $this->db->table('tbl_checked_auth_codes');
+		$get_all = $builder
+			->where('checked_auth_code_id', $auth_code_id)
+			->get();
+		return $get_all->getResult();
+	}
+
 	public function auth_codes_has_tested_valid($auth_codes_uuid){
 		$builder = $this->db->table('tbl_checked_auth_codes');
 		$get_all = $builder
