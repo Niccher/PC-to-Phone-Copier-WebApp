@@ -55,4 +55,22 @@ class ModUpload extends Model
 			->get();
 		return $get_all->getResult()[0];
 	}
+
+	public function file_to_delete($phone_file_uuid, $phone_file_name){
+		$builder = $this->db->table('tbl_files_uploaded');
+		$get_info = $builder
+			->where('up_file_uuid', $phone_file_uuid)
+			->where('up_file_name', $phone_file_name)
+			//->where('up_file_dev_id', $phone_dev_id)
+			->get();
+
+		$file_info =  $get_info->getResult()[0];
+
+		$builder
+			->where('up_file_uuid', $phone_file_uuid)
+			->where('up_file_name', $phone_file_name)
+			->delete();
+
+		return $this->db->table('tbl_files_uploaded_deleted')->insert($file_info);
+	}
 }

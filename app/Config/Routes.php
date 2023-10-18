@@ -62,6 +62,7 @@ $routes->group('home', function ($routes) {
 	$routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
 	$routes->add('phone/get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
 	$routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
+	$routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
 });
 
 /*

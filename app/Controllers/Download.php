@@ -36,4 +36,37 @@ class Download extends BaseController
 			]);
 		}
 	}
+
+	public function file_action_delete(){
+		$mod_upload = new ModUpload();
+
+		$dated = date('Y-m-d H:i:s');
+
+		$phone_file_uuid = $this->request->getVar('var_file_uuid');
+		$phone_file_name = $this->request->getVar('var_file_name');
+		//$phone_dev_id = $this->request->getVar('var_dev_id');
+		//$phone_sess_id = $this->request->getVar('var_sess_id');
+
+		$f_path_old = WRITEPATH .'/uploads/copied_files/';
+		$f_path_new = WRITEPATH .'/uploads/copied_files_deleted/';
+
+		try {
+			rename($f_path_old.$phone_file_name, $f_path_new.$phone_file_name);
+			$mod_upload->file_to_delete($phone_file_uuid,$phone_file_name);
+
+			return $this->respond([
+				'status' => "1",
+				'time' => $dated,
+				'name' => $phone_file_name,
+				'uuid' => $phone_file_uuid,
+			]);
+		}catch (\Exception $ex){
+			return $this->respond([
+				'status' => "2",
+				'time' => $dated,
+				'name' => $phone_file_name,
+				'uuid' => $phone_file_uuid,
+			]);
+		}
+	}
 }
