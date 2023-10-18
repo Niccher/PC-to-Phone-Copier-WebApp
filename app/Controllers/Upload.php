@@ -118,12 +118,14 @@ class Upload extends BaseController
 		$phone_sess_id = $this->request->getVar('var_auth_code_id');
 
 		$uploaded_files_by_session_and_devid = $mod_upload->file_get_uploaded_files_by_session_and_devid($phone_sess_id, $phone_dev_id);
+		$uploaded_files_by_devid = $mod_upload->file_get_uploaded_by_devid($phone_dev_id);
 
 		if (!empty($uploaded_files_by_session_and_devid)){
 			return $this->respond([
 				'status' => 1,
 				'time' => $dated,
 				'file_info' => $uploaded_files_by_session_and_devid,
+				'file_info_all' => $uploaded_files_by_devid,
 			]);
 		}else{
 			return $this->respond([
