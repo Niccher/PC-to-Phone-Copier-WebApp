@@ -57,6 +57,11 @@ $routes->group('home', function ($routes) {
 	$routes->add('trash', 'Utils\TypeTrash');
 });
 
+$routes->group('saved', function ($routes) {
+	$routes->add('download/(:any)', 'Download::browser_file_download/$1');
+	$routes->add('delete/(:any)', 'Download::browser_file_delete/$1');
+});
+
 $routes->group('home', function ($routes) {
 	$routes->add('file/upload', 'Upload::file_uploaded_by_browser');
 	$routes->add('phone/upload', 'Upload::file_uploaded_by_phone');

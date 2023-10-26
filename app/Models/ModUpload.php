@@ -35,6 +35,15 @@ class ModUpload extends Model
 		return $get_all->getResult();
 	}
 
+	public function file_get_uploaded_by_file_uuid($file_uuid){
+		$builder = $this->db->table('tbl_files_uploaded');
+		$get_all = $builder
+			->orderBy('up_file_count', 'DESC')
+			->where('up_file_uuid', $file_uuid)
+			->get();
+		return $get_all->getResult();
+	}
+
 	public function file_get_uploaded_files_by_session_and_devid($sess_id, $devid){
 		$builder = $this->db->table('tbl_files_uploaded');
 		$get_all = $builder

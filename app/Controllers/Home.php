@@ -68,8 +68,14 @@ class Home extends BaseController
 					<td>'.str_replace("Upload","",$file->up_file_Source).'</td>
 					<td>'.$mod_upload->bytes_to_human_filesize($file->up_file_Size).'</td>
 					<td class="">
-					    <a href="'.base_url("saved/download/".$file->up_file_uuid).'"><i class="mdi mdi-download widget-icon"></i></a>
-					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'"><i class="mdi mdi-trash-can widget-icon"></i></a>
+					    <a href="#" class="file_download" id="'.$file->up_file_uuid.'">
+					        <span>
+								<i class="mdi mdi-download widget-icon"></i>
+							</span>
+						</a>
+					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'">
+					    	<i class="mdi mdi-trash-can widget-icon"></i>
+				        </a>
 					</td>
 					</tr>
 			';
@@ -96,7 +102,7 @@ class Home extends BaseController
 		$get_auth_id = ($mod_visitors->auth_codes_get_uuid($code_data))[0]->auth_id;
 		$get_auth_phone_uuid = ($mod_visitors->auth_codes_get_phone_by_auth_code_id($get_auth_id))[0]->checked_by;
 
-		header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization');
+		header('Access-Control-Allow-Headers: Origin');
 		header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 		header('Access-Control-Allow-Origin: *');
 
@@ -184,8 +190,12 @@ class Home extends BaseController
 					<td>'.str_replace("Upload","",$file->up_file_Source).'</td>
 					<td>'.$mod_upload->bytes_to_human_filesize($file->up_file_Size).'</td>
 					<td class="">
-					    <a href="'.base_url("saved/download/".$file->up_file_uuid).'"><i class="mdi mdi-download widget-icon"></i></a>
-					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'"><i class="mdi mdi-trash-can widget-icon"></i></a>
+					    <a href="'.base_url("saved/download/".$file->up_file_uuid).'">
+					        <i class="mdi mdi-download widget-icon"></i>
+						</a>
+					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'">
+					    	<i class="mdi mdi-trash-can widget-icon"></i>
+					    </a>
 					</td>
 				</tr>
 			';

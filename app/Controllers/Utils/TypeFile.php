@@ -60,8 +60,12 @@ class TypeFile extends BaseController
 					<td>'.str_replace("Upload","",$file->up_file_Source).'</td>
 					<td>'.$mod_upload->bytes_to_human_filesize($file->up_file_Size).'</td>
 					<td class="">
-					    <a href="'.base_url("saved/download/".$file->up_file_uuid).'"><i class="mdi mdi-download widget-icon"></i></a>
-					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'"><i class="mdi mdi-trash-can widget-icon"></i></a>
+					    <div class="file_download" id="'.$file->up_file_uuid.'" onclick="setFileDelete()">
+					        <i class="mdi mdi-download widget-icon"></i>
+						</a>
+					    <a href="'.base_url("saved/delete/".$file->up_file_uuid).'">
+					    	<i class="mdi mdi-trash-can widget-icon"></i>
+				        </a>
 					</td>
 					</tr>
 			';

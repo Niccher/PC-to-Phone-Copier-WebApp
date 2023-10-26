@@ -69,4 +69,31 @@ class Download extends BaseController
 			]);
 		}
 	}
+
+	public function browser_file_download($file_uuid){
+		$mod_upload = new ModUpload();
+		$dated = date('Y-m-d H:i:s');
+
+		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+
+		if (!empty($file_data)){
+			$filePath = WRITEPATH .'/uploads/copied_files/'.$file_data[0]->up_file_Orig_Name;
+			return $this->response->download($filePath, null);
+		}else{
+			return $this->respond([
+				'status' => 2,
+				'time' => $dated,
+				'message' => "Unable to download specified file",
+			]);
+		}
+	}
+
+	public function browser_file_delete($file_uuid){
+		$mod_upload = new ModUpload();
+		$dated = date('Y-m-d H:i:s');
+
+		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+		echo "Delete file ".$file_data[0]->up_file_Orig_Name;
+		print("<pre>".print_r($file_data,true)."</pre>");
+	}
 }
