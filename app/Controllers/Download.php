@@ -93,7 +93,28 @@ class Download extends BaseController
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
-		echo "Delete file ".$file_data[0]->up_file_Orig_Name;
-		print("<pre>".print_r($file_data,true)."</pre>");
+		//echo "Delete file ".$file_data[0]->up_file_Orig_Name;
+		//print("<pre>".print_r($file_data,true)."</pre>");
+
+		$f_path_old = WRITEPATH .'/uploads/copied_files/';
+		$f_path_new = WRITEPATH .'/uploads/copied_files_deleted/';
+		$file_name = $file_data[0]->up_file_Orig_Name;
+		$file_uuid = $file_data[0]->up_file_uuid;
+
+		try {
+			rename($f_path_old.$file_name, $f_path_new.$file_name);
+			$mod_upload->file_to_delete($file_uuid,$file_name);
+//			return $this->respond([
+//				'status' => "1",
+//				'time' => $dated,
+//				'message' => "File ".$file_name." deleted successfully",
+//			]);
+		}catch (\Exception $ex){
+//			return $this->respond([
+//				'status' => "2",
+//				'time' => $dated,
+//				'message' => "Unable to delete file ".$file_name,
+//			]);
+		}
 	}
 }
