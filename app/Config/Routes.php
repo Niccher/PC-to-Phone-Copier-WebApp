@@ -54,7 +54,7 @@ $routes->group('home', function ($routes) {
 	$routes->add('recent', 'Home::home');
 	$routes->add('files', 'Utils\TypeFile');
 	$routes->add('texts', 'Utils\TypeText');
-	$routes->add('trashed', 'Utils\TypeTrash');
+	$routes->add('trashed', 'Utils\TypeTrash'); 
 });
 
 $routes->group('saved', function ($routes) {
@@ -69,6 +69,13 @@ $routes->group('home', function ($routes) {
 	$routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
 	$routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
 });
+
+$routes->group('text', function ($routes) {
+	$routes->add('save', 'Utils\TypeText::text_save');
+	$routes->add('delete/(:any)', 'Utils\TypeText::text_delete/$1');
+});
+
+$routes->get('setup/text-tables', 'DatabaseSetup::createTextTables');
 
 /*
  * --------------------------------------------------------------------
