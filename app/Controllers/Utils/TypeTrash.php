@@ -4,10 +4,10 @@ namespace App\Controllers\Utils;
 
 use App\Controllers\BaseController;
 
-class TypeText extends BaseController
+class TypeTrash extends BaseController
 {
     public function index(){
-	    $title['title'] = "text";
+	    $title['title'] = "trash";
 	    return view('includes/header')
 		    .view('includes/sidebar', $title)
 		    .view('home/textual')

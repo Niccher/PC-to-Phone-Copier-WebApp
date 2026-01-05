@@ -54,7 +54,7 @@ $routes->group('home', function ($routes) {
 	$routes->add('recent', 'Home::home');
 	$routes->add('files', 'Utils\TypeFile');
 	$routes->add('texts', 'Utils\TypeText');
-	$routes->add('trash', 'Utils\TypeTrash');
+	$routes->add('trashed', 'Utils\TypeTrash');
 });
 
 $routes->group('saved', function ($routes) {

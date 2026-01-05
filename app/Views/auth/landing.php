@@ -84,6 +84,12 @@
                                             Scan QR
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="#part_History" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
+                                            <i class="mdi mdi-qrcode text-primary"></i>
+                                            Use previous Code
+                                        </a>
+                                    </li>
                                 </ul>
                                 <!-- end nav-->
                                 <div class="tab-content">
@@ -114,6 +120,28 @@
                                                 <p class="text-muted fw-bolder h4">
                                                     Using your phone to scan this, will allow you to proceed with the next step. Simply open your phone's camera and point it at the code. Your phone should automatically recognize the code and prompt you to take the next step. Thank you for taking the time to.</p>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <!-- end preview code-->
+                                    <div class="tab-pane" id="part_History">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="col-sm-10 offset-1">
+                                                    <input type="text" class="form-control form-control-lg text-primary text-center fw-bolder" name="code_reaccess_code" placeholder="Activation Code Here">
+                                                </div>
+                                                <div class="text-center">
+                                                    <div class="row mt-2">
+                                                        <div class="col-12 text-center">
+                                                            <button class="btn btn-primary">Send <i class="mdi mdi-telegram ms-1"></i> </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ul class="card-pricing-features">
+                                                <li class="text-muted fw-bolder h4 mt-4">
+                                                    Access a previously created session, copy and paste the code on your mobile phone to proceed.
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                     <!-- end preview code-->

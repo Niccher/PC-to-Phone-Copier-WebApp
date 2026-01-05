@@ -63,12 +63,19 @@ class Upload extends BaseController
 
 		$dated = date('Y-m-d H:i:s');
 		$uuid = random_string('alnum', 16);
+		$ret = array();
 
 		if ($this->request->getPost()){
 			$file_dev_id = $this->request->getVar('varDevId');
 			$file_sess_id = $this->request->getVar('varSessId');
+
 			$uploaded_File = $this->request->getFile('uploaded_file');
-			$uploaded_File->move(WRITEPATH . 'uploads/copied_files');
+            //echo $uploaded_File->getSize();
+            if (empty($ret)){
+                echo "";
+            }
+            
+			$uploaded_File->move(WRITEPATH . 'uploads/copied_files/');
 
 			$data = [
 				'up_file_uuid' =>  $uuid,
@@ -87,18 +94,20 @@ class Upload extends BaseController
 			$pushed = $mod_upload->file_register_uploaded($data);
 
 			if ($pushed){
-				return $this->respond([
+                $ret = $this->respond([
 					'status' => 1,
 					'time' => $dated,
 					'message' => "File Uploaded Successfully"
 				]);
 			}else{
-				return $this->respond([
+                $ret = $this->respond([
 					'status' => 0,
 					'time' => $dated,
 					'message' => "File Uploaded has encountered an error"
 				]);
 			}
+
+			return $ret;
 
 		}else{
 			return $this->respond([
