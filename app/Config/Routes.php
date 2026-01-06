@@ -33,46 +33,57 @@ $routes->set404Override();
 $routes->get('/', 'Auth::landing');
 
 $routes->group('auth', function ($routes) {
-	$routes->add('login', 'Auth::login');
-	$routes->add('register', 'Auth::register');
-	$routes->add('logout', 'Auth::user_logout');
+    $routes->add('login', 'Auth::login');
+    $routes->add('register', 'Auth::register');
+    $routes->add('logout', 'Auth::user_logout');
 });
 
 $routes->group('device', function ($routes) {
-	$routes->add('check', 'Device::check');
-	$routes->add('register', 'Device::device_register');
+    $routes->add('check', 'Device::check');
+    $routes->add('register', 'Device::device_register');
 });
 
 $routes->group('home', function ($routes) {
-	$routes->add('/', 'Home::home');
-	$routes->add('check', 'Home::home_ajax_code_check');
-	$routes->add('get_files_recent', 'Home::home_ajax_get_file_recent_uploaded');
-	$routes->add('get_files_all', 'Home::home_ajax_get_file_all_uploaded');
+    $routes->add('/', 'Home::home');
+    $routes->add('check', 'Home::home_ajax_code_check');
 });
 
 $routes->group('home', function ($routes) {
-	$routes->add('recent', 'Home::home');
-	$routes->add('files', 'Utils\TypeFile');
-	$routes->add('texts', 'Utils\TypeText');
-	$routes->add('trashed', 'Utils\TypeTrash'); 
+    $routes->add('recent', 'Home::home');
+    $routes->add('files', 'Utils\TypeFile');
+    $routes->add('texts', 'Utils\TypeText');
+    $routes->add('trashed', 'Utils\TypeTrash');
 });
 
 $routes->group('saved', function ($routes) {
-	$routes->add('download/(:any)', 'Download::browser_file_download/$1');
-	$routes->add('delete/(:any)', 'Download::browser_file_delete/$1');
+    $routes->add('download/(:any)', 'Download::browser_file_download/$1');
+    $routes->add('delete/(:any)', 'Download::browser_file_delete/$1');
 });
 
 $routes->group('home', function ($routes) {
-	$routes->add('file/upload', 'Upload::file_uploaded_by_browser');
-	$routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
-	$routes->add('phone/get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
-	$routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
-	$routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
+    $routes->add('file/upload', 'Upload::file_uploaded_by_browser');
+    $routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
+    $routes->add('phone/get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
+    $routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
+    $routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
 });
 
 $routes->group('text', function ($routes) {
-	$routes->add('save', 'Utils\TypeText::text_save');
-	$routes->add('delete/(:any)', 'Utils\TypeText::text_delete/$1');
+    $routes->add('save', 'Utils\TypeText::text_save');
+    $routes->add('delete/(:any)', 'Utils\TypeText::text_delete/$1');
+});
+
+$routes->group('files', function ($routes) {
+    $routes->add('search', 'FileManager::search');
+    $routes->add('rename', 'FileManager::rename');
+    $routes->add('add-tag', 'FileManager::add_tag');
+    $routes->add('remove-tag', 'FileManager::remove_tag');
+    $routes->add('update-category', 'FileManager::update_category');
+    $routes->add('update-description', 'FileManager::update_description');
+    $routes->add('batch-delete', 'FileManager::batch_delete');
+    $routes->add('batch-add-tag', 'FileManager::batch_add_tag');
+    $routes->add('details/(:any)', 'FileManager::get_file_details/$1');
+    $routes->add('metadata', 'FileManager::get_categories_and_tags');
 });
 
 $routes->get('setup/text-tables', 'DatabaseSetup::createTextTables');

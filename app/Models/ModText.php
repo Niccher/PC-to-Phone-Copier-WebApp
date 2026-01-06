@@ -10,13 +10,16 @@ class ModText extends Model
         return $this->db->table('tbl_texts_uploaded')->insert($text_info);
     }
 
-    public function text_get_uploaded_texts($sess_id){
+    public function text_get_uploaded_texts($sess_id, $limit = null){
         $builder = $this->db->table('tbl_texts_uploaded');
-        $get_all = $builder
-            ->orderBy('text_count', 'DESC')
-            ->where('text_session_id', $sess_id)
-            ->get();
-        return $get_all->getResult();
+        $builder->orderBy('text_created_at', 'DESC')
+            ->where('text_session_id', $sess_id);
+
+        if ($limit !== null) {
+            $builder->limit($limit);
+        }
+
+        return $builder->get()->getResult();
     }
 
     public function text_get_uploaded_by_uuid($text_uuid){
