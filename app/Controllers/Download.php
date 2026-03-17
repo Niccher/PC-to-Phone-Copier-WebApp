@@ -72,6 +72,7 @@ class Download extends BaseController
 
 	public function browser_file_download($file_uuid){
 		$mod_upload = new ModUpload();
+		$mod_upload->ensureColumnsExist();
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
@@ -90,11 +91,13 @@ class Download extends BaseController
 
 	public function browser_file_delete($file_uuid){
 		$mod_upload = new ModUpload();
+		$mod_upload->ensureColumnsExist();
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
-		//echo "Delete file ".$file_data[0]->up_file_Orig_Name;
-		//print("<pre>".print_r($file_data,true)."</pre>");
+		if (empty($file_data)) {
+			return redirect()->to(base_url('home/recent'))->with('error', 'File not found');
+		}
 
 		$f_path_old = WRITEPATH .'/uploads/copied_files/';
 		$f_path_new = WRITEPATH .'/uploads/copied_files_deleted/';

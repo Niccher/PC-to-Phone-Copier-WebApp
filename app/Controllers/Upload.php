@@ -12,6 +12,7 @@ class Upload extends BaseController
 
     public function file_uploaded_by_browser(){
         $mod_upload = new ModUpload();
+        $mod_upload->ensureColumnsExist();
         $dated = date('Y-m-d H:i:s');
         $uuid = random_string('alnum', 16);
 

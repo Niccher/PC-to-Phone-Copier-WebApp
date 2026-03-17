@@ -101,37 +101,29 @@
 							</div>
 						</div>
 
-						<!-- Recent Texts Section -->
-						<div class="card glass-card">
-							<div class="card-body">
-								<h5 class="mb-3">Recent Texts</h5>
-								<div class="row" id="recent_texts_container">
-									<?php echo $text_list ?: '<div class="col-12"><p class="text-muted text-center">No texts saved yet. Create your first text above!</p></div>'; ?>
-								</div>
-							</div>
-						</div>
 
 						<!-- All Texts Section -->
-						<div class="card glass-card">
-							<div class="card-body">
-								<h5 class="mb-3">All Saved Texts</h5>
-								<div class="table-responsive">
-									<table class="table table-hover mb-0">
-										<thead>
-											<tr>
-												<th>Title</th>
-												<th>Source</th>
-												<th>Size</th>
-												<th>Actions</th>
-											</tr>
-										</thead>
-										<tbody id="all_texts_container">
-											<?php echo $text_list_all ?: '<tr><td colspan="4" class="text-center text-muted">No texts saved yet.</td></tr>'; ?>
-										</tbody>
-									</table>
-								</div>
-							</div>
+				<div class="card glass-card">
+					<div class="card-body">
+						<h5 class="mb-3">All Saved Texts</h5>
+						<div class="table-responsive">
+							<table id="texts-all-datatable" class="table table-sm table-hover align-middle w-100">
+								<thead class="table-light">
+									<tr>
+										<th>Title</th>
+										<th>Date</th>
+										<th>Source</th>
+										<th>Size</th>
+										<th class="text-center no-sort">Actions</th>
+									</tr>
+								</thead>
+								<tbody id="all_texts_container">
+									<?php echo $text_list_all ?: '<tr><td colspan="5" class="text-center text-muted">No texts saved yet.</td></tr>'; ?>
+								</tbody>
+							</table>
 						</div>
+					</div>
+				</div>
 					</div>
 					<!-- end Right Content -->
 				</div>

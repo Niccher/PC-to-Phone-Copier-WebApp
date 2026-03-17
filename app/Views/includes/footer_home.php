@@ -26,59 +26,33 @@
 <script src="<?php echo base_url('assets/js/vendor.min.js')?>"></script>
 <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
 
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
     $(document).ready(function(){
-        // Search functionality for recent items
-        $('#recent-search').on('input', function() {
-            var searchTerm = $(this).val().toLowerCase().trim();
 
-            if (searchTerm === '') {
-                // Show all items
-                $('.file-card, .text-card').show();
-                $('.tab-pane .col-12 .text-center').hide();
-            } else {
-                // Filter items
-                var activeTab = $('.nav-tabs .nav-link.active').attr('href');
-                var visibleItems = 0;
+        // Init DataTable: Files
+        if ($('#files-datatable').length) {
+            $('#files-datatable').DataTable({
+                pageLength: 15,
+                order: [[4, 'desc']],
+                columnDefs: [{ orderable: false, targets: 'no-sort' }],
+                language: { search: 'Filter files:' }
+            });
+        }
 
-                $(activeTab + ' .file-card, ' + activeTab + ' .text-card').each(function() {
-                    var itemText = $(this).text().toLowerCase();
-                    if (itemText.includes(searchTerm)) {
-                        $(this).show();
-                        visibleItems++;
-                    } else {
-                        $(this).hide();
-                    }
-                });
-
-                // Show/hide "no results" message
-                var noResultsMsg = $(activeTab + ' .col-12 .text-center');
-                if (visibleItems === 0) {
-                    if (noResultsMsg.length === 0) {
-                        $(activeTab).prepend(`
-                                    <div class="col-12">
-                                        <div class="text-center py-4">
-                                            <i class="mdi mdi-magnify display-4 text-muted mb-2"></i>
-                                            <h6 class="text-muted">No items match your search</h6>
-                                            <p class="text-muted">Try different keywords</p>
-                                        </div>
-                                    </div>
-                                `);
-                    } else {
-                        noResultsMsg.show();
-                    }
-                } else {
-                    noResultsMsg.hide();
-                }
-            }
-        });
-
-        // Clear search when switching tabs
-        $('.nav-tabs .nav-link').on('shown.bs.tab', function() {
-            $('#recent-search').val('');
-            $('.file-card, .text-card').show();
-            $('.tab-pane .col-12 .text-center').hide();
-        });
+        // Init DataTable: Texts
+        if ($('#texts-datatable').length) {
+            $('#texts-datatable').DataTable({
+                pageLength: 15,
+                order: [[2, 'desc']],
+                columnDefs: [{ orderable: false, targets: 'no-sort' }],
+                language: { search: 'Filter texts:' }
+            });
+        }
 
         // Copy text functionality
         $(document).on('click', '.copy-text-link', function() {
@@ -163,8 +137,12 @@
         $(document).on('click', '.share-qr-btn', function() {
             var url = $(this).data('url');
             var title = $(this).data('title');
+            var size = $(this).data('size') || '';
+            var date = $(this).data('date') || '';
             
-            $('#qr-modal-title').text('Share: ' + title);
+            $('#qr-modal-title').text(title);
+            $('#qr-modal-size').text(size);
+            $('#qr-modal-date').text(date);
             $('#qr-modal-container').empty();
             
             $('#share-qr-modal').modal('show');
@@ -192,18 +170,33 @@
 
 <!-- Share QR Modal -->
 <div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="qr-modal-title">Share QR</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h4 class="modal-title font-18 text-white" id="qr-modal-title">Share QR</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center">
-                <div id="qr-modal-container" class="d-inline-block p-2 bg-white rounded shadow-sm mb-3"></div>
-                <p class="text-muted small mb-0">Scan this code to access the item on another device.</p>
+            <div class="modal-body text-center p-4">
+                <div id="qr-modal-container" class="d-inline-block p-3 bg-white rounded shadow-sm mb-3"></div>
+                <div class="mt-3">
+                    <h5 class="mb-1 text-dark" id="qr-modal-item-title">Access QR Code</h5>
+                    <p class="text-muted mb-3">Scan this code to access the item on another device.</p>
+                    
+                    <div class="d-flex justify-content-center gap-3 py-2 border-top border-bottom">
+                        <div class="text-center">
+                            <small class="text-muted d-block text-uppercase font-10 fw-bold">Size</small>
+                            <span class="fw-semibold text-primary font-14" id="qr-modal-size">-</span>
+                        </div>
+                        <div class="vr"></div>
+                        <div class="text-center">
+                            <small class="text-muted d-block text-uppercase font-10 fw-bold">Date</small>
+                            <span class="fw-semibold text-primary font-14" id="qr-modal-date">-</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

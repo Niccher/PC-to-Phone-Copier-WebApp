@@ -244,4 +244,77 @@ class ModUpload extends Model
             ->where('up_file_session_id', $sess_id)
             ->delete();
     }
+
+    /**
+     * Ensure preview-related columns exist in tbl_files_uploaded.
+     * Safe to call multiple times — uses SHOW COLUMNS before ALTER.
+     */
+    public function ensureColumnsExist() {
+        $table = 'tbl_files_uploaded';
+        $columns = [
+            'up_file_thumbnail'        => "VARCHAR(255) DEFAULT NULL",
+            'up_file_tags'             => "TEXT DEFAULT NULL",
+            'up_file_category'         => "VARCHAR(100) DEFAULT NULL",
+            'up_file_description'      => "TEXT DEFAULT NULL",
+            'up_file_preview_available'=> "TINYINT(1) DEFAULT 0",
+            'up_file_width'            => "INT(11) DEFAULT NULL",
+            'up_file_height'           => "INT(11) DEFAULT NULL",
+        ];
+
+        $existing = [];
+        $result = $this->db->query("SHOW COLUMNS FROM `{$table}`")->getResult();
+        foreach ($result as $col) {
+            $existing[] = $col->Field;
+        }
+
+        foreach ($columns as $col => $definition) {
+            if (!in_array($col, $existing)) {
+                $this->db->query("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$definition}");
+            }
+        }
+    }
+
+    public function getFileIconClass($extension) {
+        $ext = strtolower($extension);
+        $map = [
+            'pdf'  => ['icon' => 'file-pdf-outline',       'color' => 'text-danger'],
+            'doc'  => ['icon' => 'file-word-outline',       'color' => 'text-primary'],
+            'docx' => ['icon' => 'file-word-outline',       'color' => 'text-primary'],
+            'xls'  => ['icon' => 'file-excel-outline',      'color' => 'text-success'],
+            'xlsx' => ['icon' => 'file-excel-outline',      'color' => 'text-success'],
+            'ppt'  => ['icon' => 'file-powerpoint-outline', 'color' => 'text-warning'],
+            'pptx' => ['icon' => 'file-powerpoint-outline', 'color' => 'text-warning'],
+            'txt'  => ['icon' => 'file-document-outline',   'color' => 'text-secondary'],
+            'jpg'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'jpeg' => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'png'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'gif'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'webp' => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'bmp'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
+            'mp4'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
+            'avi'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
+            'mov'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
+            'wmv'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
+            'webm' => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
+            'mp3'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'wav'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'flac' => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'aac'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'ogg'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'zip'  => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
+            'rar'  => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
+            '7z'   => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
+            'tar'  => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
+            'gz'   => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
+            'html' => ['icon' => 'language-html5',          'color' => 'text-danger'],
+            'css'  => ['icon' => 'language-css3',           'color' => 'text-primary'],
+            'js'   => ['icon' => 'language-javascript',     'color' => 'text-warning'],
+            'php'  => ['icon' => 'language-php',            'color' => 'text-info'],
+            'py'   => ['icon' => 'language-python',         'color' => 'text-success'],
+            'json' => ['icon' => 'code-json',               'color' => 'text-secondary'],
+            'xml'  => ['icon' => 'file-xml',                'color' => 'text-secondary'],
+            'sql'  => ['icon' => 'database',                'color' => 'text-info'],
+        ];
+        return $map[$ext] ?? ['icon' => 'file-outline', 'color' => 'text-muted'];
+    }
 }

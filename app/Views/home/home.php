@@ -8,7 +8,7 @@
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard</li>
+                        <li class="breadcrumb-item active">Recent</li>
                     </ol>
                 </div>
                 <h4 class="page-title">P2P Manager</h4>
@@ -26,17 +26,15 @@
                         <div class="btn-group d-block mb-2">
                             <button type="button" class="btn btn-success dropdown-toggle w-100" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-plus"></i> Create New </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#"><i class="mdi mdi-file-plus-outline me-1"></i> File</a>
-                                <a class="dropdown-item" href="#"><i class="mdi mdi-file-document me-1"></i> Dashboard</a>
+                                <a class="dropdown-item" href="<?php echo base_url('home/files'); ?>"><i class="mdi mdi-file-plus-outline me-1"></i> File</a>
+                                <a class="dropdown-item" href="<?php echo base_url('home/texts'); ?>"><i class="mdi mdi-file-document me-1"></i> Text</a>
                             </div>
                         </div>
                         <div class="email-menu-list mt-3">
                             <a href="<?php echo base_url('home/recent'); ?>" class="list-group-item border-0 fw-bolder text-primary">
                                 <i class="mdi mdi-history font-18 align-middle me-2"></i>
                                 Recent
-                                <span class="badge bg-primary float-end">
-                                                <i class="mdi mdi-check-all"></i>
-                                            </span>
+                                <span class="badge bg-primary float-end"><i class="mdi mdi-check-all"></i></span>
                             </a>
                             <a href="<?php echo base_url('home/files'); ?>" class="list-group-item border-0">
                                 <i class="mdi mdi-folder-outline font-18 align-middle me-2"></i>
@@ -66,22 +64,14 @@
                     </div>
                     <!-- End Left sidebar -->
                     <div class="page-aside-right">
-                        <!-- Search Bar for Recent Items -->
+                        <!-- Header -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="app-search">
-                                <form id="recent-search-form">
-                                    <div class="position-relative">
-                                        <input type="text" class="form-control" id="recent-search" placeholder="Search recent items...">
-                                        <span class="mdi mdi-magnify search-icon"></span>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="d-flex align-items-center">
+                            <div>
                                 <span class="badge bg-info me-2"><?php echo $files_count + $texts_count; ?> total items</span>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="refreshRecent()" title="Refresh">
-                                    <i class="mdi mdi-refresh"></i>
-                                </button>
                             </div>
+                            <a href="<?php echo base_url('home/files'); ?>" class="btn btn-sm btn-primary">
+                                <i class="mdi mdi-upload me-1"></i>Upload Files
+                            </a>
                         </div>
 
                         <!-- Recent Items Tabs -->
@@ -106,197 +96,152 @@
                             <div class="tab-content">
                                 <!-- Recent Files Tab -->
                                 <div class="tab-pane show active" id="recent-files" role="tabpanel">
-                                    <div class="row" id="recent-files-container">
-                                        <?php if (!empty($recent_files)): ?>
-                                            <?php foreach ($recent_files as $file):
-                                                $icon_class = 'file';
-                                                if (isset($file->up_file_Extension)) {
-                                                    $ext = strtolower($file->up_file_Extension);
-                                                    $icon_map = [
-                                                        'pdf' => 'file-pdf',
-                                                        'doc' => 'file-word',
-                                                        'docx' => 'file-word',
-                                                        'xls' => 'file-excel',
-                                                        'xlsx' => 'file-excel',
-                                                        'ppt' => 'file-powerpoint',
-                                                        'pptx' => 'file-powerpoint',
-                                                        'txt' => 'file-document',
-                                                        'jpg' => 'file-image',
-                                                        'jpeg' => 'file-image',
-                                                        'png' => 'file-image',
-                                                        'gif' => 'file-image',
-                                                        'mp4' => 'file-video',
-                                                        'avi' => 'file-video',
-                                                        'zip' => 'folder-zip',
-                                                        'rar' => 'folder-zip',
-                                                        'mp3' => 'file-music',
-                                                        'wav' => 'file-music'
-                                                    ];
-                                                    $icon_class = isset($icon_map[$ext]) ? $icon_map[$ext] : 'file';
-                                                }
-                                                $thumbnail = isset($file->up_file_thumbnail) && $file->up_file_thumbnail ? base_url($file->up_file_thumbnail) : '';
+                                    <?php if (!empty($recent_files)): ?>
+                                    <div class="table-responsive">
+                                        <table id="files-datatable" class="table table-sm table-hover align-middle w-100">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width:36px"></th>
+                                                    <th>File Name</th>
+                                                    <th>Size</th>
+                                                    <th>Dimensions</th>
+                                                    <th>Date</th>
+                                                    <th>Source</th>
+                                                    <th class="text-center no-sort">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $mod_upload = new \App\Models\ModUpload();
+                                                foreach ($recent_files as $file):
+                                                    $ext = strtolower($file->up_file_Extension ?? '');
+                                                    $iconData = $mod_upload->getFileIconClass($ext);
+                                                    $thumbnail = !empty($file->up_file_thumbnail) ? base_url($file->up_file_thumbnail) : '';
+                                                    $imageExts = ['jpg','jpeg','png','gif','webp','bmp'];
+                                                    $isImage = in_array($ext, $imageExts);
+                                                    $dimensions = '';
+                                                    if (!empty($file->up_file_width) && !empty($file->up_file_height)) {
+                                                        $dimensions = $file->up_file_width . ' × ' . $file->up_file_height;
+                                                    }
+                                                    $fileSize = $mod_upload->bytes_to_human_filesize($file->up_file_Size ?? 0);
+                                                    $fileDate = date('M j, Y H:i', strtotime($file->up_file_Created_at ?? 'now'));
+                                                    $source = $file->up_file_Source ?? 'Browser';
                                                 ?>
-                                                <div class="col-xxl-6 col-lg-12 mb-3">
-                                                    <div class="card file-card glass-card h-100">
-                                                        <div class="card-body">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-auto">
-                                                                    <?php if ($thumbnail): ?>
-                                                                        <img src="<?php echo $thumbnail; ?>" class="avatar-sm rounded" alt="Thumbnail">
-                                                                    <?php else: ?>
-                                                                        <div class="avatar-sm">
-																						<span class="avatar-title bg-light text-secondary rounded">
-																							<i class="mdi mdi-<?php echo $icon_class; ?> font-16"></i>
-																						</span>
-                                                                        </div>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <h6 class="mb-1 text-truncate">
-                                                                        <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="text-reset">
-                                                                            <?php echo htmlspecialchars($file->up_file_Orig_Name); ?>
-                                                                        </a>
-                                                                    </h6>
-                                                                    <p class="mb-1 text-muted small">
-                                                                        <?php
-                                                                        $mod_upload = new \App\Models\ModUpload();
-                                                                        echo $mod_upload->bytes_to_human_filesize($file->up_file_Size);
-                                                                        ?>
-                                                                        • <?php echo date('M j, Y', strtotime($file->up_file_Created_at)); ?>
-                                                                    </p>
-                                                                    <?php if (isset($file->up_file_tags) && $file->up_file_tags): ?>
-                                                                        <div class="file-tags">
-                                                                            <?php
-                                                                            $tags = explode(',', $file->up_file_tags);
-                                                                            foreach (array_slice($tags, 0, 2) as $tag): ?>
-                                                                                <span class="badge bg-light text-dark me-1"><?php echo htmlspecialchars(trim($tag)); ?></span>
-                                                                            <?php endforeach; ?>
-                                                                            <?php if (count($tags) > 2): ?>
-                                                                                <span class="badge bg-light text-dark">+<?php echo count($tags) - 2; ?> more</span>
-                                                                            <?php endif; ?>
-                                                                        </div>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                                <div class="col-auto">
-                                                                    <div class="dropdown">
-                                                                        <a href="#" class="btn btn-link btn-sm text-muted" data-bs-toggle="dropdown">
-                                                                            <i class="mdi mdi-dots-vertical"></i>
-                                                                        </a>
-                                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                                            <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="dropdown-item">
-                                                                                <i class="mdi mdi-download me-2"></i>Download
-                                                                            </a>
-                                                                            <a href="javascript:void(0);" class="dropdown-item share-qr-btn" data-url="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" data-title="<?php echo htmlspecialchars($file->up_file_Orig_Name); ?>">
-                                                                                <i class="mdi mdi-qrcode me-2"></i>Share QR
-                                                                            </a>
-                                                                            <a href="<?php echo base_url('saved/delete/' . $file->up_file_uuid); ?>" class="dropdown-item text-danger">
-                                                                                <i class="mdi mdi-delete me-2"></i>Delete
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <div class="col-12">
-                                                <div class="text-center py-4">
-                                                    <i class="mdi mdi-file-multiple-outline display-4 text-muted mb-2"></i>
-                                                    <h6 class="text-muted">No files uploaded yet</h6>
-                                                    <a href="<?php echo base_url('home/files'); ?>" class="btn btn-primary btn-sm">
-                                                        <i class="mdi mdi-plus me-1"></i>Upload Files
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <?php if ($isImage && $thumbnail): ?>
+                                                            <img src="<?php echo $thumbnail; ?>" class="rounded" style="width:32px;height:32px;object-fit:cover;" alt="thumb">
+                                                        <?php else: ?>
+                                                            <span class="avatar-title rounded <?php echo str_replace('text-','bg-',str_replace('muted','light',$iconData['color'])); ?> bg-opacity-25" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;">
+                                                                <i class="mdi mdi-<?php echo $iconData['icon']; ?> font-16 <?php echo $iconData['color']; ?>"></i>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="fw-semibold text-reset">
+                                                            <?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>
+                                                        </a>
+                                                        <?php if (!empty($ext)): ?>
+                                                            <span class="badge bg-light text-dark ms-1 text-uppercase font-10"><?php echo $ext; ?></span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td class="text-nowrap text-muted"><?php echo $fileSize; ?></td>
+                                                    <td class="text-muted"><?php echo $dimensions ?: '—'; ?></td>
+                                                    <td class="text-nowrap text-muted"><?php echo $fileDate; ?></td>
+                                                    <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($source); ?></span></td>
+                                                    <td class="text-center text-nowrap">
+                                                        <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="btn btn-sm btn-outline-primary py-0 px-2 me-1" title="Download">
+                                                            <i class="mdi mdi-download"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0);" class="btn btn-sm btn-outline-info py-0 px-2 me-1 share-qr-btn"
+                                                            data-url="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>"
+                                                            data-title="<?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>"
+                                                            data-size="<?php echo $fileSize; ?>"
+                                                            data-date="<?php echo $fileDate; ?>"
+                                                            title="Share QR">
+                                                            <i class="mdi mdi-qrcode"></i>
+                                                        </a>
+                                                        <a href="<?php echo base_url('saved/delete/' . $file->up_file_uuid); ?>" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" onclick="return confirm('Delete this file?')">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                    <?php else: ?>
+                                    <div class="text-center py-4">
+                                        <i class="mdi mdi-file-multiple-outline display-4 text-muted mb-2"></i>
+                                        <h6 class="text-muted">No files uploaded yet</h6>
+                                        <a href="<?php echo base_url('home/files'); ?>" class="btn btn-primary btn-sm">
+                                            <i class="mdi mdi-plus me-1"></i>Upload Files
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- Recent Texts Tab -->
                                 <div class="tab-pane" id="recent-texts" role="tabpanel">
-                                    <div class="row" id="recent-texts-container">
-                                        <?php if (!empty($recent_texts)): ?>
-                                            <?php foreach ($recent_texts as $text):
-                                                $truncated_content = strlen($text->text_content) > 150 ?
-                                                    substr($text->text_content, 0, 150) . '...' : $text->text_content;
-                                                $title = isset($text->text_title) && $text->text_title ? $text->text_title : 'Untitled Text';
+                                    <?php if (!empty($recent_texts)): ?>
+                                    <div class="table-responsive">
+                                        <table id="texts-datatable" class="table table-sm table-hover align-middle w-100">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Size</th>
+                                                    <th>Date</th>
+                                                    <th>Source</th>
+                                                    <th class="text-center no-sort">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($recent_texts as $text):
+                                                    $textTitle = !empty($text->text_title) ? $text->text_title : 'Untitled Text';
+                                                    $textSize = strlen($text->text_content ?? '') . ' chars';
+                                                    $textDate = date('M j, Y H:i', strtotime($text->text_created_at ?? 'now'));
+                                                    $textSource = str_replace('Text', '', $text->text_source ?? 'Browser');
                                                 ?>
-                                                <div class="col-xxl-6 col-lg-12 mb-3">
-                                                    <div class="card text-card glass-card h-100">
-                                                        <div class="card-body">
-                                                            <div class="row align-items-start">
-                                                                <div class="col-auto">
-                                                                    <div class="avatar-sm">
-																					<span class="avatar-title bg-success text-white rounded">
-																						<i class="mdi mdi-text font-16"></i>
-																					</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <h6 class="mb-1">
-                                                                        <a href="javascript:void(0);" class="text-reset copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content); ?>">
-                                                                            <?php echo htmlspecialchars($title); ?>
-                                                                        </a>
-                                                                    </h6>
-                                                                    <p class="mb-2 text-muted small">
-                                                                        <?php echo strlen($text->text_content); ?> characters
-                                                                        • <?php echo date('M j, Y', strtotime($text->text_created_at)); ?>
-                                                                    </p>
-                                                                    <div class="text-preview">
-                                                                        <small class="text-muted">
-                                                                            <?php echo htmlspecialchars($truncated_content); ?>
-                                                                        </small>
-                                                                    </div>
-                                                                    <?php if (isset($text->text_tags) && $text->text_tags): ?>
-                                                                        <div class="file-tags mt-2">
-                                                                            <?php
-                                                                            $tags = explode(',', $text->text_tags);
-                                                                            foreach (array_slice($tags, 0, 2) as $tag): ?>
-                                                                                <span class="badge bg-light text-dark me-1"><?php echo htmlspecialchars(trim($tag)); ?></span>
-                                                                            <?php endforeach; ?>
-                                                                            <?php if (count($tags) > 2): ?>
-                                                                                <span class="badge bg-light text-dark">+<?php echo count($tags) - 2; ?> more</span>
-                                                                            <?php endif; ?>
-                                                                        </div>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                                <div class="col-auto">
-                                                                    <div class="dropdown">
-                                                                        <a href="#" class="btn btn-link btn-sm text-muted" data-bs-toggle="dropdown">
-                                                                            <i class="mdi mdi-dots-vertical"></i>
-                                                                        </a>
-                                                                        <div class="dropdown-menu dropdown-menu-end">
-                                                                            <a href="javascript:void(0);" class="dropdown-item copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content); ?>">
-                                                                                <i class="mdi mdi-content-copy me-2"></i>Copy Text
-                                                                            </a>
-                                                                            <a href="javascript:void(0);" class="dropdown-item share-qr-btn" data-url="<?php echo base_url('home/texts?view=' . $text->text_uuid); ?>" data-title="<?php echo htmlspecialchars($title); ?>">
-                                                                                <i class="mdi mdi-qrcode me-2"></i>Share QR
-                                                                            </a>
-                                                                            <a href="<?php echo base_url('text/delete/' . $text->text_uuid); ?>" class="dropdown-item text-danger">
-                                                                                <i class="mdi mdi-delete me-2"></i>Delete
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <div class="col-12">
-                                                <div class="text-center py-4">
-                                                    <i class="mdi mdi-text-box-multiple-outline display-4 text-muted mb-2"></i>
-                                                    <h6 class="text-muted">No texts saved yet</h6>
-                                                    <a href="<?php echo base_url('home/texts'); ?>" class="btn btn-success btn-sm">
-                                                        <i class="mdi mdi-plus me-1"></i>Create Text
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:void(0);" class="fw-semibold text-reset copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content ?? ''); ?>">
+                                                            <?php echo htmlspecialchars($textTitle); ?>
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-muted"><?php echo $textSize; ?></td>
+                                                    <td class="text-nowrap text-muted"><?php echo $textDate; ?></td>
+                                                    <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($textSource); ?></span></td>
+                                                    <td class="text-center text-nowrap">
+                                                        <a href="javascript:void(0);" class="btn btn-sm btn-outline-secondary py-0 px-2 me-1 copy-text-link"
+                                                            data-text="<?php echo htmlspecialchars($text->text_content ?? ''); ?>" title="Copy">
+                                                            <i class="mdi mdi-content-copy"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0);" class="btn btn-sm btn-outline-info py-0 px-2 me-1 share-qr-btn"
+                                                            data-url="<?php echo base_url('home/texts?view=' . $text->text_uuid); ?>"
+                                                            data-title="<?php echo htmlspecialchars($textTitle); ?>"
+                                                            data-size="<?php echo $textSize; ?>"
+                                                            data-date="<?php echo $textDate; ?>"
+                                                            title="Share QR">
+                                                            <i class="mdi mdi-qrcode"></i>
+                                                        </a>
+                                                        <a href="<?php echo base_url('text/delete/' . $text->text_uuid); ?>" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" onclick="return confirm('Delete this text?')">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                    <?php else: ?>
+                                    <div class="text-center py-4">
+                                        <i class="mdi mdi-text-box-multiple-outline display-4 text-muted mb-2"></i>
+                                        <h6 class="text-muted">No texts saved yet</h6>
+                                        <a href="<?php echo base_url('home/texts'); ?>" class="btn btn-success btn-sm">
+                                            <i class="mdi mdi-plus me-1"></i>Create Text
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

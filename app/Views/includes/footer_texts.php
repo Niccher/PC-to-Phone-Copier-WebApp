@@ -30,6 +30,11 @@
 
         <script src="<?php echo base_url('assets/summernote/summernote.min.js')?>"></script>
 
+        <!-- DataTables -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
         <!-- Initialize Summernote editor and text functionality -->
         <script>
             $(document).ready(function() {
@@ -49,6 +54,16 @@
                     ],
                     focus: true
                 });
+
+                // Initialize DataTable for texts
+                if ($('#texts-all-datatable').length) {
+                    $('#texts-all-datatable').DataTable({
+                        pageLength: 15,
+                        order: [[1, 'desc']],
+                        columnDefs: [{ orderable: false, targets: 'no-sort' }],
+                        language: { search: 'Filter texts:' }
+                    });
+                }
 
                 // Save text functionality
                 $('#save_text_btn').on('click', function() {
@@ -186,8 +201,12 @@
                 $(document).on('click', '.share-qr-btn', function() {
                     var url = $(this).data('url');
                     var title = $(this).data('title');
+                    var size = $(this).data('size') || '';
+                    var date = $(this).data('date') || '';
                     
-                    $('#qr-modal-title').text('Share: ' + title);
+                    $('#qr-modal-title').text(title);
+                    $('#qr-modal-size').text(size);
+                    $('#qr-modal-date').text(date);
                     $('#qr-modal-container').empty();
                     
                     $('#share-qr-modal').modal('show');
@@ -208,18 +227,33 @@
 
         <!-- Share QR Modal -->
         <div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="qr-modal-title">Share QR</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-dialog modal-md modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-primary text-white py-3">
+                        <h4 class="modal-title font-18 text-white" id="qr-modal-title">Share QR</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center">
-                        <div id="qr-modal-container" class="d-inline-block p-2 bg-white rounded shadow-sm mb-3"></div>
-                        <p class="text-muted small mb-0">Scan this code to access the item on another device.</p>
+                    <div class="modal-body text-center p-4">
+                        <div id="qr-modal-container" class="d-inline-block p-3 bg-white rounded shadow-sm mb-3"></div>
+                        <div class="mt-2">
+                            <h5 class="mb-1 text-dark" id="qr-modal-item-title">Access QR Code</h5>
+                            <p class="text-muted mb-3 font-13">Scan this code to access the item on another device.</p>
+                            
+                            <div class="d-flex justify-content-center gap-3 py-3 border-top border-bottom">
+                                <div class="text-center px-2">
+                                    <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Size</small>
+                                    <span class="fw-semibold text-primary font-14" id="qr-modal-size">-</span>
+                                </div>
+                                <div class="vr"></div>
+                                <div class="text-center px-2">
+                                    <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Date</small>
+                                    <span class="fw-semibold text-primary font-14" id="qr-modal-date">-</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <div class="modal-footer bg-light py-2">
+                        <button type="button" class="btn btn-secondary px-4 shadow-sm" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

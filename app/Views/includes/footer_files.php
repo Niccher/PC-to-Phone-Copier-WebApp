@@ -31,21 +31,35 @@
 <!-- Dropzone js -->
 <script src="<?php echo base_url('assets/dropzone/dropzone.js')?>"></script>
 
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <!-- File Management JavaScript -->
 <script>
     // Global variables
     var currentFiles = [];
     var selectedFiles = [];
-    var currentView = 'grid';
+    var currentView = 'list';
     var categories = [];
     var availableTags = [];
 
     $(document).ready(function() {
-        // Initialize components
+        // Initialize DataTable for file manager
+        if ($('#files-manager-table').length) {
+            $('#files-manager-table').DataTable({
+                pageLength: 20,
+                order: [[5, 'desc']],
+                columnDefs: [{ orderable: false, targets: 'no-sort' }],
+                language: { search: 'Filter files:' }
+            });
+        }
+
+        // Initialize components (for upload zone only on this page)
         initializeDropzone();
         loadCategoriesAndTags();
-        loadFiles();
-        
+
         // QR Code Generation for Pairing
         if (document.getElementById('pair-qr')) {
             new QRCode(document.getElementById('pair-qr'), {
@@ -62,8 +76,12 @@
         $(document).on('click', '.share-qr-btn', function() {
             var url = $(this).data('url');
             var title = $(this).data('title');
+            var size = $(this).data('size') || '';
+            var date = $(this).data('date') || '';
             
-            $('#qr-modal-title').text('Share: ' + title);
+            $('#qr-modal-title').text(title);
+            $('#qr-modal-size').text(size);
+            $('#qr-modal-date').text(date);
             $('#qr-modal-container').empty();
             
             $('#share-qr-modal').modal('show');
@@ -443,9 +461,10 @@
 
     function updateFileDisplay(files) {
         $('#file-count').text(files.length + ' files');
+        var container = $('#files-container');
 
         if (files.length === 0) {
-            $('#files-container').html(`
+            container.html(`
                         <div class="text-center py-5">
                             <i class="mdi mdi-folder-open display-4 text-muted"></i>
                             <h5 class="text-muted mt-2">No files found</h5>
@@ -455,8 +474,11 @@
             return;
         }
 
-        var html = currentView === 'grid' ? generateGridView(files) : generateListView(files);
-        $('#files-container').html(html);
+        if (currentView === 'grid') {
+            container.html(generateGridView(files));
+        } else {
+            container.html(generateListView(files));
+        }
     }
 
     function generateGridView(files) {
@@ -486,7 +508,11 @@
                                         <a href="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" class="btn btn-sm btn-outline-success">
                                             <i class="mdi mdi-download"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-info share-qr-btn" data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" data-title="${file.up_file_Orig_Name}">
+                                        <button class="btn btn-sm btn-outline-info share-qr-btn" 
+                                            data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" 
+                                            data-title="${file.up_file_Orig_Name}"
+                                            data-size="${formatFileSize(file.up_file_Size)}"
+                                            data-date="${new Date(file.up_file_Created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}">
                                             <i class="mdi mdi-qrcode"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${file.up_file_uuid}')">
@@ -541,7 +567,11 @@
                                 <a href="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" class="btn btn-sm btn-outline-success">
                                     <i class="mdi mdi-download"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-info share-qr-btn" data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" data-title="${file.up_file_Orig_Name}">
+                                <button class="btn btn-sm btn-outline-info share-qr-btn" 
+                                    data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" 
+                                    data-title="${file.up_file_Orig_Name}"
+                                    data-size="${formatFileSize(file.up_file_Size)}"
+                                    data-date="${new Date(file.up_file_Created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}">
                                     <i class="mdi mdi-qrcode"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${file.up_file_uuid}')">
@@ -894,18 +924,33 @@
 
 <!-- Share QR Modal -->
 <div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="qr-modal-title">Share QR</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white py-3">
+                <h4 class="modal-title font-18 text-white" id="qr-modal-title">Share QR</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center">
-                <div id="qr-modal-container" class="d-inline-block p-2 bg-white rounded shadow-sm mb-3"></div>
-                <p class="text-muted small mb-0">Scan this code to access the item on another device.</p>
+            <div class="modal-body text-center p-4">
+                <div id="qr-modal-container" class="d-inline-block p-3 bg-white rounded shadow-sm mb-3"></div>
+                <div class="mt-2">
+                    <h5 class="mb-1 text-dark" id="qr-modal-item-title">Access QR Code</h5>
+                    <p class="text-muted mb-3 font-13">Scan this code to access the item on another device.</p>
+                    
+                    <div class="d-flex justify-content-center gap-3 py-3 border-top border-bottom">
+                        <div class="text-center px-2">
+                            <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Size</small>
+                            <span class="fw-semibold text-primary font-14" id="qr-modal-size">-</span>
+                        </div>
+                        <div class="vr"></div>
+                        <div class="text-center px-2">
+                            <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Date</small>
+                            <span class="fw-semibold text-primary font-14" id="qr-modal-date">-</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary px-4 shadow-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

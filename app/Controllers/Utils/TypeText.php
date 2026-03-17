@@ -64,20 +64,24 @@ class TypeText extends BaseController
                         <span class="fw-semibold">
                             <a href="javascript: void(0);" class="text-reset copy-text-btn" data-text="' . htmlspecialchars($text->text_content) . '">' . htmlspecialchars($text->text_title ?: 'Untitled Text') . '</a>
                         </span>
-                        <br>
-                        <span class="font-12">' . $text->text_created_at . '</span>
                     </td>
-                    <td>' . str_replace("Text","",$text->text_source) . '</td>
-                    <td>' . strlen($text->text_content) . ' chars</td>
-                    <td class="">
-                        <a href="javascript:void(0);" class="copy-text-btn" data-text="' . htmlspecialchars($text->text_content) . '">
-                            <i class="mdi mdi-content-copy widget-icon"></i>
+                    <td class="text-nowrap text-muted">' . date('M j, Y H:i', strtotime($text->text_created_at)) . '</td>
+                    <td><span class="badge bg-light text-dark">' . str_replace("Text","", $text->text_source) . '</span></td>
+                    <td class="text-muted">' . strlen($text->text_content) . ' chars</td>
+                    <td class="text-center text-nowrap">
+                        <a href="javascript:void(0);" class="btn btn-sm btn-outline-secondary py-0 px-2 me-1 copy-text-btn" data-text="' . htmlspecialchars($text->text_content) . '" title="Copy">
+                            <i class="mdi mdi-content-copy"></i>
                         </a>
-                        <a href="javascript:void(0);" class="share-qr-btn" data-url="' . base_url('home/texts?view=' . $text->text_uuid) . '" data-title="' . htmlspecialchars($text->text_title ?: 'Untitled Text') . '">
-                            <i class="mdi mdi-qrcode widget-icon"></i>
+                        <a href="javascript:void(0);" class="btn btn-sm btn-outline-info py-0 px-2 me-1 share-qr-btn"
+                            data-url="' . base_url('home/texts?view=' . $text->text_uuid) . '"
+                            data-title="' . htmlspecialchars($text->text_title ?: 'Untitled Text') . '"
+                            data-size="' . strlen($text->text_content) . ' chars"
+                            data-date="' . date('M j, Y H:i', strtotime($text->text_created_at)) . '"
+                            title="Share QR">
+                            <i class="mdi mdi-qrcode"></i>
                         </a>
-                        <a href="' . base_url("text/delete/" . $text->text_uuid) . '">
-                            <i class="mdi mdi-trash-can widget-icon"></i>
+                        <a href="' . base_url("text/delete/" . $text->text_uuid) . '" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm(\'Delete this text?\')" title="Delete">
+                            <i class="mdi mdi-delete"></i>
                         </a>
                     </td>
                 </tr>
@@ -144,21 +148,11 @@ class TypeText extends BaseController
 
     public function text_delete($text_uuid){
         $mod_text = new ModText();
-        $dated = date('Y-m-d H:i:s');
-
         try {
             $mod_text->text_to_delete($text_uuid);
-            return $this->respond([
-                'status' => 1,
-                'time' => $dated,
-                'message' => "Text deleted successfully"
-            ]);
+            return redirect()->to(base_url('home/texts'))->with('message', 'Text deleted successfully');
         } catch (\Exception $ex) {
-            return $this->respond([
-                'status' => 0,
-                'time' => $dated,
-                'message' => "Failed to delete text"
-            ]);
+            return redirect()->to(base_url('home/texts'))->with('error', 'Failed to delete text');
         }
     }
 
