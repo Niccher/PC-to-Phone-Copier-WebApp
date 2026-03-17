@@ -186,14 +186,62 @@ class ModUpload extends Model
             ->get()
             ->getResult();
 
-        // Move to deleted table
+        // Move to deleted table with deleted_at timestamp
         foreach ($files as $file) {
-            $this->db->table('tbl_files_uploaded_deleted')->insert((array)$file);
+            $fileArray = (array)$file;
+            $fileArray['deleted_at'] = date('Y-m-d H:i:s');
+            $this->db->table('tbl_files_uploaded_deleted')->insert($fileArray);
         }
 
         // Delete from main table
         return $this->db->table('tbl_files_uploaded')
             ->whereIn('up_file_uuid', $file_uuids)
+            ->delete();
+    }
+
+    public function get_deleted_files($sess_id) {
+        // Try to order by deleted_at if column exists, otherwise use up_file_Created_at
+        $query = $this->db->table('tbl_files_uploaded_deleted')
+            ->where('up_file_session_id', $sess_id);
+
+        // Check if deleted_at column exists
+        $columns = $this->db->query("SHOW COLUMNS FROM `tbl_files_uploaded_deleted` LIKE 'deleted_at'")->getResult();
+        if (!empty($columns)) {
+            $query->orderBy('deleted_at', 'DESC');
+        } else {
+            $query->orderBy('up_file_Created_at', 'DESC');
+        }
+
+        return $query->get()->getResult();
+    }
+
+    public function get_deleted_file_by_uuid($file_uuid, $sess_id) {
+        return $this->db->table('tbl_files_uploaded_deleted')
+            ->where('up_file_uuid', $file_uuid)
+            ->where('up_file_session_id', $sess_id)
+            ->get()
+            ->getRow();
+    }
+
+    public function restore_file($file) {
+        // Insert back to main table
+        $this->db->table('tbl_files_uploaded')->insert((array)$file);
+        // Remove from deleted table
+        return $this->db->table('tbl_files_uploaded_deleted')
+            ->where('up_file_uuid', $file->up_file_uuid)
+            ->delete();
+    }
+
+    public function permanent_delete_file($file_uuid, $sess_id) {
+        return $this->db->table('tbl_files_uploaded_deleted')
+            ->where('up_file_uuid', $file_uuid)
+            ->where('up_file_session_id', $sess_id)
+            ->delete();
+    }
+
+    public function empty_trash_files($sess_id) {
+        return $this->db->table('tbl_files_uploaded_deleted')
+            ->where('up_file_session_id', $sess_id)
             ->delete();
     }
 }

@@ -19,7 +19,7 @@
     <div class="row">
         <!-- Left Sidebar -->
         <div class="col-xl-3 col-lg-4">
-            <div class="card">
+            <div class="card glass-card">
                 <div class="card-body">
                     <div class="btn-group d-block mb-2">
                         <button type="button" class="btn btn-success dropdown-toggle w-100" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -64,6 +64,11 @@
                         </div>
                         <p class="text-muted font-12 mb-0">7.02 GB (46%) of 15 GB used</p>
                     </div>
+                    <div class="mt-4 p-3 bg-light rounded text-center">
+                        <h6 class="text-uppercase mb-2">Pair Phone</h6>
+                        <div id="pair-qr" class="d-flex justify-content-center mb-2"></div>
+                        <p class="text-muted font-11 mb-0">Scan to open on mobile</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,7 +77,7 @@
         <!-- Right Content -->
         <div class="col-xl-9 col-lg-8">
             <!-- Upload Section -->
-            <div class="card">
+            <div class="card glass-card">
                 <div class="card-body">
                     <h5 class="mb-3">
                         <i class="mdi mdi-cloud-upload me-2"></i>
@@ -138,7 +143,7 @@
             </div>
 
             <!-- File Management Section -->
-            <div class="card">
+            <div class="card glass-card">
                 <div class="card-body">
                     <!-- Header with Search and Actions -->
                     <div class="d-flex justify-content-between align-items-center mb-3">

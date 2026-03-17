@@ -55,6 +55,15 @@ $routes->group('home', function ($routes) {
     $routes->add('trashed', 'Utils\TypeTrash');
 });
 
+// API routes for trash management
+$routes->group('api', function ($routes) {
+    $routes->post('restore-file', 'Api\TrashApi::restoreFile');
+    $routes->post('restore-text', 'Api\TrashApi::restoreText');
+    $routes->post('permanent-delete-file', 'Api\TrashApi::permanentDeleteFile');
+    $routes->post('permanent-delete-text', 'Api\TrashApi::permanentDeleteText');
+    $routes->post('empty-trash', 'Api\TrashApi::emptyTrash');
+});
+
 $routes->group('saved', function ($routes) {
     $routes->add('download/(:any)', 'Download::browser_file_download/$1');
     $routes->add('delete/(:any)', 'Download::browser_file_delete/$1');

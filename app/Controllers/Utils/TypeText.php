@@ -73,6 +73,9 @@ class TypeText extends BaseController
                         <a href="javascript:void(0);" class="copy-text-btn" data-text="' . htmlspecialchars($text->text_content) . '">
                             <i class="mdi mdi-content-copy widget-icon"></i>
                         </a>
+                        <a href="javascript:void(0);" class="share-qr-btn" data-url="' . base_url('home/texts?view=' . $text->text_uuid) . '" data-title="' . htmlspecialchars($text->text_title ?: 'Untitled Text') . '">
+                            <i class="mdi mdi-qrcode widget-icon"></i>
+                        </a>
                         <a href="' . base_url("text/delete/" . $text->text_uuid) . '">
                             <i class="mdi mdi-trash-can widget-icon"></i>
                         </a>

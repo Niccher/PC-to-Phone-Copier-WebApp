@@ -19,7 +19,7 @@
 				<div class="row">
 					<!-- Left Sidebar -->
 					<div class="col-xl-3 col-lg-4">
-						<div class="card">
+						<div class="card glass-card">
 							<div class="card-body">
 								<div class="btn-group d-block mb-2">
 									<button type="button" class="btn btn-success dropdown-toggle w-100" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -57,6 +57,11 @@
                                         Trash Files
                                     </a>
 								</div>
+                                <div class="mt-4 p-3 bg-light rounded text-center">
+                                    <h6 class="text-uppercase mb-2">Pair Phone</h6>
+                                    <div id="pair-qr" class="d-flex justify-content-center mb-2"></div>
+                                    <p class="text-muted font-11 mb-0">Scan to open on mobile</p>
+                                </div>
 							</div>
 						</div>
 					</div>
@@ -65,7 +70,7 @@
 					<!-- Right Content -->
 					<div class="col-xl-9 col-lg-8">
 						<!-- Create Text Section -->
-						<div class="card">
+						<div class="card glass-card">
 							<div class="card-body">
 								<h5 class="mb-3">Create a text to copy</h5>
 								<div class="row">
@@ -97,7 +102,7 @@
 						</div>
 
 						<!-- Recent Texts Section -->
-						<div class="card">
+						<div class="card glass-card">
 							<div class="card-body">
 								<h5 class="mb-3">Recent Texts</h5>
 								<div class="row" id="recent_texts_container">
@@ -107,7 +112,7 @@
 						</div>
 
 						<!-- All Texts Section -->
-						<div class="card">
+						<div class="card glass-card">
 							<div class="card-body">
 								<h5 class="mb-3">All Saved Texts</h5>
 								<div class="table-responsive">

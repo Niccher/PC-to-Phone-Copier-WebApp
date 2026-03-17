@@ -45,6 +45,40 @@
         initializeDropzone();
         loadCategoriesAndTags();
         loadFiles();
+        
+        // QR Code Generation for Pairing
+        if (document.getElementById('pair-qr')) {
+            new QRCode(document.getElementById('pair-qr'), {
+                text: window.location.origin + "/home/files",
+                width: 100,
+                height: 100,
+                colorDark : "#313a46",
+                colorLight : "#f1f3fa",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // Share QR Functionalitiy
+        $(document).on('click', '.share-qr-btn', function() {
+            var url = $(this).data('url');
+            var title = $(this).data('title');
+            
+            $('#qr-modal-title').text('Share: ' + title);
+            $('#qr-modal-container').empty();
+            
+            $('#share-qr-modal').modal('show');
+            
+            setTimeout(function() {
+                new QRCode(document.getElementById('qr-modal-container'), {
+                    text: url,
+                    width: 256,
+                    height: 256,
+                    colorDark : "#313a46",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            }, 300);
+        });
 
         // Set up event listeners
         setupEventListeners();
@@ -452,6 +486,9 @@
                                         <a href="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" class="btn btn-sm btn-outline-success">
                                             <i class="mdi mdi-download"></i>
                                         </a>
+                                        <button class="btn btn-sm btn-outline-info share-qr-btn" data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" data-title="${file.up_file_Orig_Name}">
+                                            <i class="mdi mdi-qrcode"></i>
+                                        </button>
                                         <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${file.up_file_uuid}')">
                                             <i class="mdi mdi-delete"></i>
                                         </button>
@@ -504,6 +541,9 @@
                                 <a href="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" class="btn btn-sm btn-outline-success">
                                     <i class="mdi mdi-download"></i>
                                 </a>
+                                <button class="btn btn-sm btn-outline-info share-qr-btn" data-url="<?php echo base_url('saved/download/'); ?>${file.up_file_uuid}" data-title="${file.up_file_Orig_Name}">
+                                    <i class="mdi mdi-qrcode"></i>
+                                </button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${file.up_file_uuid}')">
                                     <i class="mdi mdi-delete"></i>
                                 </button>
@@ -851,6 +891,25 @@
                 `)
         .appendTo("head");
 </script>
+
+<!-- Share QR Modal -->
+<div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="qr-modal-title">Share QR</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qr-modal-container" class="d-inline-block p-2 bg-white rounded shadow-sm mb-3"></div>
+                <p class="text-muted small mb-0">Scan this code to access the item on another device.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

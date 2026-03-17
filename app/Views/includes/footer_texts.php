@@ -169,8 +169,61 @@
                         }
                     });
                 }
+
+                // QR Code Generation for Pairing
+                if (document.getElementById('pair-qr')) {
+                    new QRCode(document.getElementById('pair-qr'), {
+                        text: window.location.origin + "/home/texts",
+                        width: 100,
+                        height: 100,
+                        colorDark : "#313a46",
+                        colorLight : "#f1f3fa",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                }
+
+                // Share QR Functionality
+                $(document).on('click', '.share-qr-btn', function() {
+                    var url = $(this).data('url');
+                    var title = $(this).data('title');
+                    
+                    $('#qr-modal-title').text('Share: ' + title);
+                    $('#qr-modal-container').empty();
+                    
+                    $('#share-qr-modal').modal('show');
+                    
+                    setTimeout(function() {
+                        new QRCode(document.getElementById('qr-modal-container'), {
+                            text: url,
+                            width: 256,
+                            height: 256,
+                            colorDark : "#313a46",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+                    }, 300);
+                });
             });
         </script>
+
+        <!-- Share QR Modal -->
+        <div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="qr-modal-title">Share QR</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div id="qr-modal-container" class="d-inline-block p-2 bg-white rounded shadow-sm mb-3"></div>
+                        <p class="text-muted small mb-0">Scan this code to access the item on another device.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
 </html>

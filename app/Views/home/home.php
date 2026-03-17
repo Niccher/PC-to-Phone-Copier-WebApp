@@ -19,7 +19,7 @@
     <div class="row">
         <!-- Right Sidebar -->
         <div class="col-12">
-            <div class="card">
+            <div class="card glass-card">
                 <div class="card-body">
                     <!-- Left sidebar -->
                     <div class="page-aside-left">
@@ -57,6 +57,11 @@
                                 <div class="progress-bar progress-lg bg-success" role="progressbar" style="width: 46%" aria-valuenow="46" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <p class="text-muted font-12 mb-0">7.02 GB (46%) of 15 GB used</p>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded text-center">
+                            <h6 class="text-uppercase mb-2">Pair Phone</h6>
+                            <div id="pair-qr" class="d-flex justify-content-center mb-2"></div>
+                            <p class="text-muted font-11 mb-0">Scan to open on mobile</p>
                         </div>
                     </div>
                     <!-- End Left sidebar -->
@@ -132,7 +137,7 @@
                                                 $thumbnail = isset($file->up_file_thumbnail) && $file->up_file_thumbnail ? base_url($file->up_file_thumbnail) : '';
                                                 ?>
                                                 <div class="col-xxl-6 col-lg-12 mb-3">
-                                                    <div class="card file-card h-100">
+                                                    <div class="card file-card glass-card h-100">
                                                         <div class="card-body">
                                                             <div class="row align-items-center">
                                                                 <div class="col-auto">
@@ -181,6 +186,9 @@
                                                                             <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="dropdown-item">
                                                                                 <i class="mdi mdi-download me-2"></i>Download
                                                                             </a>
+                                                                            <a href="javascript:void(0);" class="dropdown-item share-qr-btn" data-url="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" data-title="<?php echo htmlspecialchars($file->up_file_Orig_Name); ?>">
+                                                                                <i class="mdi mdi-qrcode me-2"></i>Share QR
+                                                                            </a>
                                                                             <a href="<?php echo base_url('saved/delete/' . $file->up_file_uuid); ?>" class="dropdown-item text-danger">
                                                                                 <i class="mdi mdi-delete me-2"></i>Delete
                                                                             </a>
@@ -216,7 +224,7 @@
                                                 $title = isset($text->text_title) && $text->text_title ? $text->text_title : 'Untitled Text';
                                                 ?>
                                                 <div class="col-xxl-6 col-lg-12 mb-3">
-                                                    <div class="card text-card h-100">
+                                                    <div class="card text-card glass-card h-100">
                                                         <div class="card-body">
                                                             <div class="row align-items-start">
                                                                 <div class="col-auto">
@@ -262,6 +270,9 @@
                                                                         <div class="dropdown-menu dropdown-menu-end">
                                                                             <a href="javascript:void(0);" class="dropdown-item copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content); ?>">
                                                                                 <i class="mdi mdi-content-copy me-2"></i>Copy Text
+                                                                            </a>
+                                                                            <a href="javascript:void(0);" class="dropdown-item share-qr-btn" data-url="<?php echo base_url('home/texts?view=' . $text->text_uuid); ?>" data-title="<?php echo htmlspecialchars($title); ?>">
+                                                                                <i class="mdi mdi-qrcode me-2"></i>Share QR
                                                                             </a>
                                                                             <a href="<?php echo base_url('text/delete/' . $text->text_uuid); ?>" class="dropdown-item text-danger">
                                                                                 <i class="mdi mdi-delete me-2"></i>Delete

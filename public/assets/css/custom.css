@@ -1,0 +1,91 @@
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-bg-dark: rgba(49, 58, 70, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-border-dark: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --glass-blur: 10px;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transition: var(--transition-smooth);
+}
+
+body.dark-mode-active .glass-card {
+    background: var(--glass-bg-dark);
+    border: 1px solid var(--glass-border-dark);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+}
+
+/* Sidebars and Navigation */
+.page-aside-left, .card-body.left-sidebar {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+}
+
+/* List Item Animations */
+.email-menu-list a, .file-card, .text-card {
+    transition: var(--transition-smooth) !important;
+}
+
+.email-menu-list a:hover {
+    background: rgba(114, 124, 245, 0.1) !important;
+    padding-left: 25px !important;
+    border-radius: 8px;
+}
+
+.file-card:hover, .text-card:hover {
+    border-color: #727cf5 !important;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Micro-animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.recent-tabs .tab-pane .file-card, 
+.recent-tabs .tab-pane .text-card {
+    animation: fadeInUp 0.5s ease backwards;
+}
+
+.recent-tabs .tab-pane .file-card:nth-child(n) { animation-delay: 0.1s; }
+.recent-tabs .tab-pane .file-card:nth-child(2n) { animation-delay: 0.2s; }
+.recent-tabs .tab-pane .file-card:nth-child(3n) { animation-delay: 0.3s; }
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f3fa;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #727cf5;
+}
