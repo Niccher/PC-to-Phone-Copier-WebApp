@@ -17,7 +17,8 @@ class Home extends BaseController
         return view('welcome_message');
     }
 
-    public function home(){
+    public function home()
+    {
         $mod_upload = new ModUpload();
         $mod_text = new \App\Models\ModText();
 
@@ -37,23 +38,25 @@ class Home extends BaseController
         $data['recent_texts'] = $recent_texts;
         $data['files_count'] = count($all_files);
         $data['texts_count'] = count($all_texts);
+        $data['recent_count'] = count($recent_files) + count($recent_texts);
 
-        $title['title'] = "recent";
+        $data['title'] = "recent";
         //echo $this->session->get('sess_id');
 
         return view('includes/header')
-            .view('includes/sidebar', $title)
-            .view('home/home', $data)
-            .view('includes/footer_home');
+            . view('includes/sidebar', $data)
+            . view('home/home', $data)
+            . view('includes/footer_home', $data);
     }
 
-    public function home_ajax_code_check(){
+    public function home_ajax_code_check()
+    {
         $mod_visitors = new ModVisitors();
         $auth_codes = explode("---", base64_decode($this->request->getVar('a_num_code')));
 
         $code_data = [
-            'auth_text_code'    => $auth_codes[0],
-            'auth_qr_code'      => $auth_codes[1]
+            'auth_text_code' => $auth_codes[0],
+            'auth_qr_code' => $auth_codes[1]
         ];
 
         $get_auth_id = ($mod_visitors->auth_codes_get_uuid($code_data))[0]->auth_id;
@@ -63,18 +66,18 @@ class Home extends BaseController
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
         header('Access-Control-Allow-Origin: *');
 
-        if (!empty($get_auth_id)){
+        if (!empty($get_auth_id)) {
             $code_data_is_valid = [
-                'checked_auth_code_id'=> $get_auth_id,
+                'checked_auth_code_id' => $get_auth_id,
                 //'checked_phone_uuid'=> $get_auth_id,
-                'checked_is_valid'=> "valid",
+                'checked_is_valid' => "valid",
             ];
             $is_code_validated = count($mod_visitors->auth_codes_has_tested_valid($code_data_is_valid));
-            if ($is_code_validated > 0){
-                $sess_cookie= array(
-                    'name'   => 'sess_id',
-                    'value_sess_id'  => $get_auth_id,
-                    'value_phone_uuid'  => $get_auth_phone_uuid,
+            if ($is_code_validated > 0) {
+                $sess_cookie = array(
+                    'name' => 'sess_id',
+                    'value_sess_id' => $get_auth_id,
+                    'value_phone_uuid' => $get_auth_phone_uuid,
                     'expire' => '144000',
                 );
                 $_SESSION["sess_id"] = $get_auth_id;

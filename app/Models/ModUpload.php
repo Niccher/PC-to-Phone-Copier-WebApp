@@ -73,17 +73,24 @@ class ModUpload extends Model
         $get_info = $builder
             ->where('up_file_uuid', $phone_file_uuid)
             ->where('up_file_name', $phone_file_name)
-            //->where('up_file_dev_id', $phone_dev_id)
             ->get();
 
-        $file_info =  $get_info->getResult()[0];
+        if ($get_info->getNumRows() == 0) return false;
+        
+        $file_info = (array)$get_info->getRow();
 
-        $builder
+        // Delete from main table
+        $this->db->table('tbl_files_uploaded')
             ->where('up_file_uuid', $phone_file_uuid)
             ->where('up_file_name', $phone_file_name)
             ->delete();
 
-        return $this->db->table('tbl_files_uploaded_deleted')->insert($file_info);
+        // Filter keys for tbl_files_uploaded_deleted
+        $target_fields = $this->db->getFieldNames('tbl_files_uploaded_deleted');
+        $insert_data = array_intersect_key($file_info, array_flip($target_fields));
+        $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+
+        return $this->db->table('tbl_files_uploaded_deleted')->ignore(true)->insert($insert_data);
     }
 
     // New methods for file preview and management
@@ -187,10 +194,12 @@ class ModUpload extends Model
             ->getResult();
 
         // Move to deleted table with deleted_at timestamp
+        $target_fields = $this->db->getFieldNames('tbl_files_uploaded_deleted');
         foreach ($files as $file) {
             $fileArray = (array)$file;
-            $fileArray['deleted_at'] = date('Y-m-d H:i:s');
-            $this->db->table('tbl_files_uploaded_deleted')->insert($fileArray);
+            $insert_data = array_intersect_key($fileArray, array_flip($target_fields));
+            $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+            $this->db->table('tbl_files_uploaded_deleted')->ignore(true)->insert($insert_data);
         }
 
         // Delete from main table
@@ -277,30 +286,30 @@ class ModUpload extends Model
     public function getFileIconClass($extension) {
         $ext = strtolower($extension);
         $map = [
-            'pdf'  => ['icon' => 'file-pdf-outline',       'color' => 'text-danger'],
-            'doc'  => ['icon' => 'file-word-outline',       'color' => 'text-primary'],
-            'docx' => ['icon' => 'file-word-outline',       'color' => 'text-primary'],
-            'xls'  => ['icon' => 'file-excel-outline',      'color' => 'text-success'],
-            'xlsx' => ['icon' => 'file-excel-outline',      'color' => 'text-success'],
-            'ppt'  => ['icon' => 'file-powerpoint-outline', 'color' => 'text-warning'],
-            'pptx' => ['icon' => 'file-powerpoint-outline', 'color' => 'text-warning'],
-            'txt'  => ['icon' => 'file-document-outline',   'color' => 'text-secondary'],
-            'jpg'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'jpeg' => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'png'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'gif'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'webp' => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'bmp'  => ['icon' => 'file-image-outline',      'color' => 'text-info'],
-            'mp4'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
-            'avi'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
-            'mov'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
-            'wmv'  => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
-            'webm' => ['icon' => 'file-video-outline',      'color' => 'text-danger'],
-            'mp3'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
-            'wav'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
-            'flac' => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
-            'aac'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
-            'ogg'  => ['icon' => 'file-music-outline',      'color' => 'text-warning'],
+            'pdf'  => ['icon' => 'file-pdf-box',            'color' => 'text-danger'],
+            'doc'  => ['icon' => 'file-word-box',           'color' => 'text-primary'],
+            'docx' => ['icon' => 'file-word-box',           'color' => 'text-primary'],
+            'xls'  => ['icon' => 'file-excel-box',          'color' => 'text-success'],
+            'xlsx' => ['icon' => 'file-excel-box',          'color' => 'text-success'],
+            'ppt'  => ['icon' => 'file-powerpoint-box',     'color' => 'text-warning'],
+            'pptx' => ['icon' => 'file-powerpoint-box',     'color' => 'text-warning'],
+            'txt'  => ['icon' => 'file-document-box',       'color' => 'text-secondary'],
+            'jpg'  => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'jpeg' => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'png'  => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'gif'  => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'webp' => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'bmp'  => ['icon' => 'file-image-box',          'color' => 'text-info'],
+            'mp4'  => ['icon' => 'file-video-box',          'color' => 'text-danger'],
+            'avi'  => ['icon' => 'file-video-box',          'color' => 'text-danger'],
+            'mov'  => ['icon' => 'file-video-box',          'color' => 'text-danger'],
+            'wmv'  => ['icon' => 'file-video-box',          'color' => 'text-danger'],
+            'webm' => ['icon' => 'file-video-box',          'color' => 'text-danger'],
+            'mp3'  => ['icon' => 'file-music-box',          'color' => 'text-warning'],
+            'wav'  => ['icon' => 'file-music-box',          'color' => 'text-warning'],
+            'flac' => ['icon' => 'file-music-box',          'color' => 'text-warning'],
+            'aac'  => ['icon' => 'file-music-box',          'color' => 'text-warning'],
+            'ogg'  => ['icon' => 'file-music-box',          'color' => 'text-warning'],
             'zip'  => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
             'rar'  => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
             '7z'   => ['icon' => 'folder-zip-outline',      'color' => 'text-secondary'],
@@ -312,7 +321,7 @@ class ModUpload extends Model
             'php'  => ['icon' => 'language-php',            'color' => 'text-info'],
             'py'   => ['icon' => 'language-python',         'color' => 'text-success'],
             'json' => ['icon' => 'code-json',               'color' => 'text-secondary'],
-            'xml'  => ['icon' => 'file-xml',                'color' => 'text-secondary'],
+            'xml'  => ['icon' => 'file-xml-box',            'color' => 'text-secondary'],
             'sql'  => ['icon' => 'database',                'color' => 'text-info'],
         ];
         return $map[$ext] ?? ['icon' => 'file-outline', 'color' => 'text-muted'];

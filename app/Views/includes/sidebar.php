@@ -10,6 +10,27 @@
     }
 ?>
 
+<style>
+/* Sidebar Active State Enhancements */
+.side-nav-link.active {
+    background: rgba(114, 124, 245, 0.15) !important;
+    border-radius: 8px !important;
+    color: #727cf5 !important;
+    font-weight: 700 !important;
+    margin: 0 10px;
+}
+.side-nav-link.active i {
+    color: #727cf5 !important;
+}
+.side-nav-link:hover {
+    border-radius: 8px !important;
+    margin: 0 10px;
+}
+.side-nav-item {
+    margin-bottom: 4px;
+}
+</style>
+
 <!-- Begin page -->
 <div class="wrapper">
 	<!-- ========== Left Sidebar Start ========== -->
@@ -34,33 +55,68 @@
 		</a>
 		<div class="h-100" id="leftside-menu-container" data-simplebar>
 			<!--- Sidemenu -->
-			<ul class="side-nav">
-				<li class="side-nav-title side-nav-item">Home</li>
+			<ul class="side-nav mt-2">
+				<li class="side-nav-title side-nav-item">Navigation</li>
 
-				<?php
-				    echo "<li class='side-nav-item'>";
-				    $url_home = base_url('home');
+				<li class="side-nav-item">
+					<a href="<?php echo base_url('home/recent'); ?>" class="side-nav-link <?php echo ($title == 'recent') ? 'active' : ''; ?>">
+						<i class="uil-history"></i>
+						<span> Recent </span>
+                        <?php if (isset($recent_count) && $recent_count > 0): ?>
+							<span class="badge rounded-pill bg-info float-end"><?php echo $recent_count; ?></span>
+						<?php endif; ?>
+					</a>
+				</li>
 
-                    if ( is_in_dashboard($title)) {
-	                    echo '<a href="'.$url_home.'" class="side-nav-link fw-bolder text-white">';
-                    }else{
-	                    echo '<a href="'.$url_home.'" class="side-nav-link fw-bolder text-muted">';
-                    }
-                    $url_home = base_url('home');
-                    echo '
-                            <i class="uil-home"></i>
-                            <span> Dash </span>
-                        </a>
-                    </li>';
-				?>
-				<li class="side-nav-title side-nav-item">Others</li>
+				<li class="side-nav-item">
+					<a href="<?php echo base_url('home/files'); ?>" class="side-nav-link <?php echo ($title == 'files') ? 'active' : ''; ?>">
+						<i class="uil-file-upload"></i>
+						<span> My Files </span>
+						<?php if (isset($files_count) && $files_count > 0): ?>
+							<span class="badge rounded-pill bg-primary float-end"><?php echo $files_count; ?></span>
+						<?php endif; ?>
+					</a>
+				</li>
+
+				<li class="side-nav-item">
+					<a href="<?php echo base_url('home/texts'); ?>" class="side-nav-link <?php echo ($title == 'text') ? 'active' : ''; ?>">
+						<i class="uil-text-fields"></i>
+						<span> Text Data </span>
+						<?php if (isset($texts_count) && $texts_count > 0): ?>
+							<span class="badge rounded-pill bg-success float-end"><?php echo $texts_count; ?></span>
+						<?php endif; ?>
+					</a>
+				</li>
+
+				<li class="side-nav-item">
+					<a href="<?php echo base_url('home/trashed'); ?>" class="side-nav-link <?php echo ($title == 'trash') ? 'active' : ''; ?>">
+						<i class="uil-trash-alt"></i>
+						<span> Trash </span>
+						<?php if (isset($trash_count) && $trash_count > 0): ?>
+							<span class="badge rounded-pill bg-danger float-end"><?php echo $trash_count; ?></span>
+						<?php endif; ?>
+					</a>
+				</li>
+
+                <li class="side-nav-title side-nav-item mt-2">Pairing</li>
+                <li class="side-nav-item px-3 mb-3">
+                    <div class="pair-phone-section text-center p-2 rounded border border-secondary bg-light-lighten">
+                        <h6 class="text-uppercase font-10 fw-bold text-muted mb-2"><i class="mdi mdi-cellphone-link me-1"></i>Pair Phone</h6>
+                        <div class="qr-wrapper p-1 bg-white rounded shadow-sm d-inline-block mb-1">
+                            <div id="pair-qr"></div>
+                        </div>
+                        <p class="text-muted font-10 mb-0">Scan to open on mobile</p>
+                    </div>
+                </li>
+
+				<li class="side-nav-title side-nav-item mt-2">System</li>
 				<li class="side-nav-item">
 					<a href="<?php echo base_url('auth/logout')?>" class="side-nav-link">
-						<i class="uil-comments-alt"></i>
+						<i class="uil-exit"></i>
 						<span> Logout </span>
 					</a>
 				</li>
-            </ul>
+			</ul>
             <!-- End Sidebar -->
             <div class="clearfix"></div>
         </div>

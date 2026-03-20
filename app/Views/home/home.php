@@ -6,10 +6,15 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                        <li class="breadcrumb-item active">Recent</li>
-                    </ol>
+                    <div class="d-flex align-items-center">
+                        <ol class="breadcrumb m-0 me-3">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                            <li class="breadcrumb-item active">Recent</li>
+                        </ol>
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#global-upload-modal">
+                            <i class="mdi mdi-plus me-1"></i>Upload / Add Text
+                        </button>
+                    </div>
                 </div>
                 <h4 class="page-title">P2P Manager</h4>
             </div>
@@ -21,49 +26,8 @@
         <div class="col-12">
             <div class="card glass-card">
                 <div class="card-body">
-                    <!-- Left sidebar -->
-                    <div class="page-aside-left">
-                        <div class="btn-group d-block mb-2">
-                            <button type="button" class="btn btn-success dropdown-toggle w-100" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="mdi mdi-plus"></i> Create New </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?php echo base_url('home/files'); ?>"><i class="mdi mdi-file-plus-outline me-1"></i> File</a>
-                                <a class="dropdown-item" href="<?php echo base_url('home/texts'); ?>"><i class="mdi mdi-file-document me-1"></i> Text</a>
-                            </div>
-                        </div>
-                        <div class="email-menu-list mt-3">
-                            <a href="<?php echo base_url('home/recent'); ?>" class="list-group-item border-0 fw-bolder text-primary">
-                                <i class="mdi mdi-history font-18 align-middle me-2"></i>
-                                Recent
-                                <span class="badge bg-primary float-end"><i class="mdi mdi-check-all"></i></span>
-                            </a>
-                            <a href="<?php echo base_url('home/files'); ?>" class="list-group-item border-0">
-                                <i class="mdi mdi-folder-outline font-18 align-middle me-2"></i>
-                                My Files
-                            </a>
-                            <a href="<?php echo base_url('home/texts'); ?>" class="list-group-item border-0">
-                                <i class="mdi mdi-text-box-multiple font-18 align-middle me-2"></i>
-                                Text Data
-                            </a>
-                            <a href="<?php echo base_url('home/trashed'); ?>" class="list-group-item border-0">
-                                <i class="mdi mdi-trash-can font-18 align-middle me-2"></i>
-                                Trash Files
-                            </a>
-                        </div>
-                        <div class="mt-5">
-                            <h6 class="text-uppercase mt-3">Storage</h6>
-                            <div class="progress my-2 progress-sm">
-                                <div class="progress-bar progress-lg bg-success" role="progressbar" style="width: 46%" aria-valuenow="46" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <p class="text-muted font-12 mb-0">7.02 GB (46%) of 15 GB used</p>
-                        </div>
-                        <div class="mt-4 p-3 bg-light rounded text-center">
-                            <h6 class="text-uppercase mb-2">Pair Phone</h6>
-                            <div id="pair-qr" class="d-flex justify-content-center mb-2"></div>
-                            <p class="text-muted font-11 mb-0">Scan to open on mobile</p>
-                        </div>
-                    </div>
-                    <!-- End Left sidebar -->
-                    <div class="page-aside-right">
+                    <!-- Removed Inner Sidebar -->
+                    <div class="col-12">
                         <!-- Header -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
@@ -104,7 +68,6 @@
                                                     <th style="width:36px"></th>
                                                     <th>File Name</th>
                                                     <th>Size</th>
-                                                    <th>Dimensions</th>
                                                     <th>Date</th>
                                                     <th>Source</th>
                                                     <th class="text-center no-sort">Actions</th>
@@ -146,7 +109,6 @@
                                                         <?php endif; ?>
                                                     </td>
                                                     <td class="text-nowrap text-muted"><?php echo $fileSize; ?></td>
-                                                    <td class="text-muted"><?php echo $dimensions ?: '—'; ?></td>
                                                     <td class="text-nowrap text-muted"><?php echo $fileDate; ?></td>
                                                     <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($source); ?></span></td>
                                                     <td class="text-center text-nowrap">

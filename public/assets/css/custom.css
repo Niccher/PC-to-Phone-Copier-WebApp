@@ -89,3 +89,26 @@ body.dark-mode-active .glass-card {
 ::-webkit-scrollbar-thumb:hover {
     background: #727cf5;
 }
+
+/* Pair Phone Section */
+.pair-phone-section {
+    background: rgba(114, 124, 245, 0.05);
+    border: 1px dashed rgba(114, 124, 245, 0.3);
+    border-radius: 12px;
+    transition: var(--transition-smooth);
+}
+
+.pair-phone-section:hover {
+    background: rgba(114, 124, 245, 0.08);
+    border-style: solid;
+}
+
+.qr-wrapper {
+    transition: var(--transition-smooth);
+    border: 1px solid #eee;
+}
+
+.qr-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}

@@ -20,8 +20,22 @@ class TypeText extends BaseController
         $sess_id = $this->session->get('sess_id');
         $texts_uploaded = $mod_text->text_get_uploaded_texts($sess_id);
 
+        $mod_upload = new \App\Models\ModUpload();
+        $all_files = $mod_upload->file_get_uploaded_files($sess_id);
+        $deleted_files = $mod_upload->get_deleted_files($sess_id);
+        $deleted_texts = $mod_text->get_deleted_texts($sess_id);
+
         $data['text_list'] = "";
         $data['text_list_all'] = "";
+        $data['texts'] = $texts_uploaded;
+        $data['texts_count'] = count($texts_uploaded);
+        $data['files_count'] = count($all_files);
+        $data['trash_count'] = count($deleted_files) + count($deleted_texts);
+
+        $recent_files = $mod_upload->file_get_uploaded_files($sess_id, 10);
+        $recent_texts = $mod_text->text_get_uploaded_texts($sess_id, 10);
+        $data['recent_count'] = count($recent_files) + count($recent_texts);
+        $data['title'] = "text";
         $count = 0;
 
         foreach ($texts_uploaded as $text){
@@ -89,9 +103,9 @@ class TypeText extends BaseController
         }
 
         return view('includes/header')
-            .view('includes/sidebar', $title)
+            .view('includes/sidebar', $data)
             .view('home/textual', $data)
-            .view('includes/footer_texts');
+            .view('includes/footer_texts', $data);
     }
 
     public function text_save(){
