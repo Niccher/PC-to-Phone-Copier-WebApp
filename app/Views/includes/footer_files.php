@@ -33,6 +33,7 @@
 <!-- Dropzone -->
 <link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
 <script src="<?php echo base_url('assets/dropzone/dropzone.js')?>"></script>
+<script>Dropzone.autoDiscover = false;</script>
 
 <!-- DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -114,8 +115,7 @@
                 });
         }
 
-            // Initialize components (for upload zone only on this page)
-            initializeDropzone();
+            // Initialize resources that do not depend on Dropzone FIRST
             loadCategoriesAndTags();
 
             // QR Code Generation for Pairing
@@ -167,9 +167,12 @@
             setupEventListeners();
 
             console.log('File manager initialized');
+            
+            // Initialize Dropzone last so failures don't block other event listeners
+            initializeDropzone();
+            
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
-            Dropzone.autoDiscover = false;
             var globalDropzone = new Dropzone("#global-file-dropzone", {
                 url: "<?php echo base_url('home/file/upload'); ?>",
                 maxFilesize: 50,
@@ -390,10 +393,22 @@
         });
 
             // Batch actions
-            $('#batch-select-all').on('click', function() {
-            var allChecked = $('.file-checkbox:checked').length === $('.file-checkbox').length;
-            $('.file-checkbox').prop('checked', !allChecked);
+            $(document).on('click', '#select-all-files', function() {
+            var allChecked = $(this).prop('checked');
+            $('.file-checkbox').prop('checked', allChecked);
             updateSelectedFiles();
+        });
+
+            $('#batch-download-zip').on('click', function() {
+            if (selectedFiles.length === 0) return;
+            
+            var form = $('<form action="<?php echo base_url("files/batch-download"); ?>" method="POST"></form>');
+            selectedFiles.forEach(function(uuid) {
+                form.append('<input type="hidden" name="file_uuids[]" value="' + uuid + '">');
+            });
+            $('body').append(form);
+            form.submit();
+            form.remove();
         });
 
             $('#batch-delete').on('click', function() {

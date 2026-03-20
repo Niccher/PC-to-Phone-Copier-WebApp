@@ -74,6 +74,18 @@
                             <i class="mdi mdi-folder-multiple me-2"></i>All Files
                             <span class="badge bg-secondary ms-2"><?php echo count($files ?? []); ?> files</span>
                         </h5>
+                        
+                        <div id="batch-actions" style="display: none;">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1" id="batch-download-zip">
+                                <i class="mdi mdi-zip-box"></i> Download ZIP
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info me-1" id="batch-add-tag-btn" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
+                                <i class="mdi mdi-tag-plus"></i> Tag
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="batch-delete">
+                                <i class="mdi mdi-delete"></i> Delete
+                            </button>
+                        </div>
                     </div>
 
                     <?php if (!empty($files)): ?>
@@ -81,7 +93,7 @@
                         <table id="files-manager-table" class="table table-sm table-hover align-middle w-100">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width:40px"></th>
+                                    <th style="width:40px"><input type="checkbox" class="form-check-input" id="select-all-files"></th>
                                     <th>File Name</th>
                                     <th>Size</th>
                                     <th>Type</th>
@@ -111,9 +123,12 @@
                                 ?>
                                 <tr>
                                     <td class="text-center">
-                                        <span class="file-icon-box" style="width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(0,0,0,0.04);transition: all 0.2s;">
-                                            <i class="mdi mdi-<?php echo $iconData['icon']; ?> font-24 <?php echo $iconData['color']; ?>"></i>
-                                        </span>
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <input type="checkbox" class="form-check-input file-checkbox me-2" value="<?php echo $file->up_file_uuid; ?>">
+                                            <span class="file-icon-box" style="width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(0,0,0,0.04);transition: all 0.2s;">
+                                                <i class="mdi mdi-<?php echo $iconData['icon']; ?> font-24 <?php echo $iconData['color']; ?>"></i>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
                                         <h6 class="mb-0 text-truncate" style="max-width: 250px;" title="<?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>">

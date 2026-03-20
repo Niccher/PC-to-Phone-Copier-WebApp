@@ -29,6 +29,7 @@
 <!-- Dropzone -->
 <link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
 <script src="<?php echo base_url('assets/dropzone/dropzone.js')?>"></script>
+<script>Dropzone.autoDiscover = false;</script>
 
 <!-- DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -163,7 +164,6 @@
         });
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
-            Dropzone.autoDiscover = false;
             var globalDropzone = new Dropzone("#global-file-dropzone", {
                 url: "<?php echo base_url('home/file/upload'); ?>",
                 maxFilesize: 50,

@@ -91,6 +91,7 @@ $routes->group('files', function ($routes) {
     $routes->add('update-description', 'FileManager::update_description');
     $routes->add('batch-delete', 'FileManager::batch_delete');
     $routes->add('batch-add-tag', 'FileManager::batch_add_tag');
+    $routes->add('batch-download', 'FileManager::batch_download');
     $routes->add('details/(:any)', 'FileManager::get_file_details/$1');
     $routes->add('metadata', 'FileManager::get_categories_and_tags');
 });

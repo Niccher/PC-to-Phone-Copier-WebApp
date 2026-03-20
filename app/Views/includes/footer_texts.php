@@ -31,7 +31,9 @@
 <script src="<?php echo base_url('assets/summernote/summernote-lite.min.js')?>"></script>
 
 <!-- Dropzone -->
+<link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
 <script src="<?php echo base_url('assets/dropzone/dropzone.js')?>"></script>
+<script>Dropzone.autoDiscover = false;</script>
 
 <!-- DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -166,6 +168,61 @@
         });
 
         // Clear text functionality
+        $('#paste_text_btn').on('click', function() {
+            var $btn = $(this);
+            var originalHtml = $btn.html();
+
+            function saveText(text) {
+                if (!text || text.trim() === '') {
+                    alert('Text is empty.');
+                    return;
+                }
+                
+                $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> Saving...');
+                $('#please_type_here').summernote('code', text);
+                
+                var b64Content = btoa(unescape(encodeURIComponent(text)));
+                var reversedB64 = b64Content.split('').reverse().join('');
+                
+                $.ajax({
+                    url: '<?php echo base_url("text/save"); ?>',
+                    type: 'POST',
+                    data: {
+                        text_content_base64: reversedB64,
+                        text_title: 'Pasted from Clipboard'
+                    },
+                    success: function (response) {
+                        if (response.status == 1) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                            $btn.prop('disabled', false).html(originalHtml);
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to save to server.');
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            }
+
+            if (navigator.clipboard) {
+                navigator.clipboard.readText().then(function(text) {
+                    saveText(text);
+                }).catch(function(err) {
+                    var manualText = prompt('Clipboard access denied initially. Please paste (Ctrl+V) your text here explicitly:');
+                    if (manualText !== null) {
+                        saveText(manualText);
+                    }
+                });
+            } else {
+                var manualText = prompt('Please paste (Ctrl+V) your text here:');
+                if (manualText !== null) {
+                    saveText(manualText);
+                }
+            }
+        });
+
         $('#clear_text_btn').on('click', function () {
             if (confirm('Are you sure you want to clear the text?')) {
                 $('#please_type_here').summernote('code', '');
@@ -275,7 +332,6 @@
         });
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
-            Dropzone.autoDiscover = false;
             var globalDropzone = new Dropzone("#global-file-dropzone", {
                 url: "<?php echo base_url('home/file/upload'); ?>",
                 maxFilesize: 50,

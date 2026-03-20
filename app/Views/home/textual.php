@@ -42,6 +42,9 @@
 												<button type="button" class="btn btn-success me-2" id="save_text_btn">
 													<i class="mdi mdi-content-save"></i> Save Text
 												</button>
+												<button type="button" class="btn btn-outline-primary" id="paste_text_btn">
+													<i class="mdi mdi-clipboard-text"></i> Paste & Save
+												</button>
 												<button type="button" class="btn btn-outline-secondary" id="clear_text_btn">
 													<i class="mdi mdi-refresh"></i> Clear
 												</button>

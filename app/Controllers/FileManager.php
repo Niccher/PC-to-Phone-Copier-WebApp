@@ -221,4 +221,46 @@ class FileManager extends BaseController
             'tags' => $mod_upload->get_file_tags()
         ]);
     }
+
+    public function batch_download() {
+        $mod_upload = new ModUpload();
+        $file_uuids = $this->request->getPost('file_uuids');
+
+        if (empty($file_uuids) || !is_array($file_uuids)) {
+            return redirect()->back()->with('error', 'No files selected for download.');
+        }
+
+        $zipFile = WRITEPATH . 'uploads/P2P_Batch_Download_' . time() . '.zip';
+        $zip = new \ZipArchive();
+
+        if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+            return redirect()->back()->with('error', 'Could not create ZIP archive.');
+        }
+
+        $filesAdded = 0;
+        foreach ($file_uuids as $uuid) {
+            $file_data = $mod_upload->file_get_uploaded_by_file_uuid($uuid);
+            if (!empty($file_data) && isset($file_data[0])) {
+                $file = $file_data[0];
+                $physicalPath = WRITEPATH . 'uploads/copied_files/' . ($file->up_file_Orig_Name ?? '');
+                if (file_exists($physicalPath)) {
+                    $zip->addFile($physicalPath, $file->up_file_Orig_Name);
+                    $filesAdded++;
+                }
+            }
+        }
+
+        $zip->close();
+
+        if ($filesAdded === 0) {
+            if (file_exists($zipFile)) {
+                @unlink($zipFile);
+            }
+            return redirect()->back()->with('error', 'None of the selected files could be found on the server.');
+        }
+
+        $fileContent = file_get_contents($zipFile);
+        @unlink($zipFile);
+        return $this->response->download('P2P_Batch_Download.zip', $fileContent);
+    }
 }
