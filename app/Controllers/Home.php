@@ -30,18 +30,12 @@ class Home extends BaseController
         // Get recent texts (last 10)
         $recent_texts = $mod_text->text_get_uploaded_texts($sess_id, 10);
 
-        // Get total counts for badges
-        $all_files = $mod_upload->file_get_uploaded_files($sess_id);
-        $all_texts = $mod_text->text_get_uploaded_texts($sess_id);
-
-        $data['recent_files'] = $recent_files;
-        $data['recent_texts'] = $recent_texts;
-        $data['files_count'] = count($all_files);
-        $data['texts_count'] = count($all_texts);
-        $data['recent_count'] = count($recent_files) + count($recent_texts);
-
-        $data['title'] = "recent";
-        //echo $this->session->get('sess_id');
+        $data = [
+            'recent_files' => $recent_files,
+            'recent_texts' => $recent_texts
+        ];
+        $sidebarData = $this->getSidebarData('recent');
+        $data = array_merge($data, $sidebarData);
 
         return view('includes/header')
             . view('includes/sidebar', $data)

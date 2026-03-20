@@ -16,26 +16,20 @@ class TypeText extends BaseController
 
         $mod_text = new ModText();
         $title['title'] = "text";
-
         $sess_id = $this->session->get('sess_id');
         $texts_uploaded = $mod_text->text_get_uploaded_texts($sess_id);
 
-        $mod_upload = new \App\Models\ModUpload();
-        $all_files = $mod_upload->file_get_uploaded_files($sess_id);
-        $deleted_files = $mod_upload->get_deleted_files($sess_id);
-        $deleted_texts = $mod_text->get_deleted_texts($sess_id);
+        $data = [
+            'texts' => $texts_uploaded,
+            'text_list' => "",
+            'text_list_all' => "",
+            'title' => "text"
+        ];
+        
+        // Use getSidebarData to simplify count passing
+        $sidebarData = $this->getSidebarData('text');
+        $data = array_merge($data, $sidebarData);
 
-        $data['text_list'] = "";
-        $data['text_list_all'] = "";
-        $data['texts'] = $texts_uploaded;
-        $data['texts_count'] = count($texts_uploaded);
-        $data['files_count'] = count($all_files);
-        $data['trash_count'] = count($deleted_files) + count($deleted_texts);
-
-        $recent_files = $mod_upload->file_get_uploaded_files($sess_id, 10);
-        $recent_texts = $mod_text->text_get_uploaded_texts($sess_id, 10);
-        $data['recent_count'] = count($recent_files) + count($recent_texts);
-        $data['title'] = "text";
         $count = 0;
 
         foreach ($texts_uploaded as $text){
@@ -115,9 +109,15 @@ class TypeText extends BaseController
 
         if ($this->request->getPost()) {
             $text_content = $this->request->getVar('text_content');
+            $text_content_base64 = $this->request->getVar('text_content_base64');
+            
+            if (!empty($text_content_base64)) {
+                $text_content = base64_decode(strrev($text_content_base64));
+            }
+            
             $text_title = $this->request->getVar('text_title') ?: 'Untitled Text';
 
-            if (empty(trim($text_content))) {
+            if (empty(trim((string)$text_content))) {
                 return $this->respond([
                     'status' => 0,
                     'time' => $dated,
@@ -164,9 +164,9 @@ class TypeText extends BaseController
         $mod_text = new ModText();
         try {
             $mod_text->text_to_delete($text_uuid);
-            return redirect()->to(base_url('home/texts'))->with('message', 'Text deleted successfully');
+            return redirect()->back()->with('message', 'Text deleted successfully');
         } catch (\Exception $ex) {
-            return redirect()->to(base_url('home/texts'))->with('error', 'Failed to delete text');
+            return redirect()->back()->with('error', 'Failed to delete text');
         }
     }
 

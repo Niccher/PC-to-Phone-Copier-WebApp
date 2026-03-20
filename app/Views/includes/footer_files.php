@@ -24,10 +24,11 @@
 <!-- bundle -->
 <script src="<?php echo base_url('assets/js/vendor.min.js')?>"></script>
 <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<!-- Summernote -->
-<link href="<?php echo base_url('assets/summernote/summernote-bs4.css')?>" rel="stylesheet" type="text/css" />
-<script src="<?php echo base_url('assets/summernote/summernote.min.js')?>"></script>
+<!-- Summernote Lite -->
+<link href="<?php echo base_url('assets/summernote/summernote-lite.min.css')?>" rel="stylesheet" type="text/css" />
+<script src="<?php echo base_url('assets/summernote/summernote-lite.min.js')?>"></script>
 
 <!-- Dropzone -->
 <link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
@@ -50,6 +51,7 @@
 </script>
 
 <?php include 'upload_modal.php'; ?>
+<?php include 'qr_modal.php'; ?>
 
 <script>
     $(document).ready(function() {
@@ -71,34 +73,35 @@
             }, 800);
         }
 
-        // Global Upload Modal Dropzone
-        if ($('#global-file-dropzone').length) {
-            var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
-                maxFilesize: 50,
-                init: function() {
-                    this.on("sending", function() { $('#global-upload-progress').show(); });
-                    this.on("totaluploadprogress", function(progress) { $('#global-overall-bar').css('width', progress + '%'); });
-                    this.on("queuecomplete", function() { setTimeout(function() { location.reload(); }, 1500); });
-                }
-            });
-        }
+
 
         // Global Modal Summernote
         if ($('#modal_summernote').length) {
-            $('#modal_summernote').summernote({ height: 200 });
+            $('#modal_summernote').summernote({ height: 200, placeholder: 'Type your text here...' });
         }
 
         // Save text from modal
         $('#modal_save_text_btn').on('click', function() {
-            var content = $('#modal_summernote').val();
+            var content = $('#modal_summernote').summernote('code');
             var title = $('#modal_text_title').val();
-            if (!content.trim()) return;
+            if (!content.trim() || content === '<p><br></p>') {
+                alert('Please enter some text.');
+                return;
+            }
             $.ajax({
                 url: "<?php echo base_url('text/save'); ?>",
                 method: "POST",
-                data: { text_content: content, text_title: title },
-                success: function(response) { if (response.status == 1) location.reload(); }
+                data: { 
+                    text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
+                    text_title: title 
+                },
+                success: function(response) { 
+                    if (response.status == 1) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                }
             });
         });
             // Initialize DataTable for file manager
@@ -129,36 +132,54 @@
                 }, 500);
         }
 
-            // Share QR Functionalitiy
+            // Share QR Functionality
             $(document).on('click', '.share-qr-btn', function() {
-            var url = $(this).data('url');
-            var title = $(this).data('title');
-            var size = $(this).data('size') || '';
-            var date = $(this).data('date') || '';
+                var $this = $(this);
+                var url = $this.data('url');
+                var title = $this.data('title');
+                var size = $this.data('size') || '';
+                var date = $this.data('date') || '';
 
-            $('#qr-modal-title').text(title);
-            $('#qr-modal-size').text(size);
-            $('#qr-modal-date').text(date);
-            $('#qr-modal-container').empty();
+                $('#qr-modal-title').text(title);
+                $('#qr-modal-size').text(size);
+                $('#qr-modal-date').text(date);
+                $('#qr-modal-container').empty();
 
-            $('#share-qr-modal').modal('show');
+                var qrModalElement = document.getElementById('share-qr-modal');
+                if (qrModalElement) {
+                    var qrModal = bootstrap.Modal.getOrCreateInstance(qrModalElement);
+                    qrModal.show();
 
-            setTimeout(function() {
-                new QRCode(document.getElementById('qr-modal-container'), {
-                    text: url,
-                    width: 256,
-                    height: 256,
-                    colorDark: "#313a46",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }, 300);
-        });
+                    setTimeout(function() {
+                        new QRCode(document.getElementById('qr-modal-container'), {
+                            text: url,
+                            width: 256,
+                            height: 256,
+                            colorDark: "#313a46",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }, 350);
+                }
+            });
 
             // Set up event listeners
             setupEventListeners();
 
             console.log('File manager initialized');
+        // Global Upload Modal Dropzone
+        if ($('#global-file-dropzone').length) {
+            Dropzone.autoDiscover = false;
+            var globalDropzone = new Dropzone("#global-file-dropzone", {
+                url: "<?php echo base_url('home/file/upload'); ?>",
+                maxFilesize: 50,
+                init: function() {
+                    this.on("sending", function() { $('#global-upload-progress').show(); });
+                    this.on("totaluploadprogress", function(progress) { $('#global-overall-bar').css('width', progress + '%'); });
+                    this.on("queuecomplete", function() { setTimeout(function() { location.reload(); }, 1500); });
+                }
+            });
+        }
     });
 
             function initializeDropzone() {

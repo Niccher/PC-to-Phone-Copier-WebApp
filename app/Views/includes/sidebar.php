@@ -14,7 +14,7 @@
 /* Sidebar Active State Enhancements */
 .side-nav-link.active {
     background: rgba(114, 124, 245, 0.15) !important;
-    border-radius: 8px !important;
+    border-radius: 50px !important;
     color: #727cf5 !important;
     font-weight: 700 !important;
     margin: 0 10px;
@@ -62,9 +62,7 @@
 					<a href="<?php echo base_url('home/recent'); ?>" class="side-nav-link <?php echo ($title == 'recent') ? 'active' : ''; ?>">
 						<i class="uil-history"></i>
 						<span> Recent </span>
-                        <?php if (isset($recent_count) && $recent_count > 0): ?>
-							<span class="badge rounded-pill bg-info float-end"><?php echo $recent_count; ?></span>
-						<?php endif; ?>
+						<span class="badge rounded-pill bg-info float-end"><?php echo $recent_count ?? 0; ?></span>
 					</a>
 				</li>
 
@@ -72,9 +70,7 @@
 					<a href="<?php echo base_url('home/files'); ?>" class="side-nav-link <?php echo ($title == 'files') ? 'active' : ''; ?>">
 						<i class="uil-file-upload"></i>
 						<span> My Files </span>
-						<?php if (isset($files_count) && $files_count > 0): ?>
-							<span class="badge rounded-pill bg-primary float-end"><?php echo $files_count; ?></span>
-						<?php endif; ?>
+						<span class="badge rounded-pill bg-primary float-end"><?php echo $files_count ?? 0; ?></span>
 					</a>
 				</li>
 
@@ -82,9 +78,7 @@
 					<a href="<?php echo base_url('home/texts'); ?>" class="side-nav-link <?php echo ($title == 'text') ? 'active' : ''; ?>">
 						<i class="uil-text-fields"></i>
 						<span> Text Data </span>
-						<?php if (isset($texts_count) && $texts_count > 0): ?>
-							<span class="badge rounded-pill bg-success float-end"><?php echo $texts_count; ?></span>
-						<?php endif; ?>
+						<span class="badge rounded-pill bg-success float-end"><?php echo $texts_count ?? 0; ?></span>
 					</a>
 				</li>
 
@@ -92,9 +86,7 @@
 					<a href="<?php echo base_url('home/trashed'); ?>" class="side-nav-link <?php echo ($title == 'trash') ? 'active' : ''; ?>">
 						<i class="uil-trash-alt"></i>
 						<span> Trash </span>
-						<?php if (isset($trash_count) && $trash_count > 0): ?>
-							<span class="badge rounded-pill bg-danger float-end"><?php echo $trash_count; ?></span>
-						<?php endif; ?>
+						<span class="badge rounded-pill bg-danger float-end"><?php echo $trash_count ?? 0; ?></span>
 					</a>
 				</li>
 

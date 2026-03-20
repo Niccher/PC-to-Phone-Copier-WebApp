@@ -92,21 +92,17 @@
                                                 ?>
                                                 <tr>
                                                     <td class="text-center">
-                                                        <?php if ($isImage && $thumbnail): ?>
-                                                            <img src="<?php echo $thumbnail; ?>" class="rounded" style="width:32px;height:32px;object-fit:cover;" alt="thumb">
-                                                        <?php else: ?>
-                                                            <span class="avatar-title rounded <?php echo str_replace('text-','bg-',str_replace('muted','light',$iconData['color'])); ?> bg-opacity-25" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;">
-                                                                <i class="mdi mdi-<?php echo $iconData['icon']; ?> font-16 <?php echo $iconData['color']; ?>"></i>
-                                                            </span>
-                                                        <?php endif; ?>
+                                                        <span class="file-icon-box" style="width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(0,0,0,0.04);">
+                                                            <i class="mdi mdi-<?php echo $iconData['icon']; ?> font-20 <?php echo $iconData['color']; ?>"></i>
+                                                        </span>
                                                     </td>
                                                     <td>
-                                                        <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="fw-semibold text-reset">
-                                                            <?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>
-                                                        </a>
-                                                        <?php if (!empty($ext)): ?>
-                                                            <span class="badge bg-light text-dark ms-1 text-uppercase font-10"><?php echo $ext; ?></span>
-                                                        <?php endif; ?>
+                                                        <h6 class="mb-0 text-truncate" style="max-width: 200px;" title="<?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>">
+                                                            <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="text-reset">
+                                                                <?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">File • <?php echo !empty($ext) ? strtoupper($ext) : 'Unknown'; ?></small>
                                                     </td>
                                                     <td class="text-nowrap text-muted"><?php echo $fileSize; ?></td>
                                                     <td class="text-nowrap text-muted"><?php echo $fileDate; ?></td>
@@ -150,6 +146,7 @@
                                         <table id="texts-datatable" class="table table-sm table-hover align-middle w-100">
                                             <thead class="table-light">
                                                 <tr>
+                                                    <th style="width:36px"></th>
                                                     <th>Title</th>
                                                     <th>Size</th>
                                                     <th>Date</th>
@@ -165,12 +162,19 @@
                                                     $textSource = str_replace('Text', '', $text->text_source ?? 'Browser');
                                                 ?>
                                                 <tr>
-                                                    <td>
-                                                        <a href="javascript:void(0);" class="fw-semibold text-reset copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content ?? ''); ?>">
-                                                            <?php echo htmlspecialchars($textTitle); ?>
-                                                        </a>
+                                                    <td class="text-center">
+                                                        <span class="file-icon-box" style="width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(40, 167, 69, 0.1);">
+                                                            <i class="mdi mdi-text-box-outline font-20 text-success"></i>
+                                                        </span>
                                                     </td>
-                                                    <td class="text-muted"><?php echo $textSize; ?></td>
+                                                    <td>
+                                                        <h6 class="mb-0 text-truncate" style="max-width: 200px;" title="<?php echo htmlspecialchars($textTitle); ?>">
+                                                            <a href="javascript:void(0);" class="text-reset copy-text-link" data-text="<?php echo htmlspecialchars($text->text_content ?? ''); ?>">
+                                                                <?php echo htmlspecialchars($textTitle); ?>
+                                                            </a>
+                                                        </h6>
+                                                        <small class="text-muted">Text • <?php echo $textSize; ?></small>
+                                                    </td>
                                                     <td class="text-nowrap text-muted"><?php echo $textDate; ?></td>
                                                     <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($textSource); ?></span></td>
                                                     <td class="text-center text-nowrap">

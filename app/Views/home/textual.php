@@ -49,9 +49,8 @@
 										</div>
 									</div>
 								</div>
-								<div class="tab-content">
+								<div class="mt-2 text-editor-wrapper">
 									<textarea id="please_type_here" name="text_content"></textarea>
-									<!-- end preview-->
 								</div>
 							</div>
 						</div>

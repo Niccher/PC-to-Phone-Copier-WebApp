@@ -116,10 +116,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="fw-semibold text-reset">
-                                            <?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>
-                                        </a>
-                                        <span class="badge bg-light text-dark ms-1 text-uppercase font-10"><?php echo $ext; ?></span>
+                                        <h6 class="mb-0 text-truncate" style="max-width: 250px;" title="<?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>">
+                                            <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>" class="text-reset">
+                                                <?php echo htmlspecialchars($file->up_file_Orig_Name ?? ''); ?>
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">File • <?php echo !empty($ext) ? strtoupper($ext) : 'Unknown'; ?></small>
                                     </td>
                                     <td class="text-nowrap text-muted" data-order="<?php echo $fileSizeRaw; ?>"><?php echo $fileSize; ?></td>
                                     <td><span class="badge bg-info bg-opacity-25 text-white"><?php echo $category; ?></span></td>

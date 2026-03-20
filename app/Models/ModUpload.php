@@ -88,7 +88,11 @@ class ModUpload extends Model
         // Filter keys for tbl_files_uploaded_deleted
         $target_fields = $this->db->getFieldNames('tbl_files_uploaded_deleted');
         $insert_data = array_intersect_key($file_info, array_flip($target_fields));
-        $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+        
+        // Only add deleted_at if the column exists
+        if (in_array('deleted_at', $target_fields)) {
+            $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+        }
 
         return $this->db->table('tbl_files_uploaded_deleted')->ignore(true)->insert($insert_data);
     }
@@ -198,7 +202,11 @@ class ModUpload extends Model
         foreach ($files as $file) {
             $fileArray = (array)$file;
             $insert_data = array_intersect_key($fileArray, array_flip($target_fields));
-            $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+            
+            // Only add deleted_at if the column exists
+            if (in_array('deleted_at', $target_fields)) {
+                $insert_data['deleted_at'] = date('Y-m-d H:i:s');
+            }
             $this->db->table('tbl_files_uploaded_deleted')->ignore(true)->insert($insert_data);
         }
 

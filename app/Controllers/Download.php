@@ -104,20 +104,12 @@ class Download extends BaseController
 		$file_name = $file_data[0]->up_file_Orig_Name;
 		$file_uuid = $file_data[0]->up_file_uuid;
 
-		try {
-			rename($f_path_old.$file_name, $f_path_new.$file_name);
-			$mod_upload->file_to_delete($file_uuid,$file_name);
-//			return $this->respond([
-//				'status' => "1",
-//				'time' => $dated,
-//				'message' => "File ".$file_name." deleted successfully",
-//			]);
-		}catch (\Exception $ex){
-//			return $this->respond([
-//				'status' => "2",
-//				'time' => $dated,
-//				'message' => "Unable to delete file ".$file_name,
-//			]);
-		}
-	}
+        try {
+            rename($f_path_old.$file_name, $f_path_new.$file_name);
+            $mod_upload->file_to_delete($file_uuid,$file_name);
+            return redirect()->back()->with('message', "File ".$file_name." moved to trash");
+        }catch (\Exception $ex){
+            return redirect()->back()->with('error', "Unable to delete file ".$file_name);
+        }
+    }
 }

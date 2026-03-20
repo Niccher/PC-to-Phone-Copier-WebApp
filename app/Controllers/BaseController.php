@@ -56,4 +56,27 @@ abstract class BaseController extends Controller
         // E.g.: $this->session = \Config\Services::session();
 	    $this->session = \Config\Services::session();
     }
+
+    protected function getSidebarData($title = '')
+    {
+        $sess_id = $this->session->get('sess_id');
+        $mod_upload = new \App\Models\ModUpload();
+        $mod_text = new \App\Models\ModText();
+
+        $files = $mod_upload->file_get_uploaded_files($sess_id);
+        $texts = $mod_text->text_get_uploaded_texts($sess_id);
+        $deleted_files = $mod_upload->get_deleted_files($sess_id);
+        $deleted_texts = $mod_text->get_deleted_texts($sess_id);
+        
+        $recent_files = $mod_upload->file_get_uploaded_files($sess_id, 10);
+        $recent_texts = $mod_text->text_get_uploaded_texts($sess_id, 10);
+
+        return [
+            'files_count'  => count($files),
+            'texts_count'  => count($texts),
+            'trash_count'  => count($deleted_files) + count($deleted_texts),
+            'recent_count' => count($recent_files) + count($recent_texts),
+            'title'        => $title
+        ];
+    }
 }

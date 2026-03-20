@@ -34,7 +34,7 @@
                             <p class="text-muted mb-0 small">Items in trash will be permanently deleted after 30 days</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="badge bg-warning bg-opacity-10 text-warning me-3"><?php echo $total_deleted; ?> items</span>
+                            <span class="badge bg-dark bg-opacity-10 text-white me-3"><?php echo $total_deleted; ?> items</span>
                             <?php if ($total_deleted > 0): ?>
                                 <button class="btn btn-danger btn-sm shadow-sm" onclick="emptyTrash()">
                                     <i class="mdi mdi-delete-sweep me-1"></i>Empty Trash
@@ -169,8 +169,8 @@
                     </div>
 
                     <?php if ($total_deleted > 0): ?>
-                        <div class="alert alert-info bg-info bg-opacity-10 border-info mt-3 py-2 px-3">
-                            <p class="text-info mb-0 small">
+                        <div class="alert alert-dark bg-info bg-opacity-10 border-dark mt-3 py-2 px-3">
+                            <p class="text-white mb-0 small">
                                 <i class="mdi mdi-information-outline me-1"></i>
                                 Items are automatically deleted after 30 days. Showing <?php echo $total_deleted; ?> deleted items.
                             </p>

@@ -24,11 +24,13 @@
 <!-- bundle -->
 <script src="<?php echo base_url('assets/js/vendor.min.js')?>"></script>
 <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<script src="<?php echo base_url('assets/summernote/summernote.min.js')?>"></script>
+<!-- Summernote Lite -->
+<link href="<?php echo base_url('assets/summernote/summernote-lite.min.css')?>" rel="stylesheet" type="text/css" />
+<script src="<?php echo base_url('assets/summernote/summernote-lite.min.js')?>"></script>
 
 <!-- Dropzone -->
-<link href="<?php echo base_url('assets/dropzone/dropzone.css')?>" rel="stylesheet" type="text/css" />
 <script src="<?php echo base_url('assets/dropzone/dropzone.js')?>"></script>
 
 <!-- DataTables -->
@@ -39,56 +41,55 @@
 <!-- Initialize Summernote editor and text functionality -->
 
 <?php include 'upload_modal.php'; ?>
+<?php include 'qr_modal.php'; ?>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         // QR Code Generation for Pairing (Main Sidebar)
-        if (document.getElementById('pair-qr')) {
-            setTimeout(function() {
-                var container = document.getElementById('pair-qr');
-                if (container) {
-                    container.innerHTML = '';
-                    new QRCode(container, {
-                        text: window.location.origin,
-                        width: 150,
-                        height: 150,
-                        colorDark : "#313a46",
-                        colorLight : "#f1f3fa",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-                }
+        var pairQrElement = document.getElementById('pair-qr');
+        if (pairQrElement) {
+            setTimeout(function () {
+                pairQrElement.innerHTML = '';
+                new QRCode(pairQrElement, {
+                    text: window.location.origin,
+                    width: 150,
+                    height: 150,
+                    colorDark: "#313a46",
+                    colorLight: "#f1f3fa",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
             }, 800);
         }
 
-        // Global Upload Modal Dropzone
-        if ($('#global-file-dropzone').length) {
-            var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
-                maxFilesize: 50,
-                acceptedFiles: null,
-                init: function() {
-                    this.on("sending", function() { $('#global-upload-progress').show(); });
-                    this.on("totaluploadprogress", function(progress) { $('#global-overall-bar').css('width', progress + '%'); });
-                    this.on("queuecomplete", function() { setTimeout(function() { location.reload(); }, 1500); });
-                }
-            });
-        }
+
 
         // Global Modal Summernote
         if ($('#modal_summernote').length) {
-            $('#modal_summernote').summernote({ height: 200 });
+            $('#modal_summernote').summernote({ height: 200, placeholder: 'Type your text here...' });
         }
 
         // Save text from modal
-        $('#modal_save_text_btn').on('click', function() {
-            var content = $('#modal_summernote').val();
+        $('#modal_save_text_btn').on('click', function () {
+            var content = $('#modal_summernote').summernote('code');
             var title = $('#modal_text_title').val();
-            if (!content.trim()) return;
+            if (!content.trim() || content === '<p><br></p>') {
+                alert('Please enter some text.');
+                return;
+            }
             $.ajax({
                 url: "<?php echo base_url('text/save'); ?>",
                 method: "POST",
-                data: { text_content: content, text_title: title },
-                success: function(response) { if (response.status == 1) location.reload(); }
+                data: { 
+                    text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
+                    text_title: title 
+                },
+                success: function (response) {
+                    if (response.status == 1) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                }
             });
         });
 
@@ -140,7 +141,7 @@
                 url: '<?php echo base_url("text/save"); ?>',
                 type: 'POST',
                 data: {
-                    text_content: textContent,
+                    text_content_base64: btoa(unescape(encodeURIComponent(textContent))).split('').reverse().join(''),
                     text_title: textTitle
                 },
                 success: function (response) {
@@ -241,82 +242,53 @@
             });
         }
 
-        // QR Code Generation for Pairing
-        if (document.getElementById('pair-qr')) {
-            setTimeout(function () {
-                new QRCode(document.getElementById('pair-qr'), {
-                    text: window.location.origin + "/home/texts",
-                    width: 100,
-                    height: 100,
-                    colorDark: "#313a46",
-                    colorLight: "#f1f3fa",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }, 500);
-        }
 
         // Share QR Functionality
         $(document).on('click', '.share-qr-btn', function () {
-            var url = $(this).data('url');
-            var title = $(this).data('title');
-            var size = $(this).data('size') || '';
-            var date = $(this).data('date') || '';
+            var $this = $(this);
+            var url = $this.data('url');
+            var title = $this.data('title');
+            var size = $this.data('size') || '';
+            var date = $this.data('date') || '';
 
             $('#qr-modal-title').text(title);
             $('#qr-modal-size').text(size);
             $('#qr-modal-date').text(date);
             $('#qr-modal-container').empty();
 
-            $('#share-qr-modal').modal('show');
+            var qrModalElement = document.getElementById('share-qr-modal');
+            if (qrModalElement) {
+                var qrModal = bootstrap.Modal.getOrCreateInstance(qrModalElement);
+                qrModal.show();
 
-            setTimeout(function () {
-                new QRCode(document.getElementById('qr-modal-container'), {
-                    text: url,
-                    width: 256,
-                    height: 256,
-                    colorDark: "#313a46",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }, 300);
+                setTimeout(function () {
+                    new QRCode(document.getElementById('qr-modal-container'), {
+                        text: url,
+                        width: 256,
+                        height: 256,
+                        colorDark: "#313a46",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }, 350);
+            }
         });
+        // Global Upload Modal Dropzone
+        if ($('#global-file-dropzone').length) {
+            Dropzone.autoDiscover = false;
+            var globalDropzone = new Dropzone("#global-file-dropzone", {
+                url: "<?php echo base_url('home/file/upload'); ?>",
+                maxFilesize: 50,
+                acceptedFiles: null,
+                init: function () {
+                    this.on("sending", function () { $('#global-upload-progress').show(); });
+                    this.on("totaluploadprogress", function (progress) { $('#global-overall-bar').css('width', progress + '%'); });
+                    this.on("queuecomplete", function () { setTimeout(function () { location.reload(); }, 1500); });
+                }
+            });
+        }
     });
 </script>
-
-<!-- Share QR Modal -->
-<div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white py-3">
-                <h4 class="modal-title font-18 text-white" id="qr-modal-title">Share QR</h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center p-4">
-                <div id="qr-modal-container" class="d-inline-block p-3 bg-white rounded shadow-sm mb-3"></div>
-                <div class="mt-2">
-                    <h5 class="mb-1 text-dark" id="qr-modal-item-title">Access QR Code</h5>
-                    <p class="text-muted mb-3 font-13">Scan this code to access the item on another device.</p>
-
-                    <div class="d-flex justify-content-center gap-3 py-3 border-top border-bottom">
-                        <div class="text-center px-2">
-                            <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Size</small>
-                            <span class="fw-semibold text-primary font-14" id="qr-modal-size">-</span>
-                        </div>
-                        <div class="vr"></div>
-                        <div class="text-center px-2">
-                            <small class="text-muted d-block text-uppercase font-10 fw-bold mb-1">Date</small>
-                            <span class="fw-semibold text-primary font-14" id="qr-modal-date">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-secondary px-4 shadow-sm" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 </body>
 
