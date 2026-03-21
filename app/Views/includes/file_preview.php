@@ -99,7 +99,7 @@
         $('#file-tags-container').empty();
         $('#file-description').val('');
 
-        var previewModal = new bootstrap.Modal(document.getElementById('file-preview-modal'));
+        var previewModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('file-preview-modal'));
         previewModal.show();
 
         // Save UUID to modal for actions

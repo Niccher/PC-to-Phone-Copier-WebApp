@@ -175,6 +175,17 @@ class FileManager extends BaseController
         $file = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
 
         if (empty($file)) {
+            // Fallback: check the trash/deleted table
+            $sess_id = session()->get('sess_id');
+            if ($sess_id) {
+                $deleted_file = $mod_upload->get_deleted_file_by_uuid($file_uuid, $sess_id);
+                if ($deleted_file) {
+                    $file = [$deleted_file]; // Return as array to maintain compatibility
+                }
+            }
+        }
+
+        if (empty($file)) {
             return $this->respond([
                 'status' => 0,
                 'message' => 'File not found'

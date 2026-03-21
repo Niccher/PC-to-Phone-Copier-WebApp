@@ -166,7 +166,7 @@ class TypeText extends BaseController
             $text_content_base64 = $this->request->getVar('text_content_base64');
             
             if (!empty($text_content_base64)) {
-                $text_content = base64_decode(strrev($text_content_base64));
+                $text_content = base64_decode($text_content_base64);
             }
             
             $text_title = $this->request->getVar('text_title') ?: 'Untitled Text';

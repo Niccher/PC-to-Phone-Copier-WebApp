@@ -81,10 +81,21 @@ class Download extends BaseController
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+		if (empty($file_data)) {
+			// Check deleted table
+			$sess_id = session()->get('sess_id');
+			if ($sess_id) {
+				$deleted = $mod_upload->get_deleted_file_by_uuid($file_uuid, $sess_id);
+				if ($deleted) $file_data = [$deleted];
+			}
+		}
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
 			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
+			if (!file_exists($filePath)) {
+				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $file->up_file_Orig_Name;
+			}
 
 			// Handle Burn After Reading
 			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
@@ -111,11 +122,22 @@ class Download extends BaseController
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+		if (empty($file_data)) {
+			// Check deleted table
+			$sess_id = session()->get('sess_id');
+			if ($sess_id) {
+				$deleted = $mod_upload->get_deleted_file_by_uuid($file_uuid, $sess_id);
+				if ($deleted) $file_data = [$deleted];
+			}
+		}
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
 			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
-
+			
+			if (!file_exists($filePath)) {
+				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $file->up_file_Orig_Name;
+			}
 			if (!file_exists($filePath)) {
 				return $this->respond(['status' => 2, 'message' => 'File not found on disk'], 404);
 			}

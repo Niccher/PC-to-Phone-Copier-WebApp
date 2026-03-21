@@ -21,6 +21,8 @@
 <!-- ============================================================== -->
 </div>
 <!-- END wrapper -->
+<!-- Icons (MDI should be loaded globally) -->
+
 <!-- bundle -->
 <script src="<?php echo base_url('assets/js/vendor.min.js')?>"></script>
 <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
@@ -204,7 +206,7 @@
             maxFiles: 10,
             parallelUploads: 2,
             uploadMultiple: false,
-            acceptedFiles: ".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.webp,.zip,.rar,.7z,.tar,.gz,.mp3,.wav,.flac,.aac,.ogg,.mp4,.avi,.mov,.wmv,.flv,.webm,.html,.css,.js,.php,.py,.java,.cpp,.c,.h,.xml,.json,.yaml,.yml",
+            // acceptedFiles removed to allow any file type
             dictDefaultMessage: "",
             dictFallbackMessage: "Your browser does not support drag and drop file uploads.",
             dictFileTooBig: "File is too big ({{ filesize }}MiB). Max filesize: {{ maxFilesize }}MiB.",
@@ -261,21 +263,6 @@
             },
 
             accept: function (file, done) {
-                var allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'xls', 'xlsx', 'ppt', 'pptx',
-                    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp',
-                    'zip', 'rar', '7z', 'tar', 'gz',
-                    'mp3', 'wav', 'flac', 'aac', 'ogg',
-                    'mp4', 'avi', 'mov', 'wmv', 'flv', 'webm',
-                    'html', 'css', 'js', 'php', 'py', 'java', 'cpp', 'c', 'h',
-                    'xml', 'json', 'yaml', 'yml'];
-
-                var fileExtension = file.name.split('.').pop().toLowerCase();
-
-                if (!allowedExtensions.includes(fileExtension)) {
-                    done("File type not allowed. Please check the supported formats list.");
-                    return;
-                }
-
                 if (file.size > 50 * 1024 * 1024) {
                     done("File size too large. Maximum allowed size is 50MB.");
                     return;
@@ -442,6 +429,7 @@
         });
 
         // Detail Actions (from preview modal) - MOVED TO SHARED INCLUDE
+    }
 
     function loadCategoriesAndTags() {
         $.ajax({
@@ -531,7 +519,6 @@
         var html = '<div class="row">';
         files.forEach(function (file) {
             var iconClass = getFileIcon(file.up_file_Extension);
-            var thumbnail = file.up_file_thumbnail ? '<?php echo base_url(); ?>' + file.up_file_thumbnail : '';
 
             html += `
                 <div class="col-xxl-3 col-lg-4 col-md-6 mb-3">
@@ -540,10 +527,7 @@
                             <div class="file-checkbox-container">
                                 <input type="checkbox" class="form-check-input file-checkbox" value="${file.up_file_uuid}">
                             </div>
-                            ${thumbnail ?
-                    `<img src="${thumbnail}" class="file-thumbnail mb-2" alt="${file.up_file_Orig_Name}">` :
-                    `<i class="mdi mdi-${iconClass} display-4 text-primary mb-2"></i>`
-                }
+                            <i class="mdi mdi-${iconClass} display-4 text-primary mb-2"></i>
                             <h6 class="file-name text-truncate" title="${file.up_file_Orig_Name}">${file.up_file_Orig_Name}</h6>
                             <p class="file-size text-muted small">${formatFileSize(file.up_file_Size)}</p>
                             ${file.up_file_tags ? `<div class="file-tags mt-2">${generateTagBadges(file.up_file_tags)}</div>` : ''}
@@ -651,26 +635,50 @@
 
     function getFileIcon(extension) {
         var iconMap = {
-            'pdf': 'file-pdf',
-            'doc': 'file-word',
-            'docx': 'file-word',
-            'xls': 'file-excel',
-            'xlsx': 'file-excel',
-            'ppt': 'file-powerpoint',
-            'pptx': 'file-powerpoint',
-            'txt': 'file-document',
-            'jpg': 'file-image',
-            'jpeg': 'file-image',
-            'png': 'file-image',
-            'gif': 'file-image',
-            'mp4': 'file-video',
-            'avi': 'file-video',
-            'zip': 'folder-zip',
-            'rar': 'folder-zip',
-            'mp3': 'file-music',
-            'wav': 'file-music'
+            'pdf': 'file-pdf-box',
+            'doc': 'file-word-box',
+            'docx': 'file-word-box',
+            'xls': 'file-excel-box',
+            'xlsx': 'file-excel-box',
+            'ppt': 'file-powerpoint-box',
+            'pptx': 'file-powerpoint-box',
+            'txt': 'file-document-outline',
+            'rtf': 'file-document-outline',
+            'jpg': 'image',
+            'jpeg': 'image',
+            'png': 'image',
+            'gif': 'image',
+            'webp': 'image',
+            'bmp': 'image',
+            'svg': 'image',
+            'ico': 'image',
+            'mp4': 'video',
+            'avi': 'video',
+            'mov': 'video',
+            'wmv': 'video',
+            'webm': 'video',
+            'mkv': 'video',
+            'html': 'language-html5',
+            'css': 'language-css3',
+            'js': 'language-javascript',
+            'php': 'language-php',
+            'py': 'language-python',
+            'json': 'code-json',
+            'xml': 'xml',
+            'sql': 'database',
+            'zip': 'archive',
+            'rar': 'archive',
+            '7z': 'archive',
+            'tar': 'archive',
+            'gz': 'archive',
+            'mp3': 'music-note',
+            'wav': 'music-note',
+            'flac': 'music-note',
+            'aac': 'music-note',
+            'ogg': 'music-note',
+            'm4a': 'music-note'
         };
-        return iconMap[extension.toLowerCase()] || 'file';
+        return iconMap[extension.toLowerCase()] || 'file-document-outline';
     }
 
     function formatFileSize(bytes) {

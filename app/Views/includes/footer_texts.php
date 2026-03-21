@@ -82,7 +82,7 @@
                 url: "<?php echo base_url('text/save'); ?>",
                 method: "POST",
                 data: { 
-                    text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
+                    text_content_base64: btoa(unescape(encodeURIComponent(content))), 
                     text_title: title,
                     expiration_policy: $('#modal_text_expiration').val()
                 },
@@ -184,13 +184,12 @@
                 $('#please_type_here').summernote('code', text);
                 
                 var b64Content = btoa(unescape(encodeURIComponent(text)));
-                var reversedB64 = b64Content.split('').reverse().join('');
                 
                 $.ajax({
                     url: '<?php echo base_url("text/save"); ?>',
                     type: 'POST',
                     data: {
-                        text_content_base64: reversedB64,
+                        text_content_base64: b64Content,
                         text_title: 'Pasted from Clipboard',
                         expiration_policy: $('#text_expiration').val()
                     },

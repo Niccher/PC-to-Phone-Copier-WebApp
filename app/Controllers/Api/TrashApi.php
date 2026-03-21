@@ -37,9 +37,17 @@ class TrashApi extends BaseController
                 return $this->respond(['success' => false, 'message' => 'File not found in trash'], 404);
             }
 
-            // Remove deleted_at field and restore to main table
+            // Remove deleted fields and restore to main table
+            unset($file->up_file_deleted_id);
             unset($file->deleted_at);
             $this->modUpload->restore_file($file);
+
+            // Restore physical file if it was moved during delete
+            $f_path_deleted = WRITEPATH . '/uploads/copied_files_deleted/';
+            $f_path_active = WRITEPATH . '/uploads/copied_files/';
+            if (!empty($file->up_file_Orig_Name) && file_exists($f_path_deleted . $file->up_file_Orig_Name)) {
+                @rename($f_path_deleted . $file->up_file_Orig_Name, $f_path_active . $file->up_file_Orig_Name);
+            }
 
             return $this->respond(['success' => true, 'message' => 'File restored successfully']);
         } catch (\Exception $e) {
@@ -64,7 +72,8 @@ class TrashApi extends BaseController
                 return $this->respond(['success' => false, 'message' => 'Text not found in trash'], 404);
             }
 
-            // Remove deleted_at field and restore to main table
+            // Remove deleted fields and restore to main table
+            unset($text->up_text_deleted_id);
             unset($text->deleted_at);
             $this->modText->restore_text($text);
 

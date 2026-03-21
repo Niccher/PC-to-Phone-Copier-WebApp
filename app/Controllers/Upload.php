@@ -10,13 +10,14 @@ class Upload extends BaseController
 {
     use ResponseTrait;
 
-    public function file_uploaded_by_browser(){
+    public function file_uploaded_by_browser()
+    {
         $mod_upload = new ModUpload();
         $mod_upload->ensureColumnsExist();
         $dated = date('Y-m-d H:i:s');
         $uuid = random_string('alnum', 16);
 
-        if ($this->request->getFile('file')){
+        if ($this->request->getFile('file')) {
             $uploaded_File = $this->request->getFile('file');
 
             // Validate file
@@ -52,7 +53,7 @@ class Upload extends BaseController
             $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 
             if (in_array($extension, $image_extensions)) {
-                $thumbnail_path = $this->generateThumbnail($full_file_path, $uuid, $extension);
+                // Thumbnail generation removed (computationally expensive)
                 $image_dimensions = $this->getImageDimensions($full_file_path);
                 $preview_available = 1;
             }
@@ -67,17 +68,17 @@ class Upload extends BaseController
             }
 
             $uploaded_file_info = [
-                'up_file_uuid' =>  $uuid,
-                'up_file_session_id' =>  $this->session->get('sess_id'),
-                'up_file_dev_id' =>  $this->session->get('phone_id'),
-                'up_file_Name' =>  $uploaded_File->getName(),
-                'up_file_Orig_Name' =>  $uploaded_File->getClientName(),
-                'up_file_Type'  => $uploaded_File->getClientMimeType(),
-                'up_file_Extension'  => $uploaded_File->getClientExtension(),
-                'up_file_Orig_Extension'  => $uploaded_File->getClientExtension(),
-                'up_file_Size'  => $uploaded_File->getSize(),
-                'up_file_Source'  => "Browser Upload",
-                'up_file_Created_at'  => $dated,
+                'up_file_uuid' => $uuid,
+                'up_file_session_id' => $this->session->get('sess_id'),
+                'up_file_dev_id' => $this->session->get('phone_id'),
+                'up_file_Name' => $uploaded_File->getName(),
+                'up_file_Orig_Name' => $uploaded_File->getClientName(),
+                'up_file_Type' => $uploaded_File->getClientMimeType(),
+                'up_file_Extension' => $uploaded_File->getClientExtension(),
+                'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
+                'up_file_Size' => $uploaded_File->getSize(),
+                'up_file_Source' => "Browser Upload",
+                'up_file_Created_at' => $dated,
                 'up_file_thumbnail' => $thumbnail_path,
                 'up_file_category' => $category,
                 'up_file_preview_available' => $preview_available,
@@ -89,7 +90,7 @@ class Upload extends BaseController
 
             $pushed = $mod_upload->file_register_uploaded($uploaded_file_info);
 
-            if ($pushed){
+            if ($pushed) {
                 return $this->respond([
                     'status' => 1,
                     'time' => $dated,
@@ -98,7 +99,8 @@ class Upload extends BaseController
                     'file_name' => $uploaded_File->getClientName(),
                     'file_size' => $uploaded_File->getSize()
                 ]);
-            }else{
+            }
+            else {
                 // Clean up uploaded file if database insert failed
                 @unlink($upload_path . '/' . $uploaded_File->getName());
                 return $this->respond([
@@ -108,7 +110,8 @@ class Upload extends BaseController
                     'error_type' => 'database_error'
                 ]);
             }
-        }else{
+        }
+        else {
             return $this->respond([
                 'status' => 0,
                 'time' => $dated,
@@ -118,48 +121,50 @@ class Upload extends BaseController
         }
     }
 
-    public function file_uploaded_by_phone(){
+    public function file_uploaded_by_phone()
+    {
         $mod_upload = new ModUpload();
 
         $dated = date('Y-m-d H:i:s');
         $uuid = random_string('alnum', 16);
         $ret = array();
 
-        if ($this->request->getPost()){
+        if ($this->request->getPost()) {
             $file_dev_id = $this->request->getVar('varDevId');
             $file_sess_id = $this->request->getVar('varSessId');
 
             $uploaded_File = $this->request->getFile('uploaded_file');
             //echo $uploaded_File->getSize();
-            if (empty($ret)){
+            if (empty($ret)) {
                 echo "";
             }
 
             $uploaded_File->move(WRITEPATH . 'uploads/copied_files/');
 
             $data = [
-                'up_file_uuid' =>  $uuid,
-                'up_file_session_id' =>  $file_sess_id,
-                'up_file_dev_id' =>  $file_dev_id,
-                'up_file_Name' =>  $uploaded_File->getName(),
-                'up_file_Orig_Name' =>  $uploaded_File->getClientName(),
-                'up_file_Type'  => $uploaded_File->getClientMimeType(),
-                'up_file_Extension'  => $uploaded_File->getClientExtension(),
-                'up_file_Orig_Extension'  => $uploaded_File->getClientExtension(),
-                'up_file_Size'  => $uploaded_File->getSize(),
-                'up_file_Source'  => "Android Upload",
-                'up_file_Created_at'  => $dated,
+                'up_file_uuid' => $uuid,
+                'up_file_session_id' => $file_sess_id,
+                'up_file_dev_id' => $file_dev_id,
+                'up_file_Name' => $uploaded_File->getName(),
+                'up_file_Orig_Name' => $uploaded_File->getClientName(),
+                'up_file_Type' => $uploaded_File->getClientMimeType(),
+                'up_file_Extension' => $uploaded_File->getClientExtension(),
+                'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
+                'up_file_Size' => $uploaded_File->getSize(),
+                'up_file_Source' => "Android Upload",
+                'up_file_Created_at' => $dated,
             ];
 
             $pushed = $mod_upload->file_register_uploaded($data);
 
-            if ($pushed){
+            if ($pushed) {
                 $ret = $this->respond([
                     'status' => 1,
                     'time' => $dated,
                     'message' => "File Uploaded Successfully"
                 ]);
-            }else{
+            }
+            else {
                 $ret = $this->respond([
                     'status' => 0,
                     'time' => $dated,
@@ -169,7 +174,8 @@ class Upload extends BaseController
 
             return $ret;
 
-        }else{
+        }
+        else {
             return $this->respond([
                 'status' => 2,
                 'time' => $dated,
@@ -178,7 +184,8 @@ class Upload extends BaseController
         }
     }
 
-    public function file_uploaded_by_phone_session(){
+    public function file_uploaded_by_phone_session()
+    {
         $mod_upload = new ModUpload();
 
         $dated = date('Y-m-d H:i:s');
@@ -189,14 +196,15 @@ class Upload extends BaseController
         $uploaded_files_by_session_and_devid = $mod_upload->file_get_uploaded_files_by_session_and_devid($phone_sess_id, $phone_dev_id);
         $uploaded_files_by_devid = $mod_upload->file_get_uploaded_by_devid($phone_dev_id);
 
-        if (!empty($uploaded_files_by_session_and_devid)){
+        if (!empty($uploaded_files_by_session_and_devid)) {
             return $this->respond([
                 'status' => 1,
                 'time' => $dated,
                 'file_info' => $uploaded_files_by_session_and_devid,
                 'file_info_all' => $uploaded_files_by_devid,
             ]);
-        }else{
+        }
+        else {
             return $this->respond([
                 'status' => 2,
                 'time' => $dated,
@@ -204,7 +212,8 @@ class Upload extends BaseController
         }
     }
 
-    private function validateFile($file) {
+    private function validateFile($file)
+    {
         // Check if file is valid
         if (!$file->isValid()) {
             return [
@@ -237,36 +246,12 @@ class Upload extends BaseController
             ];
         }
 
-        // Define allowed file types and size limits
-        $allowed_types = [
-            // Documents
-            'pdf', 'doc', 'docx', 'txt', 'rtf', 'xls', 'xlsx', 'ppt', 'pptx',
-            // Images
-            'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp',
-            // Archives
-            'zip', 'rar', '7z', 'tar', 'gz',
-            // Audio
-            'mp3', 'wav', 'flac', 'aac', 'ogg',
-            // Video
-            'mp4', 'avi', 'mov', 'wmv', 'flv', 'webm',
-            // Code files
-            'html', 'css', 'js', 'php', 'py', 'java', 'cpp', 'c', 'h',
-            'xml', 'json', 'yaml', 'yml'
-        ];
-
         $max_file_size = 50 * 1024 * 1024; // 50MB
         $client_name = $file->getClientName();
         $extension = strtolower($file->getClientExtension());
         $file_size = $file->getSize();
 
-        // Check file extension
-        if (!in_array($extension, $allowed_types)) {
-            return [
-                'valid' => false,
-                'message' => "File type not allowed. Allowed types: " . implode(', ', array_slice($allowed_types, 0, 10)) . "...",
-                'error_type' => 'invalid_type'
-            ];
-        }
+        // Check file extension removed (all file types now allowed)
 
         // Check file size
         if ($file_size > $max_file_size) {
@@ -310,99 +295,9 @@ class Upload extends BaseController
         return ['valid' => true];
     }
 
-    private function generateThumbnail($file_path, $file_uuid, $extension) {
-        $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 
-        if (!in_array(strtolower($extension), $image_extensions)) {
-            return null; // Not an image
-        }
-
-        if (!function_exists('imagecreatetruecolor')) {
-            return null; // GD library not available
-        }
-
-        try {
-            // Create thumbnails directory if it doesn't exist
-            $thumb_dir = WRITEPATH . 'uploads/thumbnails';
-            if (!is_dir($thumb_dir)) {
-                mkdir($thumb_dir, 0755, true);
-            }
-
-            // Get image info
-            $image_info = getimagesize($file_path);
-            if (!$image_info) {
-                return null;
-            }
-
-            $width = $image_info[0];
-            $height = $image_info[1];
-            $mime = $image_info['mime'];
-
-            // Calculate thumbnail size (max 200px)
-            $max_thumb_size = 200;
-            if ($width > $height) {
-                $thumb_width = $max_thumb_size;
-                $thumb_height = intval($height * $max_thumb_size / $width);
-            } else {
-                $thumb_height = $max_thumb_size;
-                $thumb_width = intval($width * $max_thumb_size / $height);
-            }
-
-            // Create thumbnail
-            $thumb = imagecreatetruecolor($thumb_width, $thumb_height);
-
-            // Handle transparency for PNG/GIF
-            if ($mime == 'image/png' || $mime == 'image/gif') {
-                imagecolortransparent($thumb, imagecolorallocate($thumb, 0, 0, 0));
-                imagealphablending($thumb, false);
-                imagesavealpha($thumb, true);
-            }
-
-            // Load source image
-            $source = null;
-            switch ($mime) {
-                case 'image/jpeg':
-                    $source = imagecreatefromjpeg($file_path);
-                    break;
-                case 'image/png':
-                    $source = imagecreatefrompng($file_path);
-                    break;
-                case 'image/gif':
-                    $source = imagecreatefromgif($file_path);
-                    break;
-                case 'image/webp':
-                    if (function_exists('imagecreatefromwebp')) {
-                        $source = imagecreatefromwebp($file_path);
-                    }
-                    break;
-            }
-
-            if (!$source) {
-                return null;
-            }
-
-            // Resize image
-            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
-
-            // Save thumbnail
-            $thumb_filename = $file_uuid . '_thumb.jpg';
-            $thumb_path = $thumb_dir . '/' . $thumb_filename;
-
-            imagejpeg($thumb, $thumb_path, 85);
-
-            // Clean up memory
-            imagedestroy($source);
-            imagedestroy($thumb);
-
-            // Return thumbnail path relative to base_url
-            return 'uploads/thumbnails/' . $thumb_filename;
-
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-    private function getImageDimensions($file_path) {
+    private function getImageDimensions($file_path)
+    {
         $image_info = getimagesize($file_path);
         if ($image_info) {
             return [
@@ -413,7 +308,8 @@ class Upload extends BaseController
         return null;
     }
 
-    private function formatBytes($bytes, $precision = 2) {
+    private function formatBytes($bytes, $precision = 2)
+    {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         $bytes = max($bytes, 0);
@@ -425,7 +321,8 @@ class Upload extends BaseController
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
-    private function categorizeFile($extension) {
+    private function categorizeFile($extension)
+    {
         $extension = strtolower($extension);
 
         $categories = [
