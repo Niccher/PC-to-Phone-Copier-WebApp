@@ -90,6 +90,27 @@
 					</a>
 				</li>
 
+                <li class="side-nav-title side-nav-item mt-3">Storage</li>
+                <li class="side-nav-item px-3 mb-2">
+                    <?php
+                        $mod_upload_quota = new \App\Models\ModUpload();
+                        $sess_id = session()->get('sess_id');
+                        if ($sess_id) {
+                            $used_quota = $mod_upload_quota->get_session_storage_used($sess_id);
+                            $max_quota = 500 * 1024 * 1024; // 500MB
+                            $quota_percent = min(100, ($used_quota / $max_quota) * 100);
+                            $quota_color = $quota_percent > 90 ? 'bg-danger' : ($quota_percent > 75 ? 'bg-warning' : 'bg-success');
+                    ?>
+                    <div class="quota-container text-center p-2 rounded border border-secondary bg-light-lighten">
+                        <h6 class="text-uppercase font-10 fw-bold text-white mb-2"><i class="mdi mdi-harddisk me-1"></i>Storage Quota</h6>
+                        <div class="progress mb-1 shadow-sm" style="height: 5px;">
+                            <div class="progress-bar <?php echo $quota_color; ?>" role="progressbar" style="width: <?php echo $quota_percent; ?>%"></div>
+                        </div>
+                        <p class="text-white fw-bold font-16 mb-0"><?php echo $mod_upload_quota->bytes_to_human_filesize($used_quota); ?> / 500.00 MB</p>
+                    </div>
+                    <?php } ?>
+                </li>
+
                 <li class="side-nav-title side-nav-item mt-2">Pairing</li>
                 <li class="side-nav-item px-3 mb-3">
                     <div class="pair-phone-section text-center p-2 rounded border border-secondary bg-light-lighten">
@@ -102,6 +123,12 @@
                 </li>
 
 				<li class="side-nav-title side-nav-item mt-2">System</li>
+                <li class="side-nav-item" id="pwa-install-item" style="display: none;">
+                    <a href="javascript:void(0);" onclick="window.triggerPWAInstall && window.triggerPWAInstall()" class="side-nav-link text-success fw-bold">
+                        <i class="mdi mdi-cellphone-arrow-down"></i>
+                        <span> Install Web App </span>
+                    </a>
+                </li>
 				<li class="side-nav-item">
 					<a href="<?php echo base_url('auth/logout')?>" class="side-nav-link">
 						<i class="uil-exit"></i>

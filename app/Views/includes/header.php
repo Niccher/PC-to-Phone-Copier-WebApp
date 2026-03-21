@@ -7,7 +7,7 @@
     <meta content="P2P Web Copier" name="description" />
     <meta content="Niccher Inc" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico')?>">
+    <link rel="shortcut icon" href="<?php echo base_url('assets/images/logo-sm.png')?>">
 
     <!-- App css -->
     <link href="<?php echo base_url('assets/css/icons.min.css')?>" rel="stylesheet" type="text/css" />
@@ -24,11 +24,41 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="<?php echo base_url('manifest.json') ?>">
     <script>
+        let deferredPwaPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPwaPrompt = e;
+            // Show the Install Button in the sidebar
+            const installBtn = document.getElementById('pwa-install-item');
+            if (installBtn) installBtn.style.display = 'block';
+        });
+
+        window.triggerPWAInstall = () => {
+            if (deferredPwaPrompt) {
+                // Show the install prompt
+                deferredPwaPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                deferredPwaPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User safely installed the web app');
+                    }
+                    // Reset the deferred prompt variable
+                    deferredPwaPrompt = null;
+                    // Hide the install button
+                    const installBtn = document.getElementById('pwa-install-item');
+                    if (installBtn) installBtn.style.display = 'none';
+                });
+            }
+        };
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('<?php echo base_url('service-worker.js') ?>')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed', err));
+                    .then(reg => console.log('SW correctly registered with scope:', reg.scope))
+                    .catch(err => console.log('SW registration safely failed:', err));
             });
         }
     </script>

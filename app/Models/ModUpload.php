@@ -11,6 +11,28 @@ class ModUpload extends Model
         return $this->db->table('tbl_files_uploaded')->insert($file_info);
     }
 
+    public function get_session_storage_used($sess_id)
+    {
+        $active_query = $this->db->table('tbl_files_uploaded')
+            ->selectSum('up_file_Size', 'total_size')
+            ->where('up_file_session_id', $sess_id)
+            ->get()->getRow();
+        $active_size = $active_query->total_size ?? 0;
+
+        $deleted_size = 0;
+        // Check trash to ensure quota realistically accounts for physical storage presence
+        $columns = $this->db->query("SHOW TABLES LIKE 'tbl_files_uploaded_deleted'")->getResult();
+        if (!empty($columns)) {
+            $deleted_query = $this->db->table('tbl_files_uploaded_deleted')
+                ->selectSum('up_file_Size', 'total_size')
+                ->where('up_file_session_id', $sess_id)
+                ->get()->getRow();
+            $deleted_size = $deleted_query->total_size ?? 0;
+        }
+
+        return $active_size + $deleted_size;
+    }
+
     function bytes_to_human_filesize($bytes, $dec = 2): string
     {
         $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');

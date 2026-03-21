@@ -20,6 +20,19 @@ class Upload extends BaseController
         if ($this->request->getFile('file')) {
             $uploaded_File = $this->request->getFile('file');
 
+            // Quota Check
+            $max_quota = 500 * 1024 * 1024; // 500MB
+            $used_quota = $mod_upload->get_session_storage_used($this->session->get('sess_id'));
+            
+            if (($used_quota + $uploaded_File->getSize()) > $max_quota) {
+                return $this->respond([
+                    'status' => 0,
+                    'time' => $dated,
+                    'message' => 'Storage quota exceeded! (500MB max). Please delete files permanently from Trash to free up space.',
+                    'error_type' => 'quota_exceeded'
+                ]);
+            }
+
             // Validate file
             $validation_result = $this->validateFile($uploaded_File);
             if (!$validation_result['valid']) {
@@ -134,6 +147,18 @@ class Upload extends BaseController
             $file_sess_id = $this->request->getVar('varSessId');
 
             $uploaded_File = $this->request->getFile('uploaded_file');
+            
+            // Quota Check
+            $max_quota = 500 * 1024 * 1024; // 500MB
+            $used_quota = $mod_upload->get_session_storage_used($file_sess_id);
+            if (($used_quota + $uploaded_File->getSize()) > $max_quota) {
+                return $this->respond([
+                    'status' => 0,
+                    'time' => $dated,
+                    'message' => 'Storage quota exceeded (500MB limit). Empty your trash.'
+                ]);
+            }
+
             //echo $uploaded_File->getSize();
             if (empty($ret)) {
                 echo "";
