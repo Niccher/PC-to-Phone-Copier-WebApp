@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\ModUpload;
 use CodeIgniter\API\ResponseTrait;
 
-class FileManager extends BaseController
+class DebugManager extends BaseController
 {
     use ResponseTrait;
 

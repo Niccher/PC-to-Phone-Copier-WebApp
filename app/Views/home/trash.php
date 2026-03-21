@@ -95,6 +95,9 @@
                                                 </div>
                                             </td>
                                             <td class="text-center text-nowrap">
+                                                <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1 file-preview-btn" data-file-uuid="<?php echo $file->up_file_uuid; ?>" title="Preview">
+                                                    <i class="mdi mdi-eye"></i>
+                                                </button>
                                                 <button class="btn btn-sm btn-outline-success py-0 px-2 me-1" onclick="restoreFile('<?php echo $file->up_file_uuid; ?>')" title="Restore">
                                                     <i class="mdi mdi-restore me-1"></i>Restore
                                                 </button>

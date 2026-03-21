@@ -88,7 +88,6 @@ class Download extends BaseController
 
 			// Handle Burn After Reading
 			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
-				$file_uuid = $file->up_file_uuid;
 				register_shutdown_function(function () use ($mod_upload, $file_uuid) {
 					$mod_upload->batch_delete_files([$file_uuid]);
 				});
@@ -102,6 +101,50 @@ class Download extends BaseController
 				'time' => $dated,
 				'message' => "Unable to download specified file",
 			]);
+		}
+	}
+
+	public function browser_file_view($file_uuid)
+	{
+		$mod_upload = new ModUpload();
+		$mod_upload->ensureColumnsExist();
+		$dated = date('Y-m-d H:i:s');
+
+		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+
+		if (!empty($file_data)) {
+			$file = $file_data[0];
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
+
+			if (!file_exists($filePath)) {
+				return $this->respond(['status' => 2, 'message' => 'File not found on disk'], 404);
+			}
+
+			// Handle Burn After Reading
+			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
+				register_shutdown_function(function () use ($mod_upload, $file_uuid) {
+					$mod_upload->batch_delete_files([$file_uuid]);
+				});
+			}
+
+			$mimeType = mime_content_type($filePath);
+			
+			// For text files, we might want to force utf-8
+			if (strpos($mimeType, 'text/') === 0) {
+				$mimeType .= '; charset=UTF-8';
+			}
+
+			return $this->response
+				->setHeader('Content-Type', $mimeType)
+				->setHeader('Content-Disposition', 'inline; filename="' . $file->up_file_Orig_Name . '"')
+				->setBody(file_get_contents($filePath));
+		}
+		else {
+			return $this->respond([
+				'status' => 2,
+				'time' => $dated,
+				'message' => "Unable to find specified file",
+			], 404);
 		}
 	}
 

@@ -173,6 +173,12 @@
                                             <?php echo $source; ?>
                                         </span></td>
                                     <td class="text-center text-nowrap">
+                                        <a href="javascript:void(0);"
+                                            class="btn btn-sm btn-outline-primary py-0 px-2 me-1 file-preview-btn"
+                                            data-file-uuid="<?php echo $file->up_file_uuid; ?>"
+                                            title="Preview">
+                                            <i class="mdi mdi-eye"></i>
+                                        </a>
                                         <a href="<?php echo base_url('saved/download/' . $file->up_file_uuid); ?>"
                                             class="btn btn-sm btn-outline-primary py-0 px-2 me-1" title="Download">
                                             <i class="mdi mdi-download"></i>

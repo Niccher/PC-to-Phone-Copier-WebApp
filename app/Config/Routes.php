@@ -19,7 +19,7 @@ $routes->set404Override();
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
 // Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
-// $routes->setAutoRoute(false);
+$routes->setAutoRoute(false);
 
 /*
  * --------------------------------------------------------------------
@@ -66,6 +66,7 @@ $routes->group('api', function ($routes) {
 
 $routes->group('saved', function ($routes) {
     $routes->add('download/(:any)', 'Download::browser_file_download/$1');
+    $routes->add('view/(:any)', 'Download::browser_file_view/$1');
     $routes->add('delete/(:any)', 'Download::browser_file_delete/$1');
 });
 
@@ -84,17 +85,17 @@ $routes->group('text', function ($routes) {
 });
 
 $routes->group('files', function ($routes) {
-    $routes->add('search', 'FileManager::search');
-    $routes->add('rename', 'FileManager::rename');
-    $routes->add('add-tag', 'FileManager::add_tag');
-    $routes->add('remove-tag', 'FileManager::remove_tag');
-    $routes->add('update-category', 'FileManager::update_category');
-    $routes->add('update-description', 'FileManager::update_description');
-    $routes->add('batch-delete', 'FileManager::batch_delete');
-    $routes->add('batch-add-tag', 'FileManager::batch_add_tag');
-    $routes->add('batch-download', 'FileManager::batch_download');
-    $routes->add('details/(:any)', 'FileManager::get_file_details/$1');
-    $routes->add('metadata', 'FileManager::get_categories_and_tags');
+    $routes->add('search', 'DebugManager::search');
+    $routes->add('rename', 'DebugManager::rename');
+    $routes->add('add-tag', 'DebugManager::add_tag');
+    $routes->add('remove-tag', 'DebugManager::remove_tag');
+    $routes->add('update-category', 'DebugManager::update_category');
+    $routes->add('update-description', 'DebugManager::update_description');
+    $routes->add('batch-delete', 'DebugManager::batch_delete');
+    $routes->add('batch-add-tag', 'DebugManager::batch_add_tag');
+    $routes->add('batch-download', 'DebugManager::batch_download');
+    $routes->add('preview/(:any)', 'DebugManager::get_file_details/$1');
+    $routes->add('metadata', 'DebugManager::get_categories_and_tags');
 });
 
 $routes->get('setup/text-tables', 'DatabaseSetup::createTextTables');

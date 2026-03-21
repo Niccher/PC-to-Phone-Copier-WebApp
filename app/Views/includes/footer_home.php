@@ -178,6 +178,7 @@
 </script>
 
 
+<?php include 'file_preview.php'; ?>
 </body>
 
 </html>

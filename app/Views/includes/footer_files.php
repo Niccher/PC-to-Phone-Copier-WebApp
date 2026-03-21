@@ -435,67 +435,13 @@
             }
         });
 
-        // File preview modal
+        // File preview modal trigger
         $(document).on('click', '.file-preview-btn', function () {
             var fileUuid = $(this).data('file-uuid');
             showFilePreview(fileUuid);
         });
 
-        // File actions in preview modal
-        $('#download-file-btn').on('click', function () {
-            var fileUuid = $('#file-preview-modal').data('file-uuid');
-            window.open('<?php echo base_url("saved/download/"); ?>' + fileUuid, '_blank');
-        });
-
-        $('#rename-file-btn').on('click', function () {
-            var currentName = $('#file-detail-name').text();
-            $('#rename-input').val(currentName);
-            $('#rename-modal').modal('show');
-        });
-
-        $('#delete-file-btn').on('click', function () {
-            if (confirm('Are you sure you want to delete this file?')) {
-                var fileUuid = $('#file-preview-modal').data('file-uuid');
-                deleteFile(fileUuid);
-                $('#file-preview-modal').modal('hide');
-            }
-        });
-
-        // Rename modal
-        $('#confirm-rename-btn').on('click', function () {
-            var fileUuid = $('#file-preview-modal').data('file-uuid');
-            var newName = $('#rename-input').val().trim();
-
-            if (newName && newName !== $('#file-detail-name').text()) {
-                renameFile(fileUuid, newName);
-                $('#rename-modal').modal('hide');
-            }
-        });
-
-        // Tag management
-        $('#add-tag-btn').on('click', function () {
-            var fileUuid = $('#file-preview-modal').data('file-uuid');
-            var tagName = $('#new-tag-input').val().trim();
-
-            if (tagName) {
-                addFileTag(fileUuid, tagName);
-                $('#new-tag-input').val('');
-            }
-        });
-
-        $(document).on('click', '.remove-tag-btn', function () {
-            var fileUuid = $('#file-preview-modal').data('file-uuid');
-            var tagName = $(this).data('tag-name');
-            removeFileTag(fileUuid, tagName);
-        });
-
-        // Description saving
-        $('#save-description-btn').on('click', function () {
-            var fileUuid = $('#file-preview-modal').data('file-uuid');
-            var description = $('#file-description').val().trim();
-            updateFileDescription(fileUuid, description);
-        });
-    }
+        // Detail Actions (from preview modal) - MOVED TO SHARED INCLUDE
 
     function loadCategoriesAndTags() {
         $.ajax({
@@ -755,80 +701,7 @@
         }
     }
 
-    function showFilePreview(fileUuid) {
-        $.ajax({
-            url: '<?php echo base_url("files/details/"); ?>' + fileUuid,
-            type: 'GET',
-            success: function (response) {
-                if (response.status == 1) {
-                    var file = response.file;
-                    $('#file-preview-modal').data('file-uuid', fileUuid);
-                    $('#file-preview-title').text(file.up_file_Orig_Name);
-
-                    // Set file details
-                    $('#file-detail-name').text(file.up_file_Orig_Name);
-                    $('#file-detail-size').text(formatFileSize(file.up_file_Size));
-                    $('#file-detail-type').text(file.up_file_Type);
-                    $('#file-detail-category').text(file.up_file_category || 'Other');
-                    $('#file-detail-date').text(new Date(file.up_file_Created_at).toLocaleString());
-
-                    // Set preview content
-                    if (file.up_file_preview_available && file.up_file_thumbnail) {
-                        $('#file-preview-content').html(`
-                                    <img src="<?php echo base_url(); ?>${file.up_file_thumbnail}" class="img-fluid rounded" alt="${file.up_file_Orig_Name}">
-                                `);
-                    } else {
-                        var iconClass = getFileIcon(file.up_file_Extension);
-                        $('#file-preview-content').html(`
-                                    <i class="mdi mdi-${iconClass} display-4 text-primary"></i>
-                                    <p class="text-muted mt-2">Preview not available for this file type</p>
-                                `);
-                    }
-
-                    // Set tags
-                    if (file.up_file_tags) {
-                        var tagHtml = '';
-                        file.up_file_tags.split(',').forEach(function (tag) {
-                            tagHtml += `
-                                        <span class="badge bg-secondary me-1 mb-1">
-                                            ${tag.trim()}
-                                            <button class="btn btn-sm btn-close remove-tag-btn ms-1" data-tag-name="${tag.trim()}" style="font-size: 10px;"></button>
-                                        </span>
-                                    `;
-                        });
-                        $('#file-tags-container').html(tagHtml);
-                    } else {
-                        $('#file-tags-container').html('<small class="text-muted">No tags</small>');
-                    }
-
-                    // Set description
-                    $('#file-description').val(file.up_file_description || '');
-
-                    $('#file-preview-modal').modal('show');
-                }
-            }
-        });
-    }
-
-    function showNotification(message, type) {
-        var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-        var icon = type === 'success' ? 'check-circle' : 'alert-circle';
-
-        var notification = $(`
-            <div class="alert ${alertClass} alert-dismissible fade show position-fixed"
-                style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                <i class="mdi mdi-${icon} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            `);
-
-        $('body').append(notification);
-
-        setTimeout(function () {
-            notification.alert('close');
-        }, 5000);
-    }
+    // Centralized preview and notification logic moved to file_preview.php
 
     function deleteFile(fileUuid) {
         if (confirm('Are you sure you want to delete this file?')) {
@@ -1021,6 +894,8 @@
                 `)
         .appendTo("head");
 </script>
+
+<?php include 'file_preview.php'; ?>
 
 <!-- Share QR Modal -->
 <div id="share-qr-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
