@@ -60,6 +60,12 @@ class Upload extends BaseController
             // Auto-categorize file
             $category = $this->categorizeFile($extension);
 
+            $expiration_policy = $this->request->getVar('expiration_policy') ?: 0;
+            $expires_at = null;
+            if ($expiration_policy == 1) {
+                $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+            }
+
             $uploaded_file_info = [
                 'up_file_uuid' =>  $uuid,
                 'up_file_session_id' =>  $this->session->get('sess_id'),
@@ -77,6 +83,8 @@ class Upload extends BaseController
                 'up_file_preview_available' => $preview_available,
                 'up_file_width' => $image_dimensions ? $image_dimensions['width'] : null,
                 'up_file_height' => $image_dimensions ? $image_dimensions['height'] : null,
+                'up_file_expiration_policy' => $expiration_policy,
+                'up_file_expires_at' => $expires_at,
             ];
 
             $pushed = $mod_upload->file_register_uploaded($uploaded_file_info);

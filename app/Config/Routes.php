@@ -80,6 +80,7 @@ $routes->group('home', function ($routes) {
 $routes->group('text', function ($routes) {
     $routes->add('save', 'Utils\TypeText::text_save');
     $routes->add('delete/(:any)', 'Utils\TypeText::text_delete/$1');
+    $routes->add('view/(:any)', 'Utils\TypeText::public_view/$1');
 });
 
 $routes->group('files', function ($routes) {

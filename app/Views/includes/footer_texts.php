@@ -83,7 +83,8 @@
                 method: "POST",
                 data: { 
                     text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
-                    text_title: title 
+                    text_title: title,
+                    expiration_policy: $('#modal_text_expiration').val()
                 },
                 success: function (response) {
                     if (response.status == 1) {
@@ -144,7 +145,8 @@
                 type: 'POST',
                 data: {
                     text_content_base64: btoa(unescape(encodeURIComponent(textContent))).split('').reverse().join(''),
-                    text_title: textTitle
+                    text_title: textTitle,
+                    expiration_policy: $('#text_expiration').val()
                 },
                 success: function (response) {
                     if (response.status == 1) {
@@ -189,7 +191,8 @@
                     type: 'POST',
                     data: {
                         text_content_base64: reversedB64,
-                        text_title: 'Pasted from Clipboard'
+                        text_title: 'Pasted from Clipboard',
+                        expiration_policy: $('#text_expiration').val()
                     },
                     success: function (response) {
                         if (response.status == 1) {

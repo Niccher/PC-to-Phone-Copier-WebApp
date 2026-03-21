@@ -36,6 +36,14 @@
                                 </div>
                             </form>
                         </div>
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold small">Expiration Policy</label>
+                            <select class="form-select form-select-sm" id="global-file-expiration">
+                                <option value="0">Keep Forever</option>
+                                <option value="1">Expire in 1 Hour</option>
+                                <option value="2">Burn After Reading</option>
+                            </select>
+                        </div>
                         <div id="global-upload-progress" class="mt-3" style="display:none;">
                             <div class="progress progress-sm">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="global-overall-bar" style="width: 0%"></div>
@@ -53,6 +61,14 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Content</label>
                             <textarea id="modal_summernote" name="text_content"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Expiration Policy</label>
+                            <select class="form-select" id="modal_text_expiration">
+                                <option value="0">Keep Forever</option>
+                                <option value="1">Expire in 1 Hour</option>
+                                <option value="2">Burn After Reading</option>
+                            </select>
                         </div>
                         <div class="text-end">
                             <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">Cancel</button>

@@ -82,9 +82,9 @@
             $.ajax({
                 url: "<?php echo base_url('text/save'); ?>",
                 method: "POST",
-                data: { 
-                    text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
-                    text_title: title 
+                data: {
+                    text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''),
+                    text_title: title
                 },
                 success: function (response) {
                     if (response.status == 1) {

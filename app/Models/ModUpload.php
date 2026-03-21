@@ -18,6 +18,9 @@ class ModUpload extends Model
     }
 
     public function file_get_uploaded_files($sess_id, $limit = null){
+        $this->ensureColumnsExist();
+        $this->cleanupExpiredFiles($sess_id);
+        
         $builder = $this->db->table('tbl_files_uploaded');
         $builder->orderBy('up_file_Created_at', 'DESC')
             ->where('up_file_session_id', $sess_id);
@@ -110,6 +113,9 @@ class ModUpload extends Model
     }
 
     public function search_files($sess_id, $search_term = '', $category = '', $tags = [], $file_type = '') {
+        $this->ensureColumnsExist();
+        $this->cleanupExpiredFiles($sess_id);
+
         $builder = $this->db->table('tbl_files_uploaded');
 
         $builder->where('up_file_session_id', $sess_id);
@@ -276,6 +282,8 @@ class ModUpload extends Model
             'up_file_preview_available'=> "TINYINT(1) DEFAULT 0",
             'up_file_width'            => "INT(11) DEFAULT NULL",
             'up_file_height'           => "INT(11) DEFAULT NULL",
+            'up_file_expiration_policy'=> "TINYINT(1) DEFAULT 0",
+            'up_file_expires_at'       => "DATETIME DEFAULT NULL",
         ];
 
         $existing = [];
@@ -288,6 +296,19 @@ class ModUpload extends Model
             if (!in_array($col, $existing)) {
                 $this->db->query("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$definition}");
             }
+        }
+    }
+
+    public function cleanupExpiredFiles($sess_id) {
+        $expired = $this->db->table('tbl_files_uploaded')
+            ->where('up_file_session_id', $sess_id)
+            ->where('up_file_expires_at IS NOT NULL')
+            ->where('up_file_expires_at <', date('Y-m-d H:i:s'))
+            ->get()->getResult();
+            
+        if (!empty($expired)) {
+            $uuids = array_column($expired, 'up_file_uuid');
+            $this->batch_delete_files($uuids);
         }
     }
 

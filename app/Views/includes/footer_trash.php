@@ -182,7 +182,7 @@
 
         // Empty trash function
         window.emptyTrash = function () {
-            const totalItems = <? php echo $total_deleted; ?>;
+            const totalItems = <?php echo $total_deleted; ?>;
             if (totalItems === 0) {
                 showNotification('Trash is already empty.', 'info');
                 return;

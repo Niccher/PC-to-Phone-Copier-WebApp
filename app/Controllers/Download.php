@@ -11,7 +11,8 @@ class Download extends BaseController
 {
 	use ResponseTrait;
 
-	public function file_uploaded_by_phone_session_download(){
+	public function file_uploaded_by_phone_session_download()
+	{
 		$mod_upload = new ModUpload();
 
 		$dated = date('Y-m-d H:i:s');
@@ -20,12 +21,13 @@ class Download extends BaseController
 		$phone_dev_id = $this->request->getVar('var_dev_id');
 		$phone_sess_id = $this->request->getVar('var_sess_id');
 
-		$uploaded_files_by_session_and_devid = $mod_upload->file_uploaded_by_phone_session_download($phone_file_id,$phone_sess_id, $phone_dev_id);
+		$uploaded_files_by_session_and_devid = $mod_upload->file_uploaded_by_phone_session_download($phone_file_id, $phone_sess_id, $phone_dev_id);
 
-		if (!empty($uploaded_files_by_session_and_devid)){
-			$filePath = WRITEPATH .'/uploads/copied_files/'.$uploaded_files_by_session_and_devid->up_file_Name;
+		if (!empty($uploaded_files_by_session_and_devid)) {
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $uploaded_files_by_session_and_devid->up_file_Name;
 			return $this->response->download($filePath, null);
-		}else{
+		}
+		else {
 			return $this->respond([
 				'status' => 2,
 				'time' => $dated,
@@ -37,7 +39,8 @@ class Download extends BaseController
 		}
 	}
 
-	public function file_action_delete(){
+	public function file_action_delete()
+	{
 		$mod_upload = new ModUpload();
 
 		$dated = date('Y-m-d H:i:s');
@@ -47,12 +50,12 @@ class Download extends BaseController
 		//$phone_dev_id = $this->request->getVar('var_dev_id');
 		//$phone_sess_id = $this->request->getVar('var_sess_id');
 
-		$f_path_old = WRITEPATH .'/uploads/copied_files/';
-		$f_path_new = WRITEPATH .'/uploads/copied_files_deleted/';
+		$f_path_old = WRITEPATH . '/uploads/copied_files/';
+		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
 
 		try {
-			rename($f_path_old.$phone_file_name, $f_path_new.$phone_file_name);
-			$mod_upload->file_to_delete($phone_file_uuid,$phone_file_name);
+			rename($f_path_old . $phone_file_name, $f_path_new . $phone_file_name);
+			$mod_upload->file_to_delete($phone_file_uuid, $phone_file_name);
 
 			return $this->respond([
 				'status' => "1",
@@ -60,7 +63,8 @@ class Download extends BaseController
 				'name' => $phone_file_name,
 				'uuid' => $phone_file_uuid,
 			]);
-		}catch (\Exception $ex){
+		}
+		catch (\Exception $ex) {
 			return $this->respond([
 				'status' => "2",
 				'time' => $dated,
@@ -70,17 +74,29 @@ class Download extends BaseController
 		}
 	}
 
-	public function browser_file_download($file_uuid){
+	public function browser_file_download($file_uuid)
+	{
 		$mod_upload = new ModUpload();
 		$mod_upload->ensureColumnsExist();
 		$dated = date('Y-m-d H:i:s');
 
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
 
-		if (!empty($file_data)){
-			$filePath = WRITEPATH .'/uploads/copied_files/'.$file_data[0]->up_file_Orig_Name;
+		if (!empty($file_data)) {
+			$file = $file_data[0];
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
+
+			// Handle Burn After Reading
+			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
+				$file_uuid = $file->up_file_uuid;
+				register_shutdown_function(function () use ($mod_upload, $file_uuid) {
+					$mod_upload->batch_delete_files([$file_uuid]);
+				});
+			}
+
 			return $this->response->download($filePath, null);
-		}else{
+		}
+		else {
 			return $this->respond([
 				'status' => 2,
 				'time' => $dated,
@@ -89,7 +105,8 @@ class Download extends BaseController
 		}
 	}
 
-	public function browser_file_delete($file_uuid){
+	public function browser_file_delete($file_uuid)
+	{
 		$mod_upload = new ModUpload();
 		$mod_upload->ensureColumnsExist();
 		$dated = date('Y-m-d H:i:s');
@@ -99,17 +116,18 @@ class Download extends BaseController
 			return redirect()->to(base_url('home/recent'))->with('error', 'File not found');
 		}
 
-		$f_path_old = WRITEPATH .'/uploads/copied_files/';
-		$f_path_new = WRITEPATH .'/uploads/copied_files_deleted/';
+		$f_path_old = WRITEPATH . '/uploads/copied_files/';
+		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
 		$file_name = $file_data[0]->up_file_Orig_Name;
 		$file_uuid = $file_data[0]->up_file_uuid;
 
-        try {
-            rename($f_path_old.$file_name, $f_path_new.$file_name);
-            $mod_upload->file_to_delete($file_uuid,$file_name);
-            return redirect()->back()->with('message', "File ".$file_name." moved to trash");
-        }catch (\Exception $ex){
-            return redirect()->back()->with('error', "Unable to delete file ".$file_name);
-        }
-    }
+		try {
+			rename($f_path_old . $file_name, $f_path_new . $file_name);
+			$mod_upload->file_to_delete($file_uuid, $file_name);
+			return redirect()->back()->with('message', "File " . $file_name . " moved to trash");
+		}
+		catch (\Exception $ex) {
+			return redirect()->back()->with('error', "Unable to delete file " . $file_name);
+		}
+	}
 }
