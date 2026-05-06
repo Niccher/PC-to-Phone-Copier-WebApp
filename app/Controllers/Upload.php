@@ -46,6 +46,9 @@ class Upload extends BaseController
 
             // Move file to destination
             $upload_path = WRITEPATH . 'uploads/copied_files';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, true);
+            }
             $full_file_path = $upload_path . '/' . $uploaded_File->getName();
 
             if (!$uploaded_File->move($upload_path, $uploaded_File->getName())) {
@@ -148,6 +151,14 @@ class Upload extends BaseController
 
             $uploaded_File = $this->request->getFile('uploaded_file');
             
+            if (!$uploaded_File || !$uploaded_File->isValid()) {
+                return $this->respond([
+                    'status' => 0,
+                    'time' => $dated,
+                    'message' => "Invalid file or upload error."
+                ]);
+            }
+
             // Quota Check
             $max_quota = 500 * 1024 * 1024; // 500MB
             $used_quota = $mod_upload->get_session_storage_used($file_sess_id);
@@ -159,46 +170,52 @@ class Upload extends BaseController
                 ]);
             }
 
-            //echo $uploaded_File->getSize();
-            if (empty($ret)) {
-                echo "";
+            // Ensure destination directory exists
+            $upload_path = WRITEPATH . 'uploads/copied_files/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, true);
             }
 
-            $uploaded_File->move(WRITEPATH . 'uploads/copied_files/');
+            // Move file and check for success
+            if ($uploaded_File->move($upload_path)) {
+                $data = [
+                    'up_file_uuid' => $uuid,
+                    'up_file_session_id' => $file_sess_id,
+                    'up_file_dev_id' => $file_dev_id,
+                    'up_file_Name' => $uploaded_File->getName(),
+                    'up_file_Orig_Name' => $uploaded_File->getClientName(),
+                    'up_file_Type' => $uploaded_File->getClientMimeType(),
+                    'up_file_Extension' => $uploaded_File->getClientExtension(),
+                    'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
+                    'up_file_Size' => $uploaded_File->getSize(),
+                    'up_file_Source' => "Android Upload",
+                    'up_file_Created_at' => $dated,
+                ];
 
-            $data = [
-                'up_file_uuid' => $uuid,
-                'up_file_session_id' => $file_sess_id,
-                'up_file_dev_id' => $file_dev_id,
-                'up_file_Name' => $uploaded_File->getName(),
-                'up_file_Orig_Name' => $uploaded_File->getClientName(),
-                'up_file_Type' => $uploaded_File->getClientMimeType(),
-                'up_file_Extension' => $uploaded_File->getClientExtension(),
-                'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
-                'up_file_Size' => $uploaded_File->getSize(),
-                'up_file_Source' => "Android Upload",
-                'up_file_Created_at' => $dated,
-            ];
+                $pushed = $mod_upload->file_register_uploaded($data);
 
-            $pushed = $mod_upload->file_register_uploaded($data);
-
-            if ($pushed) {
-                $ret = $this->respond([
-                    'status' => 1,
-                    'time' => $dated,
-                    'message' => "File Uploaded Successfully"
-                ]);
-            }
-            else {
-                $ret = $this->respond([
+                if ($pushed) {
+                    return $this->respond([
+                        'status' => 1,
+                        'time' => $dated,
+                        'message' => "File Uploaded Successfully"
+                    ]);
+                } else {
+                    // Clean up physical file if database registration fails
+                    @unlink($upload_path . $uploaded_File->getName());
+                    return $this->respond([
+                        'status' => 0,
+                        'time' => $dated,
+                        'message' => "Successfully uploaded but failed to register in database."
+                    ]);
+                }
+            } else {
+                return $this->respond([
                     'status' => 0,
                     'time' => $dated,
-                    'message' => "File Uploaded has encountered an error"
+                    'message' => "Failed to save file on server. Permission error or missing folder."
                 ]);
             }
-
-            return $ret;
-
         }
         else {
             return $this->respond([

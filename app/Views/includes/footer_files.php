@@ -898,9 +898,36 @@
                 .dropzone-container:hover {
                     border - color: #0d6efd;
                 background: #f0f8ff;
+                right: 10px;
                     }
                 `)
         .appendTo("head");
+
+    // Global AJAX Setup for CSRF Protection
+    $.ajaxSetup({
+        headers: {
+            '<?= config('Security')->headerName ?? 'X-CSRF-TOKEN' ?>': $('meta[name="<?= csrf_token() ?>"]').attr('content')
+        }
+    });
+
+    // Real-Time Synchronization via Server-Sent Events (SSE)
+    if (!!window.EventSource) {
+        var sseSource = new EventSource('<?php echo base_url("api/events/stream"); ?>');
+        sseSource.onmessage = function(e) {
+            if (e.data === 'reload') {
+                if (typeof loadFiles === 'function') {
+                    // Silently reload the file grid
+                    loadFiles(window.currentSearchTerm, window.currentCategory, window.currentTags, window.currentFileType);
+                }
+                if (typeof updateSelectedFiles === 'function') {
+                    updateSelectedFiles(); // Refresh UI checks
+                }
+            }
+        };
+        sseSource.onerror = function(e) {
+            // Connection dropped or timeout out. EventSource reconnects automatically.
+        };
+    }
 </script>
 
 <?php include 'file_preview.php'; ?>

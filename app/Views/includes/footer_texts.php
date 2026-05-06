@@ -47,6 +47,13 @@
 
 <script>
     $(document).ready(function () {
+        // CSRF AJAX Setup
+        $.ajaxSetup({
+            headers: {
+                '<?= config('Security')->headerName ?? 'X-CSRF-TOKEN' ?>': $('meta[name="<?= csrf_token() ?>"]').attr('content')
+            }
+        });
+
         // QR Code Generation for Pairing (Main Sidebar)
         var pairQrElement = document.getElementById('pair-qr');
         if (pairQrElement) {
@@ -144,7 +151,7 @@
                 url: '<?php echo base_url("text/save"); ?>',
                 type: 'POST',
                 data: {
-                    text_content_base64: btoa(unescape(encodeURIComponent(textContent))).split('').reverse().join(''),
+                    text_content_base64: btoa(unescape(encodeURIComponent(textContent))),
                     text_title: textTitle,
                     expiration_policy: $('#text_expiration').val()
                 },

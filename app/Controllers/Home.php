@@ -53,8 +53,16 @@ class Home extends BaseController
             'auth_qr_code' => $auth_codes[1]
         ];
 
-        $get_auth_id = ($mod_visitors->auth_codes_get_uuid($code_data))[0]->auth_id;
-        $get_auth_phone_uuid = ($mod_visitors->auth_codes_get_phone_by_auth_code_id($get_auth_id))[0]->checked_by;
+        $auth_result = $mod_visitors->auth_codes_get_uuid($code_data);
+        if (empty($auth_result)) {
+            echo "invalid";
+            return;
+        }
+
+        $get_auth_id = $auth_result[0]->auth_id;
+
+        $phone_result = $mod_visitors->auth_codes_get_phone_by_auth_code_id($get_auth_id);
+        $get_auth_phone_uuid = !empty($phone_result) ? $phone_result[0]->checked_by : null;
 
         header('Access-Control-Allow-Headers: Origin');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -63,20 +71,14 @@ class Home extends BaseController
         if (!empty($get_auth_id)) {
             $code_data_is_valid = [
                 'checked_auth_code_id' => $get_auth_id,
-                //'checked_phone_uuid'=> $get_auth_id,
-                'checked_is_valid' => "valid",
+                'checked_is_valid'     => "valid",
             ];
             $is_code_validated = count($mod_visitors->auth_codes_has_tested_valid($code_data_is_valid));
             if ($is_code_validated > 0) {
-                $sess_cookie = array(
-                    'name' => 'sess_id',
-                    'value_sess_id' => $get_auth_id,
-                    'value_phone_uuid' => $get_auth_phone_uuid,
-                    'expire' => '144000',
-                );
-                $_SESSION["sess_id"] = $get_auth_id;
-                $_SESSION["phone_id"] = $get_auth_phone_uuid;
-                set_cookie($sess_cookie);
+                // Use CodeIgniter's session service so $this->session->get() works everywhere
+                $session = session();
+                $session->set('sess_id', $get_auth_id);
+                $session->set('phone_id', $get_auth_phone_uuid);
             }
             echo ($is_code_validated > 0) ? "valid" : "invalid";
         }

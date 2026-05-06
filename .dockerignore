@@ -1,0 +1,17 @@
+.git
+.gitignore
+.idea
+.env
+node_modules
+vendor
+writable/logs/*
+writable/cache/*
+writable/session/*
+writable/debugbar/*
+phpunit.xml.dist
+tests
+composer.lock
+README.md
+LICENSE
+Dockerfile
+docker-compose.yml

@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <title>P2P Web Copier</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="<?= csrf_token() ?>" content="<?= csrf_hash() ?>" id="csrf-token">
+    <meta name="csrf-header" content="<?= config('Security')->headerName ?? 'X-CSRF-TOKEN' ?>">
+
     <meta content="P2P Web Copier" name="description" />
     <meta content="Niccher Inc" name="author" />
     <!-- App favicon -->

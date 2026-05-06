@@ -6,6 +6,9 @@ use CodeIgniter\Model;
 
 class ModUpload extends Model
 {
+    protected $table = 'tbl_files_uploaded';
+    protected $primaryKey = 'up_file_id'; // Assuming up_file_id is the PK, or omit if not needed
+
     public function file_register_uploaded($file_info)
     {
         return $this->db->table('tbl_files_uploaded')->insert($file_info);

@@ -57,6 +57,7 @@ $routes->group('home', function ($routes) {
 
 // API routes for trash management
 $routes->group('api', function ($routes) {
+    $routes->get('events/stream', 'Api\Events::stream');
     $routes->post('restore-file', 'Api\TrashApi::restoreFile');
     $routes->post('restore-text', 'Api\TrashApi::restoreText');
     $routes->post('permanent-delete-file', 'Api\TrashApi::permanentDeleteFile');
@@ -99,6 +100,7 @@ $routes->group('files', function ($routes) {
 });
 
 $routes->get('setup/text-tables', 'DatabaseSetup::createTextTables');
+$routes->get('debug/info', 'Debug::info');
 
 /*
  * --------------------------------------------------------------------

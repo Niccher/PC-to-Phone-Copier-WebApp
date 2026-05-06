@@ -1,62 +1,115 @@
-# CodeIgniter 4 Application Starter
+# 📱 P2P Web Copier
+> **Seamless Device Synchronization for the Modern Web**
 
-## What is CodeIgniter?
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/Niccher/PC-to-Phone-Copier-Web)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform: Web](https://img.shields.io/badge/platform-Web-orange.svg)]()
+[![Platform: Docker](https://img.shields.io/badge/platform-Docker-blue.svg)]()
+[![PHP: 8.2](https://img.shields.io/badge/PHP-8.2-777bb4.svg)](https://www.php.net/)
+[![Framework: CodeIgniter 4](https://img.shields.io/badge/Framework-CodeIgniter%204-ee4323.svg)](https://codeigniter.com/)
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+P2P Web Copier enables lightning-fast, secure synchronization of files and text snippets between desktop and mobile devices via a unified, containerized web interface. It serves developers, power users, and anyone needing a private, self-hosted solution for moving data between devices without relying on third-party cloud services.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+---
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## ✨ Features
 
-The user guide corresponding to the latest version of the framework can be found
-[here](https://codeigniter4.github.io/userguide/).
+Every aspect of **P2P Web Copier** is built for speed, security, and a premium user experience.
 
-## Installation & updates
+*   **🚀 P2P File Synchronization**: High-speed file transfers between connected devices with real-time status tracking and visual excellence.
+*   **📝 Instant Text Sharing**: Securely share text snippets, links, and notes across multiple sessions instantly.
+*   **⚡ Real-Time Sync via SSE**: Leverages Server-Sent Events (SSE) for zero-refresh UI updates—changes appear instantly across all paired devices.
+*   **📱 QR Code Device Pairing**: Quickly pair your mobile phone or another browser session by scanning a dynamically generated QR code.
+*   **🐳 Full Docker Orchestration**: Production-ready environment using Docker Compose with PHP 8.2-Apache, MySQL 8.0, and phpMyAdmin.
+*   **🔒 Advanced Security Hardening**: Implements global CSRF protection, secure directory permissions, and session hardening for private data sharing.
+*   **⏳ 30-Day Persistent Sessions**: Extended session longevity (up to 30 days) ensures your devices stay paired even after closing the browser.
+*   **♻️ Trash & Recovery System**: Integrated trash management allows you to restore accidentally deleted files or permanently wipe data.
+*   **🛠 Developer Diagnostics**: Built-in debug tools to monitor session states, database records, and upload integrity in real-time.
+*   **🧹 Zero-Junk Architecture**: Optimized Docker build process with strict `.dockerignore` rules for a lean and fast application footprint.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+---
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+## 🚀 Installation & Setup
 
-## Setup
+Setting up the entire environment is streamlined through Docker Compose.
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+### Prerequisites
+- **Docker Desktop** (v20.10 or higher)
+- **Docker Compose**
 
-## Important Change with index.php
+### Quick Start
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Niccher/PC-to-Phone-Copier-Web.git
+    cd PC-to-Phone-Copier-Web
+    ```
+2.  **Generate your environment file:**
+    ```bash
+    cp .env.docker .env
+    ```
+3.  **Build and start the containers:**
+    ```bash
+    docker-compose up -d --build
+    ```
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## 📖 Usage
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### Initial Pairing
+1. Open the web app on your primary device (PC).
+2. Scan the generated QR code using your mobile device.
+3. Your devices are now paired via a unique session ID valid for 30 days.
 
-## Repository Management
+### Access Points
+| Service | URL | Port |
+| :--- | :--- | :--- |
+| **P2P Web App** | [http://localhost:8080](http://localhost:8080) | 8080 |
+| **phpMyAdmin** | [http://localhost:8081](http://localhost:8081) | 8081 |
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+---
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+## ⚙️ Configuration
 
-## Server Requirements
+### Environment Variables
+Edit the `.env` file to customize your setup:
+- `database.default.hostname`: Set to `db` (Docker service name).
+- `app.baseURL`: Update this if deploying to a custom domain.
+- `encryption.key`: Generate a secure key for session data.
 
-PHP version 7.4 or higher is required, with the following extensions installed:
+### Database Migrations
+To update your schema inside the container:
+```bash
+docker exec -it ci4_app php spark migrate
+```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+---
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## 🛠 Technologies Used
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
+![CodeIgniter](https://img.shields.io/badge/codeigniter-%23EF4223.svg?style=for-the-badge&logo=codeigniter&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions to make P2P Web Copier even better!
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+Built with ❤️ by **Niccher Inc**
