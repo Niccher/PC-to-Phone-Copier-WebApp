@@ -1,115 +1,178 @@
-# 📱 P2P Web Copier
-> **Seamless Device Synchronization for the Modern Web**
+# 🚀 P2P Copier
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/Niccher/PC-to-Phone-Copier-Web)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform: Web](https://img.shields.io/badge/platform-Web-orange.svg)]()
-[![Platform: Docker](https://img.shields.io/badge/platform-Docker-blue.svg)]()
-[![PHP: 8.2](https://img.shields.io/badge/PHP-8.2-777bb4.svg)](https://www.php.net/)
-[![Framework: CodeIgniter 4](https://img.shields.io/badge/Framework-CodeIgniter%204-ee4323.svg)](https://codeigniter.com/)
+> A professional, highly-scalable CodeIgniter 4 web application built for modern workflows.
 
-P2P Web Copier enables lightning-fast, secure synchronization of files and text snippets between desktop and mobile devices via a unified, containerized web interface. It serves developers, power users, and anyone needing a private, self-hosted solution for moving data between devices without relying on third-party cloud services.
+A relay hub between a desktop browser and an Android device, hosting a web clipboard interface where users can paste or upload content on their PC, which the Android app fetches in real-time.
 
----
-
-## ✨ Features
-
-Every aspect of **P2P Web Copier** is built for speed, security, and a premium user experience.
-
-*   **🚀 P2P File Synchronization**: High-speed file transfers between connected devices with real-time status tracking and visual excellence.
-*   **📝 Instant Text Sharing**: Securely share text snippets, links, and notes across multiple sessions instantly.
-*   **⚡ Real-Time Sync via SSE**: Leverages Server-Sent Events (SSE) for zero-refresh UI updates—changes appear instantly across all paired devices.
-*   **📱 QR Code Device Pairing**: Quickly pair your mobile phone or another browser session by scanning a dynamically generated QR code.
-*   **🐳 Full Docker Orchestration**: Production-ready environment using Docker Compose with PHP 8.2-Apache, MySQL 8.0, and phpMyAdmin.
-*   **🔒 Advanced Security Hardening**: Implements global CSRF protection, secure directory permissions, and session hardening for private data sharing.
-*   **⏳ 30-Day Persistent Sessions**: Extended session longevity (up to 30 days) ensures your devices stay paired even after closing the browser.
-*   **♻️ Trash & Recovery System**: Integrated trash management allows you to restore accidentally deleted files or permanently wipe data.
-*   **🛠 Developer Diagnostics**: Built-in debug tools to monitor session states, database records, and upload integrity in real-time.
-*   **🧹 Zero-Junk Architecture**: Optimized Docker build process with strict `.dockerignore` rules for a lean and fast application footprint.
+[![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](#)
+[![CodeIgniter 4](https://img.shields.io/badge/CodeIgniter-4.x-EF4223?style=for-the-badge&logo=codeigniter&logoColor=white)](#)
+[![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](#)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🚀 Installation & Setup
+## 📖 1. About the Project
 
-Setting up the entire environment is streamlined through Docker Compose.
+**P2P Copier** is a robust and flexible web application designed to solve complex developer workflows with ease. Built on the lightning-fast CodeIgniter 4 framework, this project acts as a complete, out-of-the-box solution for facilitating seamless local network file sharing, QR-based device pairing, and clipboard synchronization. 
 
-### Prerequisites
-- **Docker Desktop** (v20.10 or higher)
-- **Docker Compose**
+Our target users are developers, power users, and teams looking for an open-source solution that emphasizes performance, security, and developer experience (DX). 
 
-### Quick Start
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Niccher/PC-to-Phone-Copier-Web.git
-    cd PC-to-Phone-Copier-Web
-    ```
-2.  **Generate your environment file:**
-    ```bash
-    cp .env.docker .env
-    ```
-3.  **Build and start the containers:**
-    ```bash
-    docker-compose up -d --build
-    ```
+**What makes this project unique?**
+Every component of this application is fully containerized. From the zero-configuration automated database migrations on boot, to the host-mapped persistent storage volumes—this project guarantees a frictionless setup experience whether you are running it on a local machine or deploying it to a cloud server.
 
 ---
 
-## 📖 Usage
+## ✨ 2. Features
 
-### Initial Pairing
-1. Open the web app on your primary device (PC).
-2. Scan the generated QR code using your mobile device.
-3. Your devices are now paired via a unique session ID valid for 30 days.
-
-### Access Points
-| Service | URL | Port |
-| :--- | :--- | :--- |
-| **P2P Web App** | [http://localhost:8080](http://localhost:8080) | 8080 |
-| **phpMyAdmin** | [http://localhost:8081](http://localhost:8081) | 8081 |
+- 🐳 **Instant Setup**: 100% Dockerized architecture. Go from zero to running in under 60 seconds.
+- 🔄 **Automated Migrations**: Database tables and schemas are built automatically when the container boots.
+- 💾 **Smart Persistence**: Database records and uploaded media safely persist on your local filesystem, completely isolated from container lifecycle events.
+- 🛡️ **Hardened Security**: Features built-in CSRF protection, strictly configured session handling, and environment-driven configurations.
+- 📊 **Integrated Database Management**: Comes bundled with a dedicated `phpMyAdmin` container for real-time database visualization.
 
 ---
 
-## ⚙️ Configuration
+## 🛠️ 3. Tech Stack
 
-### Environment Variables
-Edit the `.env` file to customize your setup:
-- `database.default.hostname`: Set to `db` (Docker service name).
-- `app.baseURL`: Update this if deploying to a custom domain.
-- `encryption.key`: Generate a secure key for session data.
+| Layer | Technology |
+|---|---|
+| **Backend Framework** | [CodeIgniter 4](https://codeigniter.com/) |
+| **Language** | PHP 8.3 |
+| **Database** | MySQL 8.4 |
+| **Database Manager** | phpMyAdmin |
+| **Containerization** | Docker & Docker Compose |
+| **Dependency Manager** | Composer |
 
-### Database Migrations
-To update your schema inside the container:
+---
+
+## 📋 4. Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
+- [Git](https://git-scm.com/)
+
+*(If you choose to run without Docker, you will need PHP 8.3+, Composer, and a local MySQL server).*
+
+---
+
+## 🚀 5. Installation & Setup (Detailed)
+
+### Option 1: Using Docker (Preferred & Easiest)
+
+This repository includes a pre-configured `docker-compose.yml` file. It completely eliminates the need to manually install PHP, web servers, or databases on your local machine.
+
+#### 1. Clone the repository
 ```bash
-docker exec -it ci4_app php spark migrate
+git clone https://github.com/yourusername/p2p-copier-webapp.git
+cd "P2P Copier WebApp"
+```
+
+#### 2. Configure Environment Variables
+Copy the provided environment template:
+```bash
+cp .env.example .env
+```
+*(Note: The defaults in `.env.example` are specifically pre-configured to work perfectly with the Docker environment out of the box).*
+
+#### 3. Build and Run
+Spin up the application, MySQL database, and phpMyAdmin in detached mode:
+```bash
+docker compose up --build -d
+```
+
+#### 4. Access the Application
+Once the containers finish booting, database migrations run automatically. You can access your services at:
+- **Application**: [http://localhost:9004](http://localhost:9004)
+- **phpMyAdmin**: [http://localhost:9000](http://localhost:9000)
+
+**Useful Docker Commands:**
+- Stop the application: `docker compose down`
+- View live application logs: `docker compose logs -f p2p-copier`
+- Restart the application: `docker compose restart p2p-copier`
+
+### Option 2: Local Development (Without Docker)
+
+If you prefer a traditional local setup (e.g., XAMPP, Laragon, or Laravel Valet):
+
+1. **Clone the repo** and run `composer install` in the root directory.
+2. **Copy `.env.example`** to `.env`.
+3. **Configure the Database**: Update the `database.default.*` variables inside your `.env` to match your local MySQL credentials.
+4. **Run Migrations**: Build the necessary database tables by executing:
+   ```bash
+   php spark migrate --all
+   ```
+5. **Serve the Application**:
+   ```bash
+   php spark serve
+   ```
+
+---
+
+## 🗄️ 6. Database Configuration
+
+If you are using the Docker setup, the database configuration is completely automated.
+
+**Development Credentials:**
+- **Host:** `mysql`
+- **Database Name:** `db_p2p_copier`
+- **Username:** `root`
+- **Password:** `root_password`
+
+You can visually manage this database by navigating to [http://localhost:9000](http://localhost:9000) and logging into phpMyAdmin with the credentials above.
+
+---
+
+## 📖 7. Usage
+
+1. **Sign Up / Login**: Navigate to the homepage to create your first administrative account.
+2. **Dashboard**: Access the main dashboard to view analytics and metrics.
+3. **File Management**: Any artifacts or files you upload within the application will be securely persisted inside the `/writable/uploads` directory on your local machine.
+
+---
+
+## 📁 8. Project Structure
+
+```text
+.
+├── app/            # Core application logic (Controllers, Models, Views)
+├── public/         # Document root (accessible to the web)
+├── writable/       # Cache, logs, sessions, and persisted uploads
+├── system/         # CodeIgniter 4 framework files
+├── docker-compose.yml # Standalone Docker orchestration
+├── entrypoint.sh   # Automated migration startup script
+└── Dockerfile      # PHP-Apache container build instructions
 ```
 
 ---
 
-## 🛠 Technologies Used
+## 🤝 9. Contributing
 
-![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
-![CodeIgniter](https://img.shields.io/badge/codeigniter-%23EF4223.svg?style=for-the-badge&logo=codeigniter&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
-![jQuery](https://img.shields.io/badge/jquery-%230769AD.svg?style=for-the-badge&logo=jquery&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+We welcome contributions from the community! To contribute:
 
----
+1. **Fork** the repository.
+2. **Create a new branch**: `git checkout -b feature/your-feature-name`
+3. **Commit your changes**: `git commit -m 'Add some feature'`
+4. **Push to the branch**: `git push origin feature/your-feature-name`
+5. **Open a Pull Request**.
 
-## 🤝 Contributing
-
-We welcome contributions to make P2P Web Copier even better!
-1. Fork the project.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+Please ensure you run tests and verify your changes inside the Docker environment before submitting.
 
 ---
 
-## 📄 License
+## 📄 10. License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-Built with ❤️ by **Niccher Inc**
+
+## 📸 11. Screenshots & Demo
+
+*(Screenshots coming soon)*
+
+---
+
+## 💬 12. Support & Acknowledgments
+
+- Built with ❤️ using [CodeIgniter 4](https://codeigniter.com/).
+- UI components powered by modern web standards.
