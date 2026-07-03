@@ -160,7 +160,7 @@ class App extends BaseConfig
      *
      * @deprecated use Config\Session::$cookieName  instead.
      */
-    public string $sessionCookieName = 'p2p_sess';
+    public string $sessionCookieName = 'p2p_copier_session';
 
     /**
      * --------------------------------------------------------------------------
@@ -354,7 +354,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $tokenName property instead of using this property.
      */
-    public string $CSRFTokenName = 'p2p_csrf_name';
+    public string $CSRFTokenName = 'p2p_copier_csrf_token';
 
     /**
      * --------------------------------------------------------------------------
@@ -365,7 +365,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $headerName property instead of using this property.
      */
-    public string $CSRFHeaderName = 'P2P-X-CSRF-TOKEN';
+    public string $CSRFHeaderName = 'X-CSRF-TOKEN';
 
     /**
      * --------------------------------------------------------------------------
@@ -376,7 +376,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $cookieName property instead of using this property.
      */
-    public string $CSRFCookieName = 'p2p_csrf_cookie_name';
+    public string $CSRFCookieName = 'p2p_copier_csrf_cookie';
 
     /**
      * --------------------------------------------------------------------------
@@ -387,7 +387,7 @@ class App extends BaseConfig
      *
      * @deprecated Use `Config\Security` $expire property instead of using this property.
      */
-    public int $CSRFExpire = 14400;
+    public int $CSRFExpire = 7200;
 
     /**
      * --------------------------------------------------------------------------
@@ -447,4 +447,10 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->baseURL = env('app.baseURL', $this->baseURL);
+    }
 }
