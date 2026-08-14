@@ -1,10 +1,19 @@
+# Version Control & IDE Files
 .git
+.gitignore
 .idea
 .vscode
+.gemini
+
+# Environment Files (Passed via docker-compose env_file or environment block)
 .env
 .env.*
+
+# Local Dependencies & Builds
 node_modules
 vendor
+
+# Writable Runtime & Upload Directories
 writable/logs/*
 writable/cache/*
 writable/session/*
@@ -19,6 +28,8 @@ writable/backups/*
 !writable/uploads/index.html
 !writable/exports/index.html
 !writable/backups/index.html
+
+# Docker Specs & Documentation (Not needed inside container image)
 Dockerfile
 docker-compose.yml
 phpunit.xml*

@@ -117,4 +117,48 @@ class AuthApi extends ApiController
             'redirect_url' => base_url('home')
         ], 'Session reactivated successfully');
     }
+
+    public function sessionStatus()
+    {
+        $db = \Config\Database::connect();
+        $json = $this->request->getJSON(true) ?: $this->request->getPost();
+
+        $dev_uuid = $json['var_dev_uuid'] ?? $json['dev_uuid'] ?? $this->request->getHeaderLine('X-Device-UUID');
+        $auth_code_id = $json['var_auth_code_id'] ?? $json['auth_code_id'] ?? null;
+
+        if (empty($dev_uuid) || empty($auth_code_id)) {
+            return $this->respondError('Device UUID and auth code ID required', 400);
+        }
+
+        $mod_visitors = new \App\Models\ModVisitors();
+        $sessions = $mod_visitors->auth_codes_get_phone_by_auth_code_id($auth_code_id);
+
+        if (!empty($sessions)) {
+            $sessionRow = $sessions[0];
+            return $this->respondSuccess([
+                'active'        => true,
+                'auth_status'   => 'True',
+                'auth_code_id'  => (string)$auth_code_id,
+                'session_uuid'  => $sessionRow->auth_codes_uuid ?? '',
+                'dev_uuid'      => $sessionRow->dev_uuid ?? $dev_uuid
+            ], 'Session active and verified');
+        }
+
+        // Fallback check in tbl_pairing_codes
+        $codeRow = $db->table('tbl_pairing_codes')->where('id', $auth_code_id)->get()->getRow();
+        if ($codeRow) {
+            return $this->respondSuccess([
+                'active'        => true,
+                'auth_status'   => 'True',
+                'auth_code_id'  => (string)$auth_code_id,
+                'session_uuid'  => $codeRow->session_uuid ?? '',
+                'created_at'    => date('Y-m-d H:i:s')
+            ], 'Session active and verified');
+        }
+
+        return $this->respondError('Session revoked or not found', 401, [
+            'active'      => false,
+            'auth_status' => 'False'
+        ]);
+    }
 }

@@ -241,29 +241,28 @@ class Upload extends BaseController
     public function file_uploaded_by_phone_session()
     {
         $mod_upload = new ModUpload();
+        $mod_visitors = new ModVisitors();
 
         $dated = date('Y-m-d H:i:s');
 
-        $phone_dev_id = $this->request->getVar('var_dev_uuid');
-        $phone_sess_id = $this->request->getVar('var_auth_code_id');
+        $phone_dev_id = $this->request->getVar('var_dev_uuid') ?: $this->request->getHeaderLine('X-Device-UUID');
+        $phone_sess_id = $this->request->getVar('var_auth_code_id') ?: $this->request->getVar('var_sess_id');
 
-        $uploaded_files_by_session_and_devid = $mod_upload->file_get_uploaded_files_by_session_and_devid($phone_sess_id, $phone_dev_id);
-        $uploaded_files_by_devid = $mod_upload->file_get_uploaded_by_devid($phone_dev_id);
+        if (!empty($phone_sess_id) && is_numeric($phone_sess_id)) {
+            $sess = $mod_visitors->auth_codes_get_phone_by_auth_code_id($phone_sess_id);
+            if (!empty($sess)) {
+                $phone_sess_id = $sess[0]->auth_codes_uuid;
+            }
+        }
 
-        if (!empty($uploaded_files_by_session_and_devid)) {
-            return $this->respond([
-                'status' => 1,
-                'time' => $dated,
-                'file_info' => $uploaded_files_by_session_and_devid,
-                'file_info_all' => $uploaded_files_by_devid,
-            ]);
-        }
-        else {
-            return $this->respond([
-                'status' => 2,
-                'time' => $dated,
-            ]);
-        }
+        $uploaded_files_by_session_and_devid = $mod_upload->file_get_uploaded_files($phone_sess_id);
+
+        return $this->respond([
+            'status' => 1,
+            'time' => $dated,
+            'file_info' => $uploaded_files_by_session_and_devid,
+            'summarizer' => $uploaded_files_by_session_and_devid
+        ]);
     }
 
     private function validateFile($file)

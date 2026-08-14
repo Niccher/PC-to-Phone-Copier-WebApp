@@ -60,7 +60,7 @@ class ModUpload extends Model
     public function file_get_uploaded_files($sess_id, $limit = null)
     {
         $builder = $this->db->table('tbl_files');
-        $builder->select('*, uuid as up_file_uuid, session_id as up_file_session_id, original_name as up_file_Orig_Name, system_name as up_file_Sys_Name, file_type as up_file_Type, file_size as up_file_Size, created_at as up_file_Created_at, thumbnail_path as up_file_thumbnail')
+        $builder->select('*, uuid as up_file_uuid, session_id as up_file_session_id, session_id as up_file_dev_id, original_name as up_file_Name, original_name as up_file_Orig_Name, system_name as up_file_Sys_Name, file_type as up_file_Type, SUBSTRING_INDEX(original_name, ".", -1) as up_file_Extension, file_size as up_file_Size, created_at as up_file_Created_at, thumbnail_path as up_file_thumbnail')
             ->orderBy('created_at', 'DESC')
             ->where('session_id', $sess_id);
 

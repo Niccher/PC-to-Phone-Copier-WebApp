@@ -43,10 +43,11 @@ phpunit
 .phpunit.cache
 .phpunit.result.cache
 
-# IDE & Editor Files
+# IDE, Editor & Tool Files
 .idea/
 *.iml
 .vscode/
 nbproject/
 *.sublime-workspace
 *.sublime-project
+.gemini/

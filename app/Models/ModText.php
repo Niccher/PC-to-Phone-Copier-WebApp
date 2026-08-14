@@ -26,8 +26,16 @@ class ModText extends Model
     public function text_get_uploaded_texts($sess_id, $limit = null){
         $builder = $this->db->table('tbl_texts');
         $builder->select('*, id as text_id, uuid as text_uuid, session_id as text_session_id, device_uuid as text_dev_id, title as text_title, content as text_content, source as text_source, created_at as text_created_at, copy_count as text_count')
-            ->orderBy('created_at', 'DESC')
-            ->where('session_id', $sess_id);
+            ->orderBy('created_at', 'DESC');
+
+        if ($sess_id !== 'general') {
+            $builder->groupStart()
+                ->where('session_id', $sess_id)
+                ->orWhere('session_id', 'general')
+                ->groupEnd();
+        } else {
+            $builder->where('session_id', 'general');
+        }
 
         if ($limit !== null) {
             $builder->limit($limit);

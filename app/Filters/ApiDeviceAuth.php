@@ -11,8 +11,12 @@ class ApiDeviceAuth implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // Strictly enforce header authentication (No POST payload scanning)
-        $deviceUuid = trim($request->getHeaderLine('X-Device-UUID'));
+        // Strictly enforce header authentication
+        $deviceUuid   = trim($request->getHeaderLine('X-Device-UUID'));
+        $deviceBrand  = trim($request->getHeaderLine('X-Device-Brand'));
+        $deviceModel  = trim($request->getHeaderLine('X-Device-Model'));
+        $deviceOs     = trim($request->getHeaderLine('X-Device-OS'));
+        $fingerprint  = trim($request->getHeaderLine('X-Device-Fingerprint'));
 
         // Exempt public endpoints (device registration, status check, pairing, metrics)
         $path = $request->getUri()->getPath();
@@ -30,11 +34,11 @@ class ApiDeviceAuth implements FilterInterface
                 ->setStatusCode(401)
                 ->setJSON([
                     'status'  => 'error',
-                    'message' => 'Missing device authentication header (X-Device-UUID)'
+                    'message' => 'Missing required device authentication header (X-Device-UUID)'
                 ]);
         }
 
-        // Fast Cache Lookup Layer (Zero DB query overhead for cached devices)
+        // Fast Cache Lookup Layer
         $cacheKey = 'dev_auth_' . md5($deviceUuid);
         $isAuth = cache()->get($cacheKey);
 
@@ -46,7 +50,20 @@ class ApiDeviceAuth implements FilterInterface
                 ->getRow();
 
             $isAuth = $device ? true : false;
-            cache()->save($cacheKey, $isAuth, 86400); // Cache verification status for 24 hours
+            cache()->save($cacheKey, $isAuth, 86400); // Cache verification for 24h
+
+            // Sync device headers into tbl_devices metadata if present
+            if ($device && (!empty($deviceBrand) || !empty($deviceModel))) {
+                $db->table('tbl_devices')
+                    ->where('uuid', $deviceUuid)
+                    ->update([
+                        'brand'       => $deviceBrand ?: $device->brand,
+                        'model'       => $deviceModel ?: $device->model,
+                        'os_version'  => $deviceOs ?: $device->os_version,
+                        'fingerprint' => $fingerprint ?: ($device->fingerprint ?? null),
+                        'updated_at'  => date('Y-m-d H:i:s')
+                    ]);
+            }
         }
 
         if (!$isAuth) {

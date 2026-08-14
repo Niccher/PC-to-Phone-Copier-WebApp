@@ -79,14 +79,26 @@ $routes->group('api/v1', ['filter' => 'device_auth'], function ($routes) {
     $routes->get('device/sessions', 'Api\v1\AuthApi::sessions');
     $routes->post('auth/pair', 'Api\v1\AuthApi::pair');
     $routes->post('auth/reactivate', 'Api\v1\AuthApi::reactivate');
+    $routes->post('auth/session-status', 'Api\v1\AuthApi::sessionStatus');
     
+    $routes->get('analytics/summary', 'Api\v1\AnalyticsApi::summary');
+    $routes->post('analytics/summary', 'Api\v1\AnalyticsApi::summary');
+    $routes->post('telemetry/event', 'Api\v1\AnalyticsApi::logEvent');
+
     $routes->get('files', 'Api\v1\FilesApi::list');
+    $routes->post('files/list', 'Api\v1\FilesApi::list');
     $routes->post('files', 'Api\v1\FilesApi::upload');
+    $routes->post('files/download', 'Api\v1\FilesApi::download');
     $routes->delete('files/(:segment)', 'Api\v1\FilesApi::delete/$1');
     $routes->post('files/delete', 'Api\v1\FilesApi::delete');
+    $routes->get('uploaded', 'Api\v1\FilesApi::uploaded');
+    $routes->post('uploaded', 'Api\v1\FilesApi::uploaded');
+    $routes->post('uploaded/list', 'Api\v1\FilesApi::uploaded');
 
     $routes->get('texts', 'Api\v1\TextsApi::list');
+    $routes->post('texts/list', 'Api\v1\TextsApi::list');
     $routes->post('texts', 'Api\v1\TextsApi::create');
+    $routes->post('texts/delete', 'Api\v1\TextsApi::delete');
 });
 
 $routes->group('saved', ['filter' => 'session_auth'], function ($routes) {
@@ -97,12 +109,15 @@ $routes->group('saved', ['filter' => 'session_auth'], function ($routes) {
 
 $routes->group('home', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('file/upload', 'Upload::file_uploaded_by_browser');
-    $routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
-    $routes->add('phone/text_save', 'Utils\TypeText::text_save');
-    $routes->add('phone/get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
-    $routes->add('phone/get_texts_uploaded_by_session', 'Utils\TypeText::text_get_by_session');
-    $routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
-    $routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
+});
+
+$routes->group('home/phone', ['filter' => 'device_auth'], function ($routes) {
+    $routes->add('upload', 'Upload::file_uploaded_by_phone');
+    $routes->add('text_save', 'Utils\TypeText::text_save');
+    $routes->add('get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
+    $routes->add('get_texts_uploaded_by_session', 'Utils\TypeText::text_get_by_session');
+    $routes->add('get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
+    $routes->add('set_files_to_delete', 'Download::file_action_delete');
 });
 
 $routes->group('text', ['filter' => 'session_auth'], function ($routes) {
