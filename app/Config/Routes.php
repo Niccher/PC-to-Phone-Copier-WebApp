@@ -32,6 +32,9 @@ $routes->setAutoRoute(false);
 #$routes->get('/', 'Home::index');
 $routes->get('/', 'Auth::landing');
 
+$routes->post('device/log_metrics', 'Device::log_metrics');
+$routes->post('device/register', 'Device::device_register');
+
 $routes->group('auth', function ($routes) {
     $routes->add('login', 'Auth::login');
     $routes->add('register', 'Auth::register');
@@ -39,24 +42,28 @@ $routes->group('auth', function ($routes) {
 });
 
 $routes->group('device', function ($routes) {
+    $routes->get('ping', 'Device::ping');
+    $routes->post('register', 'Device::device_register');
+    $routes->post('log_metrics', 'Device::log_metrics');
+    $routes->post('metrics', 'Device::log_metrics');
     $routes->add('check', 'Device::check');
     $routes->add('register', 'Device::device_register');
+    $routes->add('log_metrics', 'Device::log_metrics');
 });
 
-$routes->group('home', function ($routes) {
+$routes->group('home', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('/', 'Home::home');
     $routes->add('check', 'Home::home_ajax_code_check');
 });
 
-$routes->group('home', function ($routes) {
+$routes->group('home', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('recent', 'Home::home');
     $routes->add('files', 'Utils\TypeFile');
     $routes->add('texts', 'Utils\TypeText');
     $routes->add('trashed', 'Utils\TypeTrash');
 });
 
-// API routes for trash management
-$routes->group('api', function ($routes) {
+$routes->group('api', ['filter' => 'session_auth'], function ($routes) {
     $routes->get('events/stream', 'Api\Events::stream');
     $routes->post('restore-file', 'Api\TrashApi::restoreFile');
     $routes->post('restore-text', 'Api\TrashApi::restoreText');
@@ -65,27 +72,46 @@ $routes->group('api', function ($routes) {
     $routes->post('empty-trash', 'Api\TrashApi::emptyTrash');
 });
 
-$routes->group('saved', function ($routes) {
+$routes->group('api/v1', ['filter' => 'device_auth'], function ($routes) {
+    $routes->get('ping', 'Api\v1\DeviceApi::ping');
+    $routes->post('device/register', 'Api\v1\DeviceApi::register');
+    $routes->post('device/metrics', 'Api\v1\DeviceApi::metrics');
+    $routes->get('device/sessions', 'Api\v1\AuthApi::sessions');
+    $routes->post('auth/pair', 'Api\v1\AuthApi::pair');
+    $routes->post('auth/reactivate', 'Api\v1\AuthApi::reactivate');
+    
+    $routes->get('files', 'Api\v1\FilesApi::list');
+    $routes->post('files', 'Api\v1\FilesApi::upload');
+    $routes->delete('files/(:segment)', 'Api\v1\FilesApi::delete/$1');
+    $routes->post('files/delete', 'Api\v1\FilesApi::delete');
+
+    $routes->get('texts', 'Api\v1\TextsApi::list');
+    $routes->post('texts', 'Api\v1\TextsApi::create');
+});
+
+$routes->group('saved', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('download/(:any)', 'Download::browser_file_download/$1');
     $routes->add('view/(:any)', 'Download::browser_file_view/$1');
     $routes->add('delete/(:any)', 'Download::browser_file_delete/$1');
 });
 
-$routes->group('home', function ($routes) {
+$routes->group('home', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('file/upload', 'Upload::file_uploaded_by_browser');
     $routes->add('phone/upload', 'Upload::file_uploaded_by_phone');
+    $routes->add('phone/text_save', 'Utils\TypeText::text_save');
     $routes->add('phone/get_files_uploaded_by_session', 'Upload::file_uploaded_by_phone_session');
+    $routes->add('phone/get_texts_uploaded_by_session', 'Utils\TypeText::text_get_by_session');
     $routes->add('phone/get_files_uploaded_by_session_download', 'Download::file_uploaded_by_phone_session_download');
     $routes->add('phone/set_files_to_delete', 'Download::file_action_delete');
 });
 
-$routes->group('text', function ($routes) {
+$routes->group('text', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('save', 'Utils\TypeText::text_save');
     $routes->add('delete/(:any)', 'Utils\TypeText::text_delete/$1');
     $routes->add('view/(:any)', 'Utils\TypeText::public_view/$1');
 });
 
-$routes->group('files', function ($routes) {
+$routes->group('files', ['filter' => 'session_auth'], function ($routes) {
     $routes->add('search', 'DebugManager::search');
     $routes->add('rename', 'DebugManager::rename');
     $routes->add('add-tag', 'DebugManager::add_tag');

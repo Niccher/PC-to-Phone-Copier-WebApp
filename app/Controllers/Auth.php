@@ -21,17 +21,17 @@ class Auth extends BaseController{
 		$save_name  = bin2hex($data_alphanum) . '.png';
 
 		/* QR Code File Directory Initialize */
-		$dir = 'assets/media/';
+		$dir = FCPATH . 'assets/media/';
 		if (! file_exists($dir)) {
 			mkdir($dir, 0775, true);
 		}
 
 		/* QR Configuration  */
 		$config['cacheable']    = true;
-		$config['imagedir']     = $dir;
+		$config['imagedir']     = 'assets/media/';
 		$config['quality']      = true;
 		$config['size']         = '1024';
-		$config['black']        = [255, 255, 255];
+		$config['black']        = [0, 0, 0];
 		$config['white']        = [255, 255, 255];
 		$this->qr_scan->initialize($config);
 
@@ -39,8 +39,8 @@ class Auth extends BaseController{
 		$params['data']     = $data_alphanum;
 		$params['level']    = 'M'; // L M Q H
 		$params['size']     = 10; // 1 2 3 4 5 6 7 8 9 10
-		$params['savename'] = FCPATH . $config['imagedir'] . $save_name;
-		$params['filepath'] =  $config['imagedir'] . $save_name;
+		$params['savename'] = $dir . $save_name;
+		$params['filepath'] = $config['imagedir'] . $save_name;
 		$params['data_num'] =  $data_num;
 		$params['data_codes'] =  base64_encode($data_num . "---". $data_alphanum);
 		$this->qr_scan->generate($params);
@@ -51,22 +51,20 @@ class Auth extends BaseController{
 		$agent = $this->request->getUserAgent();
 
 		$visitor_data = [
-			'visitor_time'          => $dated,
-			'visitor_ip'            => $this->request->getIPAddress(),
-			'visitor_user_agent'    => $agent, //$agent->getAgentString()
-			'visitor_browser'       => ($agent->isBrowser()) ? $agent->getBrowser() . ' ' . $agent->getVersion() : 'Unknown',
-			'visitor_robot'         => ($agent->isRobot()) ? $agent->getRobot(): 'Unknown',
-			'visitor_is_mobile'     => ($agent->isMobile()) ? $agent->getMobile() : 'Unknown',
-			'visitor_OS'            =>  $agent->getPlatform(),
-			'visitor_referrer'      => ($agent->isReferral()) ? $agent->referrer() : 'Unknown',
-			'visitor_method'        =>  $this->request->getMethod(),
+			'visited_at'       => $dated,
+			'client_ip'        => $this->request->getIPAddress(),
+			'user_agent'       => (string)$agent,
+			'browser'          => ($agent->isBrowser()) ? $agent->getBrowser() . ' ' . $agent->getVersion() : 'Unknown',
+			'is_robot'         => ($agent->isRobot()) ? $agent->getRobot() : 'Unknown',
+			'is_mobile'        => ($agent->isMobile()) ? $agent->getMobile() : 'Unknown',
+			'operating_system' => $agent->getPlatform(),
+			'referrer'         => ($agent->isReferral()) ? $agent->referrer() : 'Unknown',
+			'http_method'      => $this->request->getMethod(),
 		];
 
 		$auth_data = [
-			'auth_created_at'           => $dated,
-			'auth_text_code'            => $data_num,
-			'auth_qr_code'              => $data_alphanum,
-			'auth_qr_image_name'        => $save_name,
+			'session_uuid' => bin2hex($data_alphanum),
+			'pairing_code' => $data_num,
 		];
 
 		$mod_visitors->vistor_register($visitor_data);
@@ -97,8 +95,7 @@ class Auth extends BaseController{
 				'checked_by'        => $u_dev_id,
 			];
 
-			($u_type == "code_qr") ? $auth_data_test = ['auth_qr_code' => $u_code] : $auth_data_test = ['auth_text_code' => $u_code];
-
+			$auth_data_test = ['pairing_code' => $u_code];
 			$is_code_present = $mod_android->android_test_auth_codes($auth_data_test);
 			if (empty($is_code_present)){
 				$auth_data_tested['checked_is_valid']  = "invalid";

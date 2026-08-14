@@ -24,7 +24,20 @@ class Download extends BaseController
 		$uploaded_files_by_session_and_devid = $mod_upload->file_uploaded_by_phone_session_download($phone_file_id, $phone_sess_id, $phone_dev_id);
 
 		if (!empty($uploaded_files_by_session_and_devid)) {
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $uploaded_files_by_session_and_devid->up_file_Name;
+			$diskName = basename($uploaded_files_by_session_and_devid->up_file_Name);
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
+			$realPath = realpath($filePath);
+			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
+			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
+				return $this->respond([
+					'status' => 2,
+					'time' => $dated,
+					'phone_file_id' => $phone_file_id,
+					'phone_dev_id' => $phone_dev_id,
+					'phone_sess_id' => $phone_sess_id,
+					'phone_file_status' => "Invalid file path",
+				]);
+			}
 			return $this->response->download($filePath, null);
 		}
 		else {
@@ -46,12 +59,40 @@ class Download extends BaseController
 		$dated = date('Y-m-d H:i:s');
 
 		$phone_file_uuid = $this->request->getVar('var_file_uuid');
-		$phone_file_name = $this->request->getVar('var_file_name');
-		//$phone_dev_id = $this->request->getVar('var_dev_id');
-		//$phone_sess_id = $this->request->getVar('var_sess_id');
+		$phone_file_name = basename($this->request->getVar('var_file_name'));
 
 		$f_path_old = WRITEPATH . '/uploads/copied_files/';
 		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
+
+		$realOld = realpath($f_path_old . $phone_file_name);
+		$allowedPath = realpath($f_path_old);
+		if ($realOld === false || strpos($realOld, $allowedPath) !== 0) {
+			return $this->respond([
+				'status' => "2",
+				'time' => $dated,
+				'name' => $phone_file_name,
+				'uuid' => $phone_file_uuid,
+			]);
+		}
+
+		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($phone_file_uuid);
+		if (empty($file_data)) {
+			return $this->respond([
+				'status' => "2",
+				'time' => $dated,
+				'name' => $phone_file_name,
+				'uuid' => $phone_file_uuid,
+			]);
+		}
+		$stored_name = basename($file_data[0]->up_file_Name);
+		if ($stored_name !== $phone_file_name) {
+			return $this->respond([
+				'status' => "2",
+				'time' => $dated,
+				'name' => $phone_file_name,
+				'uuid' => $phone_file_uuid,
+			]);
+		}
 
 		try {
 			rename($f_path_old . $phone_file_name, $f_path_new . $phone_file_name);
@@ -92,9 +133,22 @@ class Download extends BaseController
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
-			if (!file_exists($filePath)) {
-				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $file->up_file_Orig_Name;
+			$diskName = basename($file->up_file_Name);
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
+			$realPath = realpath($filePath);
+			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
+
+			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
+				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $diskName;
+				$realPath = realpath($filePath);
+				$deletedPath = realpath(WRITEPATH . '/uploads/copied_files_deleted');
+				if ($realPath === false || strpos($realPath, $deletedPath) !== 0) {
+					return $this->respond([
+						'status' => 2,
+						'time' => $dated,
+						'message' => "Invalid file path",
+					]);
+				}
 			}
 
 			// Handle Burn After Reading
@@ -133,11 +187,20 @@ class Download extends BaseController
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $file->up_file_Orig_Name;
-			
-			if (!file_exists($filePath)) {
-				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $file->up_file_Orig_Name;
+			$diskName = basename($file->up_file_Name);
+			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
+			$realPath = realpath($filePath);
+			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
+
+			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
+				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $diskName;
+				$realPath = realpath($filePath);
+				$deletedPath = realpath(WRITEPATH . '/uploads/copied_files_deleted');
+				if ($realPath === false || strpos($realPath, $deletedPath) !== 0) {
+					return $this->respond(['status' => 2, 'message' => 'File not found or access denied'], 404);
+				}
 			}
+
 			if (!file_exists($filePath)) {
 				return $this->respond(['status' => 2, 'message' => 'File not found on disk'], 404);
 			}
@@ -150,7 +213,7 @@ class Download extends BaseController
 			}
 
 			$mimeType = mime_content_type($filePath);
-			
+
 			// For text files, we might want to force utf-8
 			if (strpos($mimeType, 'text/') === 0) {
 				$mimeType .= '; charset=UTF-8';
@@ -158,7 +221,7 @@ class Download extends BaseController
 
 			return $this->response
 				->setHeader('Content-Type', $mimeType)
-				->setHeader('Content-Disposition', 'inline; filename="' . $file->up_file_Orig_Name . '"')
+				->setHeader('Content-Disposition', 'inline; filename="' . basename($file->up_file_Orig_Name) . '"')
 				->setBody(file_get_contents($filePath));
 		}
 		else {
@@ -183,16 +246,17 @@ class Download extends BaseController
 
 		$f_path_old = WRITEPATH . '/uploads/copied_files/';
 		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
-		$file_name = $file_data[0]->up_file_Orig_Name;
+		$diskName = basename($file_data[0]->up_file_Name);
+		$stored_orig_name = $file_data[0]->up_file_Orig_Name;
 		$file_uuid = $file_data[0]->up_file_uuid;
 
 		try {
-			rename($f_path_old . $file_name, $f_path_new . $file_name);
-			$mod_upload->file_to_delete($file_uuid, $file_name);
-			return redirect()->back()->with('message', "File " . $file_name . " moved to trash");
+			rename($f_path_old . $diskName, $f_path_new . $diskName);
+			$mod_upload->file_to_delete($file_uuid, $diskName);
+			return redirect()->back()->with('message', "File " . $stored_orig_name . " moved to trash");
 		}
 		catch (\Exception $ex) {
-			return redirect()->back()->with('error', "Unable to delete file " . $file_name);
+			return redirect()->back()->with('error', "Unable to delete file " . $stored_orig_name);
 		}
 	}
 }

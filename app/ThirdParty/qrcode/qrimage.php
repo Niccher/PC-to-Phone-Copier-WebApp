@@ -71,27 +71,27 @@
             $h = count($frame);
             $w = strlen($frame[0]);
             
-            $imgW = $w + 2*$outerFrame;
-            $imgH = $h + 2*$outerFrame;
+            $imgW = $w + 2 * $outerFrame;
+            $imgH = $h + 2 * $outerFrame;
             
-            $base_image =ImageCreate($imgW, $imgH);
+            $base_image = imagecreatetruecolor($imgW, $imgH);
             
-            $col[0] = ImageColorAllocate($base_image,QRImage::$black[0],QRImage::$black[1],QRImage::$black[2]);
-            $col[1] = ImageColorAllocate($base_image,QRImage::$white[0],QRImage::$white[1],QRImage::$white[2]);
+            $bgColor = imagecolorallocate($base_image, 255, 255, 255); // White background
+            $fgColor = imagecolorallocate($base_image, 0, 0, 0);       // Black QR code modules
 
-            imagefill($base_image, 0, 0, $col[0]);
+            imagefilledrectangle($base_image, 0, 0, $imgW, $imgH, $bgColor);
 
-            for($y=0; $y<$h; $y++) {
-                for($x=0; $x<$w; $x++) {
+            for ($y = 0; $y < $h; $y++) {
+                for ($x = 0; $x < $w; $x++) {
                     if ($frame[$y][$x] == '1') {
-                        ImageSetPixel($base_image,$x+$outerFrame,$y+$outerFrame,$col[1]); 
+                        imagesetpixel($base_image, $x + $outerFrame, $y + $outerFrame, $fgColor); 
                     }
                 }
             }
             
-            $target_image =ImageCreate($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
-            ImageCopyResized($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
-            ImageDestroy($base_image);
+            $target_image = imagecreatetruecolor($imgW * $pixelPerPoint, $imgH * $pixelPerPoint);
+            imagecopyresampled($target_image, $base_image, 0, 0, 0, 0, $imgW * $pixelPerPoint, $imgH * $pixelPerPoint, $imgW, $imgH);
+            imagedestroy($base_image);
             
             return $target_image;
         }

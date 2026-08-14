@@ -16,6 +16,10 @@ class Debug extends BaseController
      */
     public function info()
     {
+        if (ENVIRONMENT === 'production') {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
         $sess_id = $this->session->get('sess_id');
         $phone_id = $this->session->get('phone_id');
 

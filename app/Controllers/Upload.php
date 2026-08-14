@@ -44,14 +44,20 @@ class Upload extends BaseController
                 ]);
             }
 
+            $originalName = $uploaded_File->getClientName();
+            $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+            $safeName = str_replace(['..', '/', '\\'], '_', $safeName);
+            $extension = strtolower($uploaded_File->getClientExtension());
+            $diskName = $uuid . '.' . $extension;
+
             // Move file to destination
             $upload_path = WRITEPATH . 'uploads/copied_files';
             if (!is_dir($upload_path)) {
                 mkdir($upload_path, 0777, true);
             }
-            $full_file_path = $upload_path . '/' . $uploaded_File->getName();
+            $full_file_path = $upload_path . '/' . $diskName;
 
-            if (!$uploaded_File->move($upload_path, $uploaded_File->getName())) {
+            if (!$uploaded_File->move($upload_path, $diskName)) {
                 return $this->respond([
                     'status' => 0,
                     'time' => $dated,
@@ -87,11 +93,11 @@ class Upload extends BaseController
                 'up_file_uuid' => $uuid,
                 'up_file_session_id' => $this->session->get('sess_id'),
                 'up_file_dev_id' => $this->session->get('phone_id'),
-                'up_file_Name' => $uploaded_File->getName(),
-                'up_file_Orig_Name' => $uploaded_File->getClientName(),
+                'up_file_Name' => $diskName,
+                'up_file_Orig_Name' => $originalName,
                 'up_file_Type' => $uploaded_File->getClientMimeType(),
-                'up_file_Extension' => $uploaded_File->getClientExtension(),
-                'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
+                'up_file_Extension' => $extension,
+                'up_file_Orig_Extension' => $extension,
                 'up_file_Size' => $uploaded_File->getSize(),
                 'up_file_Source' => "Browser Upload",
                 'up_file_Created_at' => $dated,
@@ -112,13 +118,13 @@ class Upload extends BaseController
                     'time' => $dated,
                     'message' => "File Uploaded Successfully",
                     'file_uuid' => $uuid,
-                    'file_name' => $uploaded_File->getClientName(),
+                    'file_name' => $originalName,
                     'file_size' => $uploaded_File->getSize()
                 ]);
             }
             else {
                 // Clean up uploaded file if database insert failed
-                @unlink($upload_path . '/' . $uploaded_File->getName());
+                @unlink($upload_path . '/' . $diskName);
                 return $this->respond([
                     'status' => 0,
                     'time' => $dated,
@@ -176,17 +182,23 @@ class Upload extends BaseController
                 mkdir($upload_path, 0777, true);
             }
 
+            $originalName = $uploaded_File->getClientName();
+            $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+            $safeName = str_replace(['..', '/', '\\'], '_', $safeName);
+            $extension = strtolower($uploaded_File->getClientExtension());
+            $diskName = $uuid . '.' . $extension;
+
             // Move file and check for success
-            if ($uploaded_File->move($upload_path)) {
+            if ($uploaded_File->move($upload_path, $diskName)) {
                 $data = [
                     'up_file_uuid' => $uuid,
                     'up_file_session_id' => $file_sess_id,
                     'up_file_dev_id' => $file_dev_id,
-                    'up_file_Name' => $uploaded_File->getName(),
-                    'up_file_Orig_Name' => $uploaded_File->getClientName(),
+                    'up_file_Name' => $diskName,
+                    'up_file_Orig_Name' => $originalName,
                     'up_file_Type' => $uploaded_File->getClientMimeType(),
-                    'up_file_Extension' => $uploaded_File->getClientExtension(),
-                    'up_file_Orig_Extension' => $uploaded_File->getClientExtension(),
+                    'up_file_Extension' => $extension,
+                    'up_file_Orig_Extension' => $extension,
                     'up_file_Size' => $uploaded_File->getSize(),
                     'up_file_Source' => "Android Upload",
                     'up_file_Created_at' => $dated,
@@ -202,7 +214,7 @@ class Upload extends BaseController
                     ]);
                 } else {
                     // Clean up physical file if database registration fails
-                    @unlink($upload_path . $uploaded_File->getName());
+                    @unlink($upload_path . $diskName);
                     return $this->respond([
                         'status' => 0,
                         'time' => $dated,

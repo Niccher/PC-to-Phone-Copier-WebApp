@@ -7,7 +7,8 @@
         <meta content="P2P Web Copier" name="description" />
         <meta content="Niccher Inc" name="author" />
         <!-- App favicon -->
-        <link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.ico')?>">
+        <link rel="icon" type="image/png" href="<?php echo base_url('favicon.png')?>">
+        <link rel="apple-touch-icon" href="<?php echo base_url('favicon.png')?>">
 
         <!-- App css -->
         <link href="<?php echo base_url('assets/css/icons.min.css')?>" rel="stylesheet" type="text/css" />
@@ -127,15 +128,21 @@
                                         <div class="row">
                                             <div class="row">
                                                 <div class="col-sm-10 offset-1">
-                                                    <input type="text" class="form-control form-control-lg text-primary text-center fw-bolder" name="code_reaccess_code" placeholder="Activation Code Here">
+                                                    <input type="text" class="form-control form-control-lg text-primary text-center fw-bolder" id="input_reaccess_code" name="code_reaccess_code" placeholder="Activation Code Here">
                                                 </div>
                                                 <div class="text-center">
                                                     <div class="row mt-2">
                                                         <div class="col-12 text-center">
-                                                            <button class="btn btn-primary">Send <i class="mdi mdi-telegram ms-1"></i> </button>
+                                                            <button class="btn btn-primary" id="btn_reaccess_send">Send <i class="mdi mdi-telegram ms-1"></i> </button>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div id="recent_session_container" class="mt-3 text-center d-none">
+                                                <span class="badge bg-soft-info text-info p-2 font-14">
+                                                    Recent Browser Session Found: <strong id="recent_code_label"></strong>
+                                                    <button type="button" class="btn btn-xs btn-outline-info ms-2" id="btn_restore_recent">Auto-Load</button>
+                                                </span>
                                             </div>
                                             <ul class="card-pricing-features">
                                                 <li class="text-muted fw-bolder h4 mt-4">
@@ -294,8 +301,63 @@
         <script src="<?php echo base_url('assets/js/app.min.js')?>"></script>
         <script>
             $(document).ready(function(){
-                //console.log( "ready!" );
                 var num_code = "<?php echo $data_codes; ?>";
+
+                function saveRecentSession(code) {
+                    try {
+                        localStorage.setItem('p2p_recent_session', JSON.stringify({
+                            code: code,
+                            time: new Date().toISOString()
+                        }));
+                    } catch (e) {
+                        console.error("Storage error:", e);
+                    }
+                }
+
+                function tryReactivateSession(code) {
+                    if (!code) return;
+                    $.ajax({
+                        url: "<?php echo base_url('api/v1/auth/reactivate');?>",
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ pairing_code: code }),
+                        success: function (res) {
+                            if (res && res.success) {
+                                saveRecentSession(code);
+                                window.location.replace("<?php echo base_url('home'); ?>");
+                            }
+                        }
+                    });
+                }
+
+                // Check for cached browser session
+                try {
+                    var cached = localStorage.getItem('p2p_recent_session');
+                    if (cached) {
+                        var parsed = JSON.parse(cached);
+                        if (parsed && parsed.code) {
+                            $('#input_reaccess_code').val(parsed.code);
+                            $('#recent_code_label').text(parsed.code);
+                            $('#recent_session_container').removeClass('d-none');
+
+                            // Auto-attempt session restoration unless URL contains ?new=1
+                            const urlParams = new URLSearchParams(window.location.search);
+                            if (!urlParams.has('new')) {
+                                tryReactivateSession(parsed.code);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to load cached session:", e);
+                }
+
+                $('#btn_reaccess_send, #btn_restore_recent').on('click', function(e){
+                    e.preventDefault();
+                    var inputCode = $('#input_reaccess_code').val().trim();
+                    if (inputCode) {
+                        tryReactivateSession(inputCode);
+                    }
+                });
 
                 function getState(){
                     $.ajax({
@@ -304,6 +366,7 @@
                         data: {a_num_code: num_code},
                         success: function (response) {
                             if (response == 'valid') {
+                                saveRecentSession(num_code);
                                 window.location.replace("<?php echo base_url('home'); ?>");
                             } else {
                                 console.log("Not Verified");

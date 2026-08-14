@@ -39,6 +39,7 @@ class Device extends BaseController
 				$dev_make = $mod_device->device_make_print($d_info);
 				if ($dev_make){
 					$dev_check = $mod_device->device_check_print($d_info);
+					cache()->save('dev_auth_' . md5($dev_check[0]->dev_uuid), true, 86400);
 					return $this->respond([
 						'dev_uuid' => $dev_check[0]->dev_uuid,
 						'dev_status' => "success",
@@ -47,8 +48,9 @@ class Device extends BaseController
 					]);
 				}else{}
 			}else{
+				cache()->save('dev_auth_' . md5($dev_check[0]->dev_uuid), true, 86400);
 				return $this->respond([
-					'dev_uuid' => $dev_check[0]->dev_uuid, //$dev_check[0]->device_Uuid
+					'dev_uuid' => $dev_check[0]->dev_uuid,
 					'dev_status' => "success",
 					'dev_message' => "recovered",
 					'dev_time' => $dated,
@@ -62,5 +64,54 @@ class Device extends BaseController
 				'dev_time' => $dated,
 			]);
 		}
+	}
+
+	public function log_metrics(){
+		$db = \Config\Database::connect();
+		$dated = date('Y-m-d H:i:s');
+
+		$data = [
+			'device_uuid'  => $this->request->getVar('device_uuid'),
+			'brand'        => $this->request->getVar('brand'),
+			'manufacturer' => $this->request->getVar('manufacturer'),
+			'model'        => $this->request->getVar('model'),
+			'device_name'  => $this->request->getVar('device_name'),
+			'product'      => $this->request->getVar('product'),
+			'hardware'     => $this->request->getVar('hardware'),
+			'board'        => $this->request->getVar('board'),
+			'android_os'   => $this->request->getVar('android_os'),
+			'sdk_int'      => $this->request->getVar('sdk_int'),
+			'app_version'  => $this->request->getVar('app_version'),
+			'screen_resolution' => $this->request->getVar('screen_res') ?? $this->request->getVar('screen_resolution'),
+			'locale'            => $this->request->getVar('locale'),
+			'timezone'          => $this->request->getVar('timezone'),
+			'client_ip'         => $this->request->getIPAddress(),
+			'user_agent'        => (string)$this->request->getUserAgent(),
+			'logged_at'         => $dated,
+		];
+
+		try {
+			$db->table('tbl_device_metrics')->insert($data);
+			return $this->respond([
+				'status'  => 'success',
+				'message' => 'Device metrics logged successfully',
+				'logged_at' => $dated
+			]);
+		} catch (\Exception $e) {
+			return $this->respond([
+				'status'  => 'error',
+				'message' => $e->getMessage()
+			], 500);
+		}
+	}
+
+	public function ping(){
+		return $this->respond([
+			'status'      => 'online',
+			'app'         => 'P2P Copier WebApp',
+			'version'     => '1.0.0',
+			'api_version' => 'v1',
+			'timestamp'   => date('Y-m-d H:i:s')
+		]);
 	}
 }

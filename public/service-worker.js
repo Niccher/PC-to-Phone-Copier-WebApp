@@ -3,7 +3,7 @@ const ASSETS = [
   '/assets/css/app.min.css',
   '/assets/css/icons.min.css',
   '/assets/js/app.min.js',
-  '/assets/images/logo-sm.png'
+  '/favicon.png'
 ];
 
 self.addEventListener('install', event => {

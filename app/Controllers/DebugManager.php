@@ -255,7 +255,7 @@ class DebugManager extends BaseController
             $file_data = $mod_upload->file_get_uploaded_by_file_uuid($uuid);
             if (!empty($file_data) && isset($file_data[0])) {
                 $file = $file_data[0];
-                $physicalPath = WRITEPATH . 'uploads/copied_files/' . ($file->up_file_Orig_Name ?? '');
+                $physicalPath = WRITEPATH . 'uploads/copied_files/' . $file->up_file_Name;
                 if (file_exists($physicalPath)) {
                     $zip->addFile($physicalPath, $file->up_file_Orig_Name);
                     $filesAdded++;

@@ -170,6 +170,10 @@ class TypeText extends BaseController
             }
             
             $text_title = $this->request->getVar('text_title') ?: 'Untitled Text';
+            $text_source = $this->request->getVar('text_source') ?: "Android Text";
+
+            $sess_id = $this->session->get('sess_id') ?: $this->request->getVar('var_auth_code_id');
+            $dev_id = $this->session->get('phone_id') ?: $this->request->getVar('var_dev_uuid');
 
             if (empty(trim((string)$text_content))) {
                 return $this->respond([
@@ -181,11 +185,11 @@ class TypeText extends BaseController
 
             $text_info = [
                 'text_uuid' => $uuid,
-                'text_session_id' => $this->session->get('sess_id'),
-                'text_dev_id' => $this->session->get('phone_id'),
+                'text_session_id' => $sess_id ?: 'default_session',
+                'text_dev_id' => $dev_id ?: 'default_device',
                 'text_title' => $text_title,
                 'text_content' => $text_content,
-                'text_source' => "Browser Text",
+                'text_source' => $text_source,
                 'text_created_at' => $dated,
             ];
 
@@ -221,6 +225,27 @@ class TypeText extends BaseController
                 'message' => "Invalid request method"
             ]);
         }
+    }
+
+    public function text_get_by_session(){
+        $mod_text = new ModText();
+        $dated = date('Y-m-d H:i:s');
+
+        $phone_dev_id = $this->request->getVar('var_dev_uuid');
+        $phone_sess_id = $this->request->getVar('var_auth_code_id');
+
+        if (empty($phone_sess_id)) {
+            $phone_sess_id = $this->session->get('sess_id');
+        }
+
+        $texts = $mod_text->text_get_uploaded_texts($phone_sess_id);
+
+        return $this->respond([
+            'status' => 1,
+            'time' => $dated,
+            'message' => "Texts retrieved successfully",
+            'texts' => $texts
+        ]);
     }
 
     public function text_delete($text_uuid){
