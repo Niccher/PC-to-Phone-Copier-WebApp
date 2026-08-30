@@ -33,6 +33,10 @@ writable/exports/*
 !writable/exports/index.html
 php_errors.log
 
+# Generated QR Codes & Uploaded Media
+public/assets/media/*.png
+public/assets/media/uploads/
+
 # Dependencies
 vendor/
 node_modules/

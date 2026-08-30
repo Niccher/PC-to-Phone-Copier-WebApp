@@ -29,6 +29,10 @@ writable/backups/*
 !writable/exports/index.html
 !writable/backups/index.html
 
+# Generated QR Codes & Uploaded Media
+public/assets/media/*.png
+public/assets/media/uploads/
+
 # Docker Specs & Documentation (Not needed inside container image)
 Dockerfile
 docker-compose.yml
