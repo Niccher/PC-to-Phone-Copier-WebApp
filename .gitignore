@@ -1,57 +1,52 @@
-# Operating System Specific Files
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-
-# Environment & Sensitive Files
+# Environments
 .env
 .env.*
 !.env.example
-.vagrant
-Vagrantfile
-auth.json
 
-# Temporary & Writable Files
-writable/cache/*
-!writable/cache/index.html
-writable/logs/*
-!writable/logs/index.html
-writable/session/*
-!writable/session/index.html
-writable/uploads/*
-!writable/uploads/index.html
-writable/debugbar/*
-!writable/debugbar/index.html
-writable/backups/*
-!writable/backups/index.html
-writable/exports/*
-!writable/exports/index.html
-php_errors.log
-
-# Generated QR Codes & Uploaded Media
-public/assets/media/*.png
-public/assets/media/uploads/
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
 
 # Dependencies
 vendor/
 node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
 
-# Test & Coverage Files
-tests/coverage*
-phpunit
-.phpunit.cache
-.phpunit.result.cache
+# Build
+build/
+dist/
+*.apk
+*.aab
+*.jar
+*.war
 
-# IDE, Editor & Tool Files
-.idea/
-*.iml
-.vscode/
-nbproject/
-*.sublime-workspace
-*.sublime-project
-.gemini/
+# Logs and DB
+logs/
+*.log
+*.sqlite
+*.sqlite3
+
+# CodeIgniter Writable
+writable/cache/*
+!writable/cache/index.html
+!writable/cache/.gitkeep
+writable/debugbar/*
+writable/logs/*
+!writable/logs/index.html
+!writable/logs/.gitkeep
+writable/session/*
+!writable/session/index.html
+!writable/session/.gitkeep
+writable/uploads/*
+!writable/uploads/index.html
+!writable/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

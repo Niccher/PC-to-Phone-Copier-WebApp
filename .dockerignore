@@ -1,42 +1,27 @@
-# Version Control & IDE Files
-.git
-.gitignore
-.idea
-.vscode
-.gemini
-
-# Environment Files (Passed via docker-compose env_file or environment block)
+# Environments
 .env
 .env.*
 
-# Local Dependencies & Builds
-node_modules
-vendor
+# IDEs
+.idea/
+.vscode/
 
-# Writable Runtime & Upload Directories
-writable/logs/*
-writable/cache/*
-writable/session/*
-writable/debugbar/*
-writable/uploads/*
-writable/exports/*
-writable/backups/*
-!writable/logs/index.html
-!writable/cache/index.html
-!writable/session/index.html
-!writable/debugbar/index.html
-!writable/uploads/index.html
-!writable/exports/index.html
-!writable/backups/index.html
+# Git
+.git/
+.gitignore
 
-# Generated QR Codes & Uploaded Media
-public/assets/media/*.png
-public/assets/media/uploads/
+# Dependencies
+vendor/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
 
-# Docker Specs & Documentation (Not needed inside container image)
-Dockerfile
-docker-compose.yml
-phpunit.xml*
-tests
-README.md
-LICENSE
+# Build
+build/
+dist/
+
+# OS
+.DS_Store
