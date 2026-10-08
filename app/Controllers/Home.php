@@ -46,12 +46,32 @@ class Home extends BaseController
     public function home_ajax_code_check()
     {
         $mod_visitors = new ModVisitors();
-        $auth_codes = explode("---", base64_decode($this->request->getVar('a_num_code')));
+        $raw_input = $this->request->getVar('a_num_code') ?: $this->request->getVar('code');
 
-        $code_data = [
-            'auth_text_code' => $auth_codes[0],
-            'auth_qr_code' => $auth_codes[1]
-        ];
+        if (empty($raw_input)) {
+            echo "invalid";
+            return;
+        }
+
+        $decoded = base64_decode($raw_input, true);
+        if ($decoded !== false && str_contains($decoded, '---')) {
+            $auth_codes = explode("---", $decoded);
+            $code_data = [
+                'auth_text_code' => $auth_codes[0],
+                'auth_qr_code'   => $auth_codes[1] ?? $auth_codes[0]
+            ];
+        } else if (str_contains($raw_input, '---')) {
+            $auth_codes = explode("---", $raw_input);
+            $code_data = [
+                'auth_text_code' => $auth_codes[0],
+                'auth_qr_code'   => $auth_codes[1] ?? $auth_codes[0]
+            ];
+        } else {
+            $code_data = [
+                'auth_text_code' => $raw_input,
+                'auth_qr_code'   => $raw_input
+            ];
+        }
 
         $auth_result = $mod_visitors->auth_codes_get_uuid($code_data);
         if (empty($auth_result)) {
@@ -59,28 +79,36 @@ class Home extends BaseController
             return;
         }
 
-        $get_auth_id = $auth_result[0]->auth_id;
+        $auth_record = $auth_result[0];
+        $auth_id     = $auth_record->id;
+        $sess_uuid   = $auth_record->session_uuid;
+        $pair_code   = $auth_record->pairing_code;
 
-        $phone_result = $mod_visitors->auth_codes_get_phone_by_auth_code_id($get_auth_id);
-        $get_auth_phone_uuid = !empty($phone_result) ? $phone_result[0]->checked_by : null;
+        $db = \Config\Database::connect();
+        $paired_session = $db->table('tbl_paired_sessions')
+            ->groupStart()
+                ->where('session_uuid', $sess_uuid)
+                ->orWhere('pairing_code_id', (string)$auth_id)
+            ->groupEnd()
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->getRow();
 
-        header('Access-Control-Allow-Headers: Origin');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+        header('Access-Control-Allow-Headers: Origin, Content-Type');
+        header('Access-Control-Allow-Methods: GET, POST');
         header('Access-Control-Allow-Origin: *');
 
-        if (!empty($get_auth_id)) {
-            $code_data_is_valid = [
-                'checked_auth_code_id' => $get_auth_id,
-                'checked_is_valid'     => "valid",
-            ];
-            $is_code_validated = count($mod_visitors->auth_codes_has_tested_valid($code_data_is_valid));
-            if ($is_code_validated > 0) {
-                // Use CodeIgniter's session service so $this->session->get() works everywhere
-                $session = session();
-                $session->set('sess_id', $get_auth_id);
-                $session->set('phone_id', $get_auth_phone_uuid);
-            }
-            echo ($is_code_validated > 0) ? "valid" : "invalid";
+        if ($paired_session) {
+            $session = session();
+            // Store session_uuid so tbl_files and tbl_texts queries match uploaded items
+            $session->set('sess_id', $sess_uuid);
+            $session->set('auth_code_id', (string)$auth_id);
+            $session->set('auth_code', $pair_code);
+            $session->set('phone_id', $paired_session->device_uuid ?? null);
+
+            echo "valid";
+        } else {
+            echo "invalid";
         }
     }
 

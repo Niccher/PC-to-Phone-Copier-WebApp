@@ -259,4 +259,49 @@ class Download extends BaseController
 			return redirect()->back()->with('error', "Unable to delete file " . $stored_orig_name);
 		}
 	}
+
+	public function download_all_session_zip()
+	{
+		$mod_upload = new ModUpload();
+		$sess_id = session()->get('sess_id');
+		if (empty($sess_id)) {
+			return redirect()->to(base_url())->with('error', 'Session expired');
+		}
+
+		$files = $mod_upload->file_get_uploaded_files($sess_id);
+		if (empty($files)) {
+			return redirect()->back()->with('error', 'No active files found to download');
+		}
+
+		$zipFile = WRITEPATH . 'uploads/P2P_Session_' . substr(md5($sess_id . time()), 0, 8) . '.zip';
+		$zip = new \ZipArchive();
+
+		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+			return redirect()->back()->with('error', 'Could not create ZIP archive.');
+		}
+
+		$filesAdded = 0;
+		foreach ($files as $file) {
+			$diskName = basename($file->up_file_Name ?? $file->system_name ?? '');
+			$origName = basename($file->up_file_Orig_Name ?? $file->original_name ?? $diskName);
+			$filePath = WRITEPATH . 'uploads/copied_files/' . $diskName;
+			if (file_exists($filePath)) {
+				$zip->addFile($filePath, $origName);
+				$filesAdded++;
+			}
+		}
+
+		$zip->close();
+
+		if ($filesAdded === 0) {
+			if (file_exists($zipFile)) {
+				@unlink($zipFile);
+			}
+			return redirect()->back()->with('error', 'None of the session files could be found on disk');
+		}
+
+		$fileContent = file_get_contents($zipFile);
+		@unlink($zipFile);
+		return $this->response->download('P2P_Files_' . date('Ymd_His') . '.zip', $fileContent);
+	}
 }

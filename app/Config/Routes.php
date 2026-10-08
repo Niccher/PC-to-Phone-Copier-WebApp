@@ -51,12 +51,11 @@ $routes->group('device', function ($routes) {
     $routes->add('log_metrics', 'Device::log_metrics');
 });
 
-$routes->group('home', ['filter' => 'session_auth'], function ($routes) {
-    $routes->add('/', 'Home::home');
-    $routes->add('check', 'Home::home_ajax_code_check');
-});
+// Unauthenticated pairing verification check polled by landing page
+$routes->add('home/check', 'Home::home_ajax_code_check');
 
 $routes->group('home', ['filter' => 'session_auth'], function ($routes) {
+    $routes->add('/', 'Home::home');
     $routes->add('recent', 'Home::home');
     $routes->add('files', 'Utils\TypeFile');
     $routes->add('texts', 'Utils\TypeText');
@@ -102,6 +101,7 @@ $routes->group('api/v1', ['filter' => 'device_auth'], function ($routes) {
 });
 
 $routes->group('saved', ['filter' => 'session_auth'], function ($routes) {
+    $routes->add('download-all-zip', 'Download::download_all_session_zip');
     $routes->add('download/(:any)', 'Download::browser_file_download/$1');
     $routes->add('view/(:any)', 'Download::browser_file_view/$1');
     $routes->add('delete/(:any)', 'Download::browser_file_delete/$1');

@@ -36,17 +36,19 @@ class Events extends Controller
             }
 
             // Calculate current state hash based on active DB records
-            $active_count = $db->table('tbl_files_uploaded')->where('up_file_session_id', $sess_id)->countAllResults();
+            $active_count = 0;
+            if ($db->tableExists('tbl_files')) {
+                $active_count = $db->table('tbl_files')->where('session_id', $sess_id)->countAllResults();
+            }
             
             $deleted_count = 0;
-            if ($db->tableExists('tbl_files_uploaded_deleted')) {
-                $deleted_count = $db->table('tbl_files_uploaded_deleted')
-                                    ->where('up_file_session_id', $sess_id)->countAllResults();
+            if ($db->tableExists('tbl_files_trash')) {
+                $deleted_count = $db->table('tbl_files_trash')->where('session_id', $sess_id)->countAllResults();
             }
             
             $text_count = 0;
-            if ($db->tableExists('tbl_text')) {
-                $text_count = $db->table('tbl_text')->where('up_text_session_id', $sess_id)->countAllResults();
+            if ($db->tableExists('tbl_texts')) {
+                $text_count = $db->table('tbl_texts')->where('session_id', $sess_id)->countAllResults();
             }
 
             $current_hash = $active_count . "_" . $deleted_count . "_" . $text_count;
