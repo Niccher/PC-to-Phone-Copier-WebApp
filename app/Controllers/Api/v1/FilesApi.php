@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Api\v1;
 
+use App\Libraries\StorageService;
 use App\Models\ModUpload;
 use App\Models\ModVisitors;
 
@@ -125,17 +126,29 @@ class FilesApi extends ApiController
         }
 
         $fileName = $found[0]->up_file_Sys_Name ?? $found[0]->up_file_Name;
-        $filePath = WRITEPATH . 'uploads/copied_files/' . $fileName;
+        $origName = $found[0]->up_file_Orig_Name ?? $fileName;
 
-        if (!file_exists($filePath)) {
-            $filePath = FCPATH . 'assets/media/uploads/' . $fileName;
+        $storage = StorageService::getInstance();
+        $fileData = $storage->downloadStream("active/{$fileName}") ?? $storage->downloadStream($fileName);
+
+        if (!$fileData) {
+            return $this->respondError('File asset missing in storage', 404);
         }
 
-        if (!file_exists($filePath)) {
-            return $this->respondError('File asset missing on server disk', 404);
+        $this->response->setHeader('Content-Type', $fileData['type'] ?: 'application/octet-stream');
+        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($origName) . '"');
+        if (!empty($fileData['size'])) {
+            $this->response->setHeader('Content-Length', (string) $fileData['size']);
         }
 
-        return $this->response->download($filePath, null)->setFileName($found[0]->up_file_Orig_Name ?? $fileName);
+        if (is_resource($fileData['stream'])) {
+            $this->response->sendHeaders();
+            fpassthru($fileData['stream']);
+            fclose($fileData['stream']);
+            exit;
+        }
+
+        return $this->response->download($origName, $fileData['stream']);
     }
 
     public function upload()
@@ -169,12 +182,10 @@ class FilesApi extends ApiController
         $file_type = $file->getClientMimeType();
         $file_size = $file->getSize();
 
-        $dir = WRITEPATH . 'uploads/copied_files/';
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
+        $storage = StorageService::getInstance();
+        $uploaded = $storage->upload("active/{$diskName}", $file->getTempName(), $file_type);
 
-        if ($file->move($dir, $diskName)) {
+        if ($uploaded) {
             $data = [
                 'up_file_uuid'       => $uuid,
                 'up_file_session_id' => $session_id ?: 'general',
@@ -206,7 +217,7 @@ class FilesApi extends ApiController
             ], 201);
         }
 
-        return $this->respondError('Failed to move uploaded file on server', 500);
+        return $this->respondError('Failed to store uploaded file in storage', 500);
     }
 
     public function delete($id = null)
@@ -219,9 +230,15 @@ class FilesApi extends ApiController
             return $this->respondError('File UUID is required for deletion', 400);
         }
 
+        $found = $mod_upload->file_get_uploaded_by_file_uuid($file_uuid);
+        $diskName = !empty($found) ? ($found[0]->up_file_Sys_Name ?? $found[0]->up_file_Name) : null;
+
         $deleted = $mod_upload->file_delete_uploaded_files(['up_file_uuid' => $file_uuid]);
 
         if ($deleted) {
+            if ($diskName) {
+                StorageService::getInstance()->move("active/{$diskName}", "trash/{$diskName}");
+            }
             return $this->respondSuccess(['file_uuid' => $file_uuid], 'File deleted successfully');
         }
 
@@ -243,12 +260,21 @@ class FilesApi extends ApiController
             return $this->respondError('Array of file UUIDs required for batch deletion', 400);
         }
 
+        $storage = StorageService::getInstance();
         $deleted_count = 0;
         foreach ($file_uuids as $uuid) {
             $uuid = trim($uuid);
             if (!empty($uuid)) {
+                $found = $mod_upload->file_get_uploaded_by_file_uuid($uuid);
+                $diskName = !empty($found) ? ($found[0]->up_file_Sys_Name ?? $found[0]->up_file_Name) : null;
+
                 $deleted = $mod_upload->file_delete_uploaded_files(['up_file_uuid' => $uuid]);
-                if ($deleted) $deleted_count++;
+                if ($deleted) {
+                    $deleted_count++;
+                    if ($diskName) {
+                        $storage->move("active/{$diskName}", "trash/{$diskName}");
+                    }
+                }
             }
         }
 

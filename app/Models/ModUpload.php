@@ -100,6 +100,20 @@ class ModUpload extends Model
         return $this->file_delete_uploaded_files(['uuid' => $phone_file_uuid]);
     }
 
+    public function batch_delete_files(array $file_uuids)
+    {
+        $count = 0;
+        foreach ($file_uuids as $uuid) {
+            $uuid = trim($uuid);
+            if (!empty($uuid)) {
+                if ($this->file_delete_uploaded_files(['uuid' => $uuid])) {
+                    $count++;
+                }
+            }
+        }
+        return $count > 0;
+    }
+
     public function get_deleted_files($sess_id)
     {
         return $this->db->table('tbl_files_trash')

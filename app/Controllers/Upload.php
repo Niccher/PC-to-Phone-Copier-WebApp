@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\StorageService;
 use App\Models\ModDevice;
 use App\Models\ModUpload;
 use CodeIgniter\API\ResponseTrait;
@@ -50,34 +51,26 @@ class Upload extends BaseController
             $extension = strtolower($uploaded_File->getClientExtension());
             $diskName = $uuid . '.' . $extension;
 
-            // Move file to destination
-            $upload_path = WRITEPATH . 'uploads/copied_files';
-            if (!is_dir($upload_path)) {
-                mkdir($upload_path, 0777, true);
-            }
-            $full_file_path = $upload_path . '/' . $diskName;
-
-            if (!$uploaded_File->move($upload_path, $diskName)) {
-                return $this->respond([
-                    'status' => 0,
-                    'time' => $dated,
-                    'message' => "Failed to save file to server",
-                    'error_type' => 'server_error'
-                ]);
-            }
-
-            // Generate thumbnail for images
+            // Generate dimensions before moving/uploading
             $thumbnail_path = null;
             $image_dimensions = null;
             $preview_available = 0;
-
-            $extension = strtolower($uploaded_File->getClientExtension());
             $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 
             if (in_array($extension, $image_extensions)) {
-                // Thumbnail generation removed (computationally expensive)
-                $image_dimensions = $this->getImageDimensions($full_file_path);
+                $image_dimensions = $this->getImageDimensions($uploaded_File->getTempName());
                 $preview_available = 1;
+            }
+
+            // Save file to MinIO / S3 storage
+            $storage = StorageService::getInstance();
+            if (!$storage->upload("active/{$diskName}", $uploaded_File->getTempName(), $uploaded_File->getClientMimeType())) {
+                return $this->respond([
+                    'status' => 0,
+                    'time' => $dated,
+                    'message' => "Failed to save file to storage",
+                    'error_type' => 'server_error'
+                ]);
             }
 
             // Auto-categorize file
@@ -176,20 +169,15 @@ class Upload extends BaseController
                 ]);
             }
 
-            // Ensure destination directory exists
-            $upload_path = WRITEPATH . 'uploads/copied_files/';
-            if (!is_dir($upload_path)) {
-                mkdir($upload_path, 0777, true);
-            }
-
             $originalName = $uploaded_File->getClientName();
             $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
             $safeName = str_replace(['..', '/', '\\'], '_', $safeName);
             $extension = strtolower($uploaded_File->getClientExtension());
             $diskName = $uuid . '.' . $extension;
 
-            // Move file and check for success
-            if ($uploaded_File->move($upload_path, $diskName)) {
+            // Upload file to MinIO / S3 storage
+            $storage = StorageService::getInstance();
+            if ($storage->upload("active/{$diskName}", $uploaded_File->getTempName(), $uploaded_File->getClientMimeType())) {
                 $data = [
                     'up_file_uuid' => $uuid,
                     'up_file_session_id' => $file_sess_id,
@@ -213,8 +201,7 @@ class Upload extends BaseController
                         'message' => "File Uploaded Successfully"
                     ]);
                 } else {
-                    // Clean up physical file if database registration fails
-                    @unlink($upload_path . $diskName);
+                    $storage->delete("active/{$diskName}");
                     return $this->respond([
                         'status' => 0,
                         'time' => $dated,
@@ -225,7 +212,7 @@ class Upload extends BaseController
                 return $this->respond([
                     'status' => 0,
                     'time' => $dated,
-                    'message' => "Failed to save file on server. Permission error or missing folder."
+                    'message' => "Failed to save file to storage."
                 ]);
             }
         }

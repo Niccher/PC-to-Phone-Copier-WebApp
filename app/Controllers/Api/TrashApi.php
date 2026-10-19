@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
+use App\Libraries\StorageService;
 use App\Models\ModUpload;
 use App\Models\ModText;
 use CodeIgniter\API\ResponseTrait;
@@ -42,11 +43,10 @@ class TrashApi extends BaseController
             unset($file->deleted_at);
             $this->modUpload->restore_file($file);
 
-            // Restore physical file if it was moved during delete
-            $f_path_deleted = WRITEPATH . '/uploads/copied_files_deleted/';
-            $f_path_active = WRITEPATH . '/uploads/copied_files/';
-            if (!empty($file->up_file_Orig_Name) && file_exists($f_path_deleted . $file->up_file_Orig_Name)) {
-                @rename($f_path_deleted . $file->up_file_Orig_Name, $f_path_active . $file->up_file_Orig_Name);
+            // Restore physical file in storage
+            $diskName = basename($file->up_file_Sys_Name ?? $file->up_file_Name ?? $file->up_file_Orig_Name ?? '');
+            if (!empty($diskName)) {
+                StorageService::getInstance()->move("trash/{$diskName}", "active/{$diskName}");
             }
 
             return $this->respond(['success' => true, 'message' => 'File restored successfully']);
@@ -93,10 +93,18 @@ class TrashApi extends BaseController
         }
 
         try {
+            $file = $this->modUpload->get_deleted_file_by_uuid($fileUuid, $sessId);
+            $diskName = $file ? basename($file->up_file_Sys_Name ?? $file->up_file_Name ?? $file->up_file_Orig_Name ?? '') : null;
+
             // Permanently delete from deleted table
             $deleted = $this->modUpload->permanent_delete_file($fileUuid, $sessId);
 
             if ($deleted) {
+                if ($diskName) {
+                    $storage = StorageService::getInstance();
+                    $storage->delete("trash/{$diskName}");
+                    $storage->delete("active/{$diskName}");
+                }
                 return $this->respond(['success' => true, 'message' => 'File permanently deleted']);
             } else {
                 return $this->respond(['success' => false, 'message' => 'File not found or already deleted'], 404);
@@ -138,8 +146,25 @@ class TrashApi extends BaseController
         }
 
         try {
+            $deletedFiles = $this->modUpload->get_deleted_files($sessId);
+            $storage = StorageService::getInstance();
+            $keysToDelete = [];
+            if (!empty($deletedFiles)) {
+                foreach ($deletedFiles as $df) {
+                    $diskName = basename($df->up_file_Sys_Name ?? $df->up_file_Name ?? $df->up_file_Orig_Name ?? '');
+                    if (!empty($diskName)) {
+                        $keysToDelete[] = "trash/{$diskName}";
+                        $keysToDelete[] = "active/{$diskName}";
+                    }
+                }
+            }
+
             $filesDeleted = $this->modUpload->empty_trash_files($sessId);
             $textsDeleted = $this->modText->empty_trash_texts($sessId);
+
+            if (!empty($keysToDelete)) {
+                $storage->deleteMultiple($keysToDelete);
+            }
 
             $totalDeleted = $filesDeleted + $textsDeleted;
 

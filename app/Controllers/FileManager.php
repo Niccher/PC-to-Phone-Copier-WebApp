@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\StorageService;
 use App\Models\ModUpload;
 use CodeIgniter\API\ResponseTrait;
 
@@ -120,6 +121,17 @@ class FileManager extends BaseController
                 'status' => 0,
                 'message' => 'File UUIDs array is required'
             ]);
+        }
+
+        $storage = StorageService::getInstance();
+        foreach ($file_uuids as $uuid) {
+            $file_data = $mod_upload->file_get_uploaded_by_file_uuid($uuid);
+            if (!empty($file_data) && isset($file_data[0])) {
+                $diskName = basename($file_data[0]->up_file_Sys_Name ?? $file_data[0]->up_file_Name ?? '');
+                if ($diskName) {
+                    $storage->move("active/{$diskName}", "trash/{$diskName}");
+                }
+            }
         }
 
         $result = $mod_upload->batch_delete_files($file_uuids);
@@ -243,21 +255,31 @@ class FileManager extends BaseController
             return redirect()->back()->with('error', 'No files selected for download.');
         }
 
-        $zipFile = WRITEPATH . 'uploads/P2P_Batch_Download_' . time() . '.zip';
+        $zipDir = WRITEPATH . 'uploads/';
+        if (!is_dir($zipDir)) {
+            @mkdir($zipDir, 0777, true);
+        }
+        $zipFile = $zipDir . 'P2P_Batch_Download_' . time() . '.zip';
         $zip = new \ZipArchive();
 
         if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
             return redirect()->back()->with('error', 'Could not create ZIP archive.');
         }
 
+        $storage = StorageService::getInstance();
         $filesAdded = 0;
         foreach ($file_uuids as $uuid) {
             $file_data = $mod_upload->file_get_uploaded_by_file_uuid($uuid);
             if (!empty($file_data) && isset($file_data[0])) {
                 $file = $file_data[0];
-                $physicalPath = WRITEPATH . 'uploads/copied_files/' . ($file->up_file_Orig_Name ?? '');
-                if (file_exists($physicalPath)) {
-                    $zip->addFile($physicalPath, $file->up_file_Orig_Name);
+                $diskName = basename($file->up_file_Sys_Name ?? $file->up_file_Name ?? '');
+                $origName = basename($file->up_file_Orig_Name ?? $diskName);
+
+                $fileData = $storage->downloadStream("active/{$diskName}") ?? $storage->downloadStream($diskName);
+                if ($fileData && is_resource($fileData['stream'])) {
+                    $content = stream_get_contents($fileData['stream']);
+                    fclose($fileData['stream']);
+                    $zip->addFromString($origName, $content);
                     $filesAdded++;
                 }
             }
@@ -269,7 +291,7 @@ class FileManager extends BaseController
             if (file_exists($zipFile)) {
                 @unlink($zipFile);
             }
-            return redirect()->back()->with('error', 'None of the selected files could be found on the server.');
+            return redirect()->back()->with('error', 'None of the selected files could be found in storage.');
         }
 
         $fileContent = file_get_contents($zipFile);

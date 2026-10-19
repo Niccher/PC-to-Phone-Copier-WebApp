@@ -17,6 +17,12 @@ done
 
 echo "MySQL is ready!"
 
+# Ensure Composer dependencies (including AWS S3 SDK) are installed
+if [ ! -d "/var/www/html/vendor/aws" ]; then
+    echo "Installing/updating Composer dependencies..."
+    composer install --no-dev --optimize-autoloader --no-interaction || echo "WARNING: Composer install encountered an issue."
+fi
+
 # Run migrations (safe to run multiple times — only applies pending migrations)
 echo "Running database migrations..."
 cd /var/www/html

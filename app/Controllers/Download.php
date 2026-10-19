@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\StorageService;
 use App\Models\ModDevice;
 use App\Models\ModUpload;
 use CodeIgniter\API\ResponseTrait;
@@ -24,21 +25,37 @@ class Download extends BaseController
 		$uploaded_files_by_session_and_devid = $mod_upload->file_uploaded_by_phone_session_download($phone_file_id, $phone_sess_id, $phone_dev_id);
 
 		if (!empty($uploaded_files_by_session_and_devid)) {
-			$diskName = basename($uploaded_files_by_session_and_devid->up_file_Name);
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
-			$realPath = realpath($filePath);
-			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
-			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
+			$diskName = basename($uploaded_files_by_session_and_devid->up_file_Sys_Name ?? $uploaded_files_by_session_and_devid->up_file_Name);
+			$origName = $uploaded_files_by_session_and_devid->up_file_Orig_Name ?? $diskName;
+
+			$storage = StorageService::getInstance();
+			$fileData = $storage->downloadStream("active/{$diskName}") ?? $storage->downloadStream($diskName);
+
+			if (!$fileData) {
 				return $this->respond([
 					'status' => 2,
 					'time' => $dated,
 					'phone_file_id' => $phone_file_id,
 					'phone_dev_id' => $phone_dev_id,
 					'phone_sess_id' => $phone_sess_id,
-					'phone_file_status' => "Invalid file path",
+					'phone_file_status' => "File missing in storage",
 				]);
 			}
-			return $this->response->download($filePath, null);
+
+			$this->response->setHeader('Content-Type', $fileData['type'] ?: 'application/octet-stream');
+			$this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($origName) . '"');
+			if (!empty($fileData['size'])) {
+				$this->response->setHeader('Content-Length', (string) $fileData['size']);
+			}
+
+			if (is_resource($fileData['stream'])) {
+				$this->response->sendHeaders();
+				fpassthru($fileData['stream']);
+				fclose($fileData['stream']);
+				exit;
+			}
+
+			return $this->response->download($origName, $fileData['stream']);
 		}
 		else {
 			return $this->respond([
@@ -61,20 +78,6 @@ class Download extends BaseController
 		$phone_file_uuid = $this->request->getVar('var_file_uuid');
 		$phone_file_name = basename($this->request->getVar('var_file_name'));
 
-		$f_path_old = WRITEPATH . '/uploads/copied_files/';
-		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
-
-		$realOld = realpath($f_path_old . $phone_file_name);
-		$allowedPath = realpath($f_path_old);
-		if ($realOld === false || strpos($realOld, $allowedPath) !== 0) {
-			return $this->respond([
-				'status' => "2",
-				'time' => $dated,
-				'name' => $phone_file_name,
-				'uuid' => $phone_file_uuid,
-			]);
-		}
-
 		$file_data = $mod_upload->file_get_uploaded_by_file_uuid($phone_file_uuid);
 		if (empty($file_data)) {
 			return $this->respond([
@@ -84,8 +87,9 @@ class Download extends BaseController
 				'uuid' => $phone_file_uuid,
 			]);
 		}
-		$stored_name = basename($file_data[0]->up_file_Name);
-		if ($stored_name !== $phone_file_name) {
+
+		$stored_name = basename($file_data[0]->up_file_Sys_Name ?? $file_data[0]->up_file_Name);
+		if ($stored_name !== $phone_file_name && basename($file_data[0]->up_file_Orig_Name) !== $phone_file_name) {
 			return $this->respond([
 				'status' => "2",
 				'time' => $dated,
@@ -95,8 +99,9 @@ class Download extends BaseController
 		}
 
 		try {
-			rename($f_path_old . $phone_file_name, $f_path_new . $phone_file_name);
-			$mod_upload->file_to_delete($phone_file_uuid, $phone_file_name);
+			$storage = StorageService::getInstance();
+			$storage->move("active/{$stored_name}", "trash/{$stored_name}");
+			$mod_upload->file_to_delete($phone_file_uuid, $stored_name);
 
 			return $this->respond([
 				'status' => "1",
@@ -133,32 +138,44 @@ class Download extends BaseController
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
-			$diskName = basename($file->up_file_Name);
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
-			$realPath = realpath($filePath);
-			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
+			$diskName = basename($file->up_file_Sys_Name ?? $file->up_file_Name);
+			$origName = $file->up_file_Orig_Name ?? $diskName;
 
-			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
-				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $diskName;
-				$realPath = realpath($filePath);
-				$deletedPath = realpath(WRITEPATH . '/uploads/copied_files_deleted');
-				if ($realPath === false || strpos($realPath, $deletedPath) !== 0) {
-					return $this->respond([
-						'status' => 2,
-						'time' => $dated,
-						'message' => "Invalid file path",
-					]);
-				}
+			$storage = StorageService::getInstance();
+			$fileData = $storage->downloadStream("active/{$diskName}")
+				?? $storage->downloadStream("trash/{$diskName}")
+				?? $storage->downloadStream($diskName);
+
+			if (!$fileData) {
+				return $this->respond([
+					'status' => 2,
+					'time' => $dated,
+					'message' => "Unable to find file in storage",
+				], 404);
 			}
 
 			// Handle Burn After Reading
 			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
-				register_shutdown_function(function () use ($mod_upload, $file_uuid) {
-					$mod_upload->batch_delete_files([$file_uuid]);
+				register_shutdown_function(function () use ($mod_upload, $file_uuid, $storage, $diskName) {
+					$mod_upload->file_delete_uploaded_files(['uuid' => $file_uuid]);
+					$storage->move("active/{$diskName}", "trash/{$diskName}");
 				});
 			}
 
-			return $this->response->download($filePath, null);
+			$this->response->setHeader('Content-Type', $fileData['type'] ?: 'application/octet-stream');
+			$this->response->setHeader('Content-Disposition', 'attachment; filename="' . basename($origName) . '"');
+			if (!empty($fileData['size'])) {
+				$this->response->setHeader('Content-Length', (string) $fileData['size']);
+			}
+
+			if (is_resource($fileData['stream'])) {
+				$this->response->sendHeaders();
+				fpassthru($fileData['stream']);
+				fclose($fileData['stream']);
+				exit;
+			}
+
+			return $this->response->download($origName, $fileData['stream']);
 		}
 		else {
 			return $this->respond([
@@ -187,42 +204,45 @@ class Download extends BaseController
 
 		if (!empty($file_data)) {
 			$file = $file_data[0];
-			$diskName = basename($file->up_file_Name);
-			$filePath = WRITEPATH . '/uploads/copied_files/' . $diskName;
-			$realPath = realpath($filePath);
-			$allowedPath = realpath(WRITEPATH . '/uploads/copied_files');
+			$diskName = basename($file->up_file_Sys_Name ?? $file->up_file_Name);
+			$origName = $file->up_file_Orig_Name ?? $diskName;
 
-			if ($realPath === false || strpos($realPath, $allowedPath) !== 0) {
-				$filePath = WRITEPATH . '/uploads/copied_files_deleted/' . $diskName;
-				$realPath = realpath($filePath);
-				$deletedPath = realpath(WRITEPATH . '/uploads/copied_files_deleted');
-				if ($realPath === false || strpos($realPath, $deletedPath) !== 0) {
-					return $this->respond(['status' => 2, 'message' => 'File not found or access denied'], 404);
-				}
-			}
+			$storage = StorageService::getInstance();
+			$fileData = $storage->downloadStream("active/{$diskName}")
+				?? $storage->downloadStream("trash/{$diskName}")
+				?? $storage->downloadStream($diskName);
 
-			if (!file_exists($filePath)) {
-				return $this->respond(['status' => 2, 'message' => 'File not found on disk'], 404);
+			if (!$fileData) {
+				return $this->respond(['status' => 2, 'message' => 'File not found in storage'], 404);
 			}
 
 			// Handle Burn After Reading
 			if (isset($file->up_file_expiration_policy) && $file->up_file_expiration_policy == 2) {
-				register_shutdown_function(function () use ($mod_upload, $file_uuid) {
-					$mod_upload->batch_delete_files([$file_uuid]);
+				register_shutdown_function(function () use ($mod_upload, $file_uuid, $storage, $diskName) {
+					$mod_upload->file_delete_uploaded_files(['uuid' => $file_uuid]);
+					$storage->move("active/{$diskName}", "trash/{$diskName}");
 				});
 			}
 
-			$mimeType = mime_content_type($filePath);
-
-			// For text files, we might want to force utf-8
+			$mimeType = $fileData['type'] ?: 'application/octet-stream';
 			if (strpos($mimeType, 'text/') === 0) {
 				$mimeType .= '; charset=UTF-8';
 			}
 
-			return $this->response
-				->setHeader('Content-Type', $mimeType)
-				->setHeader('Content-Disposition', 'inline; filename="' . basename($file->up_file_Orig_Name) . '"')
-				->setBody(file_get_contents($filePath));
+			$this->response->setHeader('Content-Type', $mimeType);
+			$this->response->setHeader('Content-Disposition', 'inline; filename="' . basename($origName) . '"');
+			if (!empty($fileData['size'])) {
+				$this->response->setHeader('Content-Length', (string) $fileData['size']);
+			}
+
+			if (is_resource($fileData['stream'])) {
+				$this->response->sendHeaders();
+				fpassthru($fileData['stream']);
+				fclose($fileData['stream']);
+				exit;
+			}
+
+			return $this->response->setBody((string) $fileData['stream']);
 		}
 		else {
 			return $this->respond([
@@ -244,14 +264,13 @@ class Download extends BaseController
 			return redirect()->to(base_url('home/recent'))->with('error', 'File not found');
 		}
 
-		$f_path_old = WRITEPATH . '/uploads/copied_files/';
-		$f_path_new = WRITEPATH . '/uploads/copied_files_deleted/';
-		$diskName = basename($file_data[0]->up_file_Name);
-		$stored_orig_name = $file_data[0]->up_file_Orig_Name;
+		$diskName = basename($file_data[0]->up_file_Sys_Name ?? $file_data[0]->up_file_Name);
+		$stored_orig_name = $file_data[0]->up_file_Orig_Name ?? $diskName;
 		$file_uuid = $file_data[0]->up_file_uuid;
 
 		try {
-			rename($f_path_old . $diskName, $f_path_new . $diskName);
+			$storage = StorageService::getInstance();
+			$storage->move("active/{$diskName}", "trash/{$diskName}");
 			$mod_upload->file_to_delete($file_uuid, $diskName);
 			return redirect()->back()->with('message', "File " . $stored_orig_name . " moved to trash");
 		}
@@ -273,20 +292,28 @@ class Download extends BaseController
 			return redirect()->back()->with('error', 'No active files found to download');
 		}
 
-		$zipFile = WRITEPATH . 'uploads/P2P_Session_' . substr(md5($sess_id . time()), 0, 8) . '.zip';
+		$zipDir = WRITEPATH . 'uploads/';
+		if (!is_dir($zipDir)) {
+			@mkdir($zipDir, 0777, true);
+		}
+		$zipFile = $zipDir . 'P2P_Session_' . substr(md5($sess_id . time()), 0, 8) . '.zip';
 		$zip = new \ZipArchive();
 
 		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
 			return redirect()->back()->with('error', 'Could not create ZIP archive.');
 		}
 
+		$storage = StorageService::getInstance();
 		$filesAdded = 0;
 		foreach ($files as $file) {
-			$diskName = basename($file->up_file_Name ?? $file->system_name ?? '');
+			$diskName = basename($file->up_file_Sys_Name ?? $file->up_file_Name ?? $file->system_name ?? '');
 			$origName = basename($file->up_file_Orig_Name ?? $file->original_name ?? $diskName);
-			$filePath = WRITEPATH . 'uploads/copied_files/' . $diskName;
-			if (file_exists($filePath)) {
-				$zip->addFile($filePath, $origName);
+
+			$fileData = $storage->downloadStream("active/{$diskName}") ?? $storage->downloadStream($diskName);
+			if ($fileData && is_resource($fileData['stream'])) {
+				$content = stream_get_contents($fileData['stream']);
+				fclose($fileData['stream']);
+				$zip->addFromString($origName, $content);
 				$filesAdded++;
 			}
 		}
@@ -297,7 +324,7 @@ class Download extends BaseController
 			if (file_exists($zipFile)) {
 				@unlink($zipFile);
 			}
-			return redirect()->back()->with('error', 'None of the session files could be found on disk');
+			return redirect()->back()->with('error', 'None of the session files could be found in storage');
 		}
 
 		$fileContent = file_get_contents($zipFile);
