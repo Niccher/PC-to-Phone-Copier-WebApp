@@ -17,16 +17,22 @@ This document lists all environment variables that users and operators can confi
 | `database.default.password` | WebApp / DB | Yes | `root_password` | Database password. |
 | `database.default.DBDriver` | WebApp / DB | Yes | `MySQLi` | Database driver (MySQLi). |
 | `database.default.port` | WebApp / DB | Yes | `3306` | Internal MySQL connection port. |
+| `s3.endpoint` | WebApp / S3 | Yes | `http://minio:9000` | Internal MinIO/S3 API endpoint for container communication. |
+| `s3.public_endpoint` | WebApp / S3 | Yes | `http://localhost:9000` | Publicly reachable MinIO/S3 endpoint for presigned direct download URLs. |
+| `s3.access_key` | WebApp / S3 | Yes | `minio_admin` | S3 Access Key. |
+| `s3.secret_key` | WebApp / S3 | Yes | `minio_secure_password` | S3 Secret Key. |
+| `s3.bucket` | WebApp / S3 | Yes | `p2p-copier-files` | S3 target bucket name. |
 | `encryption.key` | WebApp | No | Empty | Application master encryption key. Generate via `php spark key:generate`. |
 
 ---
 
 ## Docker Compose Port Mappings
 
-If default ports collide with services already running on your host machine, modify `docker-compose.yml`:
+Standard production ports for cloud deployment (GCP / Docker):
 
 | Container Service | Default Host Port | Container Port | Purpose |
 |---|---|---|---|
-| `p2p-copier-webapp` | `9004` | `80` | Web application & REST API |
-| `shared-phpmyadmin` | `9000` | `80` | phpMyAdmin web management UI |
-| `shared-mysql` | `9306` | `3306` | MySQL server host port |
+| `p2p-copier-webapp` | `80` | `80` | Web application & REST API |
+| `shared-minio` | `9000` | `9000` | MinIO S3 API |
+| `shared-minio` | `9001` | `9001` | MinIO Web Console UI |
+| `shared-mysql` | `3306` | `3306` | MySQL database host port |

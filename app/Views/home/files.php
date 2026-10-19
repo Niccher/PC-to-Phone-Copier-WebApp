@@ -37,7 +37,7 @@
                         <strong>Max 50MB per file.</strong> Supported: Documents, Images, Archives, Audio, Video, Code.
                     </div>
                     <div class="dropzone-container">
-                        <form action="<?php echo base_url('home/file/upload'); ?>" class="dropzone"
+                        <form action="<?php echo base_url('api/v1/files/upload'); ?>" class="dropzone"
                             id="file-upload-dropzone">
                             <div class="fallback"><input name="file" type="file" multiple /></div>
                             <div class="dz-message needsclick">

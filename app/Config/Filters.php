@@ -35,8 +35,6 @@ class Filters extends BaseConfig
             'csrf' => [
                 'except' => [
                     'auth/register',
-                    'device/*',
-                    'home/phone/*',
                     'api/*',
                 ]
             ],

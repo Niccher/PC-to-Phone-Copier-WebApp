@@ -19,7 +19,7 @@ class Storage extends BaseConfig
     /**
      * MinIO / S3 public API endpoint for presigned URLs
      */
-    public string $publicEndpoint = 'http://localhost:9100';
+    public string $publicEndpoint = 'http://localhost:9000';
 
     /**
      * Access Key ID

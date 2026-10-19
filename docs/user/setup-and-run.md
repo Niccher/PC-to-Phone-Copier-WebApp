@@ -33,24 +33,24 @@ Check container statuses:
 docker compose ps
 ```
 A healthy cluster displays:
-- `p2p-copier-webapp`: `Up` (port 9004)
-- `shared-mysql`: `Up (healthy)` (port 9306)
-- `shared-phpmyadmin`: `Up` (port 9000)
+- `p2p-copier-webapp`: `Up` (port 80)
+- `shared-mysql`: `Up (healthy)` (port 3306)
+- `shared-minio`: `Up (healthy)` (ports 9000 & 9001)
 
 Verify API health via curl:
 ```bash
-curl -s http://localhost:9004/api/v1/ping
+curl -s http://localhost/api/v1/ping
 ```
 Expected output:
 ```json
-{"status":"ok","message":"pong"}
+{"success":true,"code":200,"message":"P2P Copier Server Ping OK","data":{"status":"online","app":"P2P Copier WebApp","version":"1.0.0","api_version":"v1"}}
 ```
 
 ### Step 5: Access Web Interfaces
-- **Web App Interface**: [http://localhost:9004](http://localhost:9004)
-- **phpMyAdmin**: [http://localhost:9000](http://localhost:9000)
-  - Username: `root`
-  - Password: `root_password`
+- **Web App Interface**: [http://localhost](http://localhost) (Port 80)
+- **MinIO Console**: [http://localhost:9001](http://localhost:9001)
+  - Username: `minio_admin`
+  - Password: `minio_secure_password`
 
 ### Step 6: Stopping the System
 When finished:

@@ -6,10 +6,10 @@ info:
     session pairing, unified file/text transfer feed, and telemetry.
   version: 1.1.0
 servers:
-  - url: http://localhost:9004
-    description: Local Docker Compose Environment
-  - url: http://10.0.2.2:9004
-    description: Android Emulator Host Gateway
+  - url: http://localhost
+    description: Production / GCP Docker Environment (Port 80)
+  - url: http://10.0.2.2
+    description: Android Emulator Host Gateway (Port 80)
 paths:
   /api/v1/ping:
     get:

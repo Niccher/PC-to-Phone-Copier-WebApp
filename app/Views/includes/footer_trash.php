@@ -76,7 +76,7 @@
                 return;
             }
             $.ajax({
-                url: "<?php echo base_url('text/save'); ?>",
+                url: "<?php echo base_url('api/v1/texts/save'); ?>",
                 method: "POST",
                 data: { 
                     text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''), 
@@ -96,7 +96,7 @@
         window.restoreFile = function (fileUuid) {
             if (confirm('Are you sure you want to restore this file?')) {
                 $.ajax({
-                    url: '<?php echo base_url("api/restore-file"); ?>',
+                    url: '<?php echo base_url("api/v1/trash/files/restore"); ?>',
                     type: 'POST',
                     data: { file_uuid: fileUuid },
                     success: function (response) {
@@ -118,7 +118,7 @@
         window.restoreText = function (textUuid) {
             if (confirm('Are you sure you want to restore this text?')) {
                 $.ajax({
-                    url: '<?php echo base_url("api/restore-text"); ?>',
+                    url: '<?php echo base_url("api/v1/trash/texts/restore"); ?>',
                     type: 'POST',
                     data: { text_uuid: textUuid },
                     success: function (response) {
@@ -140,7 +140,7 @@
         window.permanentDeleteFile = function (fileUuid) {
             if (confirm('Are you sure you want to permanently delete this file? This action cannot be undone!')) {
                 $.ajax({
-                    url: '<?php echo base_url("api/permanent-delete-file"); ?>',
+                    url: '<?php echo base_url("api/v1/trash/files/delete"); ?>',
                     type: 'POST',
                     data: { file_uuid: fileUuid },
                     success: function (response) {
@@ -162,7 +162,7 @@
         window.permanentDeleteText = function (textUuid) {
             if (confirm('Are you sure you want to permanently delete this text? This action cannot be undone!')) {
                 $.ajax({
-                    url: '<?php echo base_url("api/permanent-delete-text"); ?>',
+                    url: '<?php echo base_url("api/v1/trash/texts/delete"); ?>',
                     type: 'POST',
                     data: { text_uuid: textUuid },
                     success: function (response) {
@@ -190,7 +190,7 @@
 
             if (confirm(`Are you sure you want to permanently delete all ${totalItems} items in trash? This action cannot be undone!`)) {
                 $.ajax({
-                    url: '<?php echo base_url("api/empty-trash"); ?>',
+                    url: '<?php echo base_url("api/v1/trash/empty"); ?>',
                     type: 'POST',
                     success: function (response) {
                         if (response.success) {
@@ -277,7 +277,7 @@
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
             var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
+                url: "<?php echo base_url('api/v1/files/upload'); ?>",
                 maxFilesize: 50,
                 init: function () {
                     this.on("sending", function () { $('#global-upload-progress').show(); });

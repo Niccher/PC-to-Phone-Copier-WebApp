@@ -15,7 +15,7 @@ flowchart LR
         Android["Android Device / Emulator\n(Retrofit / ML Kit)"]
     end
 
-    subgraph Backend["Relay Server Tier (Port 9004)"]
+    subgraph Backend["Relay Server Tier (Port 80)"]
         CI4["CodeIgniter 4 Application\n(PHP 8.3 + Apache)"]
         WebUI["Web UI Controller\n(Home.php / Views)"]
         API["REST API v1 Controllers\n(Api/v1/*)"]
@@ -23,8 +23,8 @@ flowchart LR
     end
 
     subgraph Storage["Persistence Tier"]
-        DB[("MySQL 8.4 Database\n(Port 9306)")]
-        Disk[("Local Filesystem\n(writable/uploads/)")]
+        DB[("MySQL 8.4 Database\n(Port 3306)")]
+        S3[("MinIO S3 Object Storage\n(Port 9000 API / 9001 Console)")]
     end
 
     Browser -->|HTTP POST / GET| WebUI
@@ -34,7 +34,7 @@ flowchart LR
     API --> CI4
     SSE --> CI4
     CI4 -->|PDO SQL Queries| DB
-    CI4 -->|Multipart File I/O| Disk
+    CI4 -->|S3 AWS SDK Object Streaming| S3
 ```
 
 ---
@@ -43,9 +43,10 @@ flowchart LR
 
 | Container / Component | Repository / Folder | Runtime / Base Image | Published Port | Responsibility |
 |---|---|---|---|---|
-| `p2p-copier-webapp` | `.` (Root) | PHP 8.3 Apache (`Dockerfile`) | `9004:80` | Serves browser UI, executes REST API endpoints, coordinates session pairing, and serves SSE updates. |
-| `shared-mysql` | Volume `mysql-data` | `mysql:8.4` | `9306:3306` | Relational storage for devices, paired sessions, uploaded files metadata, text entries, and audit logs. |
-| `shared-phpmyadmin` | External container | `phpmyadmin:latest` | `9000:80` | Web-based database management interface for development and diagnostics. |
+| `p2p-copier-webapp` | `.` (Root) | PHP 8.3 Apache (`Dockerfile`) | `80:80` | Serves browser UI, executes REST API endpoints, coordinates session pairing, and serves SSE updates. |
+| `shared-mysql` | Volume `mysql-data` | `mysql:8.4` | `3306:3306` | Relational storage for devices, paired sessions, uploaded files metadata, text entries, and audit logs. |
+| `shared-minio` | Volume `minio-data` | `minio/minio:latest` | `9000:9000`, `9001:9001` | High-performance distributed S3-compatible object storage for file payloads. |
+| `shared-minio-init` | External container | `minio/mc:latest` | N/A (One-off) | Bootstraps S3 bucket `p2p-copier-files` and configures anonymous read policies. |
 | `P2P_Copier_App` | Sibling repo (`P2P_Copier_App`) | Android SDK 24–35 (JVM 11) | N/A (Client) | Mobile client providing on-device ML Kit OCR, ZXing QR scanning, biometrics, and file/text transfers. |
 
 ---

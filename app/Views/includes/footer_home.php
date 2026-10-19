@@ -80,7 +80,7 @@
                 return;
             }
             $.ajax({
-                url: "<?php echo base_url('text/save'); ?>",
+                url: "<?php echo base_url('api/v1/texts/save'); ?>",
                 method: "POST",
                 data: {
                     text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''),
@@ -165,7 +165,7 @@
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
             var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
+                url: "<?php echo base_url('api/v1/files/upload'); ?>",
                 maxFilesize: 50,
                 init: function () {
                     this.on("sending", function () { $('#global-upload-progress').show(); });

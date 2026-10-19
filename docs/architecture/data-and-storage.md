@@ -91,9 +91,16 @@ Database: `db_p2p_copier` (Engine: InnoDB, Character set: `utf8mb4`, Collation: 
 
 ---
 
-## 3. Filesystem Storage Architecture
+## 3. Object & Filesystem Storage Architecture
 
-Uploaded binary files are stored under `writable/uploads/`:
-- **Naming Strategy**: Stored with sanitized, randomized filesystem names (e.g. `p2p_1725638400_abc123.pdf`), while preserving the original user-submitted filename in `tbl_files.original_name`.
-- **Directory Protection**: `writable/` contains an `.htaccess` preventing direct execution of `.php` or script files.
-- **Serving Files**: Binary downloads are routed through `Download::browser_file_download($uuid)` and `FilesApi::download`, ensuring only users with valid session credentials can download files.
+Uploaded binary files are stored in **MinIO S3 Object Storage** (`p2p-copier-files` bucket):
+- **Storage Driver**: AWS SDK for PHP (`Aws\S3\S3Client`) wrapped in `App\Libraries\StorageService`.
+- **Key Prefixing & Separation**:
+  - `active/{uuid}.{ext}`: Active files available for browsing and download.
+  - `trash/{uuid}.{ext}`: Soft-deleted files preserved until trash is emptied or permanently deleted.
+- **Serving Files**:
+  - Direct secure streaming via `Download::browser_file_download($uuid)` and `FilesApi::download`, streaming S3 object bodies directly into HTTP responses.
+  - Presigned S3 URLs via `StorageService::getPresignedUrl()` for direct client-to-storage transfers when requested.
+- **Storage Quota & Expiration**:
+  - Storage quota (500MB per session) checked before upload.
+  - Burn-After-Reading (policy `2`) automatically triggers object deletion upon completion of first download.

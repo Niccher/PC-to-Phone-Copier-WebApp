@@ -54,12 +54,12 @@ app/
 
 Registered in `app/Config/Filters.php`:
 
-1. **`session_auth` (`App\Filters\FilterSessionAuth`)**:
-   - Applied to `/home/*`, `/saved/*`, `/api/events/stream`, `/text/*`.
-   - Ensures an active PHP web session exists. If unauthenticated, redirects browser to `/`.
-2. **`device_auth` (`App\Filters\FilterDeviceAuth`)**:
-   - Applied to `/api/v1/*`.
-   - Validates that incoming API requests submit a valid, registered `dev_uuid` and active session.
+1. **`session_auth` (`App\Filters\SessionAuth`)**:
+   - Applied to web routes (`/home/*`, `/saved/*`) and session-authenticated Web API endpoints under `/api/v1/*` (SSE stream, file metadata/management, trash).
+   - Ensures an active PHP web session exists. Returns 401 JSON on API routes or redirects unauthenticated browser requests.
+2. **`device_auth` (`App\Filters\ApiDeviceAuth`)**:
+   - Applied to device endpoints under `/api/v1/*`.
+   - Validates `X-Device-UUID` header against `tbl_devices`, exempting public endpoints (`register`, `check`, `pair`, `metrics`). Fast cached for 24 hours.
 
 ---
 

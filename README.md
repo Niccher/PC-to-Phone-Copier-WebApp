@@ -11,14 +11,15 @@ Software engineers: [docs/README.md](docs/README.md).
 
 | Component | URL / Endpoint | Port | Health Check / Dev Login |
 |-----------|----------------|------|--------------------------|
-| Web UI | http://localhost:9004 | 9004 | Landing pairing page with QR code |
-| REST API | http://localhost:9004/api/v1/ping | 9004 | Returns JSON `status: "ok"` |
-| phpMyAdmin | http://localhost:9000 | 9000 | User: `root` / Pass: `root_password` |
-| MySQL | localhost:9306 | 9306 | Internal DB: `db_p2p_copier` |
+| Web UI | http://localhost | 80 | Landing pairing page with QR code |
+| REST API | http://localhost/api/v1/ping | 80 | Returns JSON `status: "online"` |
+| MinIO S3 API | http://localhost:9000 | 9000 | S3-compatible object storage API |
+| MinIO Console | http://localhost:9001 | 9001 | User: `minio_admin` / Pass: `minio_secure_password` |
+| MySQL | localhost:3306 | 3306 | Internal DB: `db_p2p_copier` |
 
 ## Prerequisites
 
-### Option A — Docker (recommended for users)
+### Option A — Docker (recommended for users & GCP deployment)
 
 - Git
 - Docker Engine & Docker Compose v2 (or Docker Desktop)
@@ -28,6 +29,7 @@ Software engineers: [docs/README.md](docs/README.md).
 - PHP 8.3+ with `intl`, `mbstring`, `mysqli`, `curl` extensions
 - Composer 2.x
 - MySQL 8.4+
+- MinIO or S3-compatible object store
 
 ## Setup and run
 
@@ -42,7 +44,7 @@ From a fresh machine, numbered, copy-pasteable:
    ```bash
    cp .env.example .env
    ```
-3. Build and start the containers (MySQL, phpMyAdmin, and WebApp):
+3. Build and start the containers (MySQL, MinIO S3, and WebApp):
    ```bash
    docker compose up --build -d
    ```
@@ -50,7 +52,7 @@ From a fresh machine, numbered, copy-pasteable:
    ```bash
    docker compose ps
    ```
-5. Open the Web UI at [http://localhost:9004](http://localhost:9004).
+5. Open the Web UI at [http://localhost](http://localhost) (Port 80).
 6. When finished, stop the stack:
    ```bash
    docker compose down
@@ -61,16 +63,19 @@ From a fresh machine, numbered, copy-pasteable:
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `CI_ENVIRONMENT` | `development` | Environment mode (`development` / `production`) |
-| `app.baseURL` | `http://localhost:9004/` | Web application base URL |
+| `app.baseURL` | `http://localhost/` | Web application base URL |
 | `database.default.hostname` | `mysql` | MySQL service name (Docker) or `localhost` |
 | `database.default.database` | `db_p2p_copier` | Active MySQL database name |
 | `database.default.port` | `3306` | MySQL port inside the network |
+| `s3.endpoint` | `http://minio:9000` | S3 API endpoint for container communication |
+| `s3.public_endpoint` | `http://localhost:9000` | Public S3 endpoint for presigned direct downloads |
+| `s3.bucket` | `p2p-copier-files` | S3 bucket name |
 
 Full configuration reference: [docs/user/configuration.md](docs/user/configuration.md).
 
 ## Something went wrong?
 
-- **Port 9004 or 9000 in use**: Stop conflicting services or adjust published ports in `docker-compose.yml`.
+- **Port 80 or 9000 in use**: Stop conflicting services or adjust published ports in `docker-compose.yml`.
 - **Database connection failure**: Wait 20 seconds on first run while MySQL initializes its storage volume and seeds tables.
 - **Upload folder permission denied**: Ensure `writable/` is writable: `chmod -R 777 writable`.
 

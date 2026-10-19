@@ -92,7 +92,7 @@
                 return;
             }
             $.ajax({
-                url: "<?php echo base_url('text/save'); ?>",
+                url: "<?php echo base_url('api/v1/texts/save'); ?>",
                 method: "POST",
                 data: {
                     text_content_base64: btoa(unescape(encodeURIComponent(content))).split('').reverse().join(''),
@@ -176,7 +176,7 @@
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
             var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
+                url: "<?php echo base_url('api/v1/files/upload'); ?>",
                 maxFilesize: 50,
                 init: function () {
                     this.on("sending", function (file, xhr, formData) {
@@ -199,7 +199,7 @@
         var totalUploads = 0;
 
         var myDropzone = new Dropzone("#file-upload-dropzone", {
-            url: "<?php echo base_url('home/file/upload'); ?>",
+            url: "<?php echo base_url('api/v1/files/upload'); ?>",
             method: "post",
             paramName: "file",
             maxFilesize: 50,
@@ -396,7 +396,7 @@
         $('#batch-download-zip').on('click', function () {
             if (selectedFiles.length === 0) return;
 
-            var form = $('<form action="<?php echo base_url("files/batch-download"); ?>" method="POST"></form>');
+            var form = $('<form action="<?php echo base_url("api/v1/files/batch-download"); ?>" method="POST"></form>');
             selectedFiles.forEach(function (uuid) {
                 form.append('<input type="hidden" name="file_uuids[]" value="' + uuid + '">');
             });
@@ -433,7 +433,7 @@
 
     function loadCategoriesAndTags() {
         $.ajax({
-            url: '<?php echo base_url("files/metadata"); ?>',
+            url: '<?php echo base_url("api/v1/files/metadata"); ?>',
             type: 'GET',
             success: function (response) {
                 if (response.status == 1) {
@@ -453,7 +453,7 @@
 
     function loadFiles(searchParams = {}) {
         // If no search parameters, load recent files
-        var url = '<?php echo base_url("files/search"); ?>';
+        var url = '<?php echo base_url("api/v1/files/search"); ?>';
         var data = {};
 
         if (Object.keys(searchParams).length === 0) {
@@ -729,7 +729,7 @@
 
     function renameFile(fileUuid, newName) {
         $.ajax({
-            url: '<?php echo base_url("files/rename"); ?>',
+            url: '<?php echo base_url("api/v1/files/rename"); ?>',
             type: 'POST',
             data: { file_uuid: fileUuid, new_name: newName },
             success: function (response) {
@@ -746,7 +746,7 @@
 
     function addFileTag(fileUuid, tagName) {
         $.ajax({
-            url: '<?php echo base_url("files/add-tag"); ?>',
+            url: '<?php echo base_url("api/v1/files/add-tag"); ?>',
             type: 'POST',
             data: { file_uuid: fileUuid, tag_name: tagName },
             success: function (response) {
@@ -762,7 +762,7 @@
 
     function removeFileTag(fileUuid, tagName) {
         $.ajax({
-            url: '<?php echo base_url("files/remove-tag"); ?>',
+            url: '<?php echo base_url("api/v1/files/remove-tag"); ?>',
             type: 'POST',
             data: { file_uuid: fileUuid, tag_name: tagName },
             success: function (response) {
@@ -778,7 +778,7 @@
 
     function updateFileDescription(fileUuid, description) {
         $.ajax({
-            url: '<?php echo base_url("files/update-description"); ?>',
+            url: '<?php echo base_url("api/v1/files/update-description"); ?>',
             type: 'POST',
             data: { file_uuid: fileUuid, description: description },
             success: function (response) {
@@ -793,7 +793,7 @@
 
     function batchDeleteFiles(fileUuids) {
         $.ajax({
-            url: '<?php echo base_url("files/batch-delete"); ?>',
+            url: '<?php echo base_url("api/v1/files/batch-delete"); ?>',
             type: 'POST',
             data: { file_uuids: fileUuids },
             success: function (response) {
@@ -809,7 +809,7 @@
 
     function batchAddTag(fileUuids, tagName) {
         $.ajax({
-            url: '<?php echo base_url("files/batch-add-tag"); ?>',
+            url: '<?php echo base_url("api/v1/files/batch-add-tag"); ?>',
             type: 'POST',
             data: { file_uuids: fileUuids, tag_name: tagName },
             success: function (response) {
@@ -912,7 +912,7 @@
 
     // Real-Time Synchronization via Server-Sent Events (SSE)
     if (!!window.EventSource) {
-        var sseSource = new EventSource('<?php echo base_url("api/events/stream"); ?>');
+        var sseSource = new EventSource('<?php echo base_url("api/v1/events/stream"); ?>');
         sseSource.onmessage = function(e) {
             if (e.data === 'reload') {
                 if (typeof loadFiles === 'function') {

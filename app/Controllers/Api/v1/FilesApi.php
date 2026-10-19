@@ -278,9 +278,16 @@ class FilesApi extends ApiController
             }
         }
 
-        return $this->respondSuccess([
+        return $this->respond([
+            'status'          => 1,
+            'success'         => true,
+            'code'            => 200,
+            'message'         => 'Batch deletion completed',
             'deleted_count'   => $deleted_count,
-            'total_requested' => count($file_uuids)
-        ], 'Batch deletion completed');
+            'data'            => [
+                'deleted_count'   => $deleted_count,
+                'total_requested' => count($file_uuids)
+            ]
+        ], 200);
     }
 }

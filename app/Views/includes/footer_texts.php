@@ -86,7 +86,7 @@
                 return;
             }
             $.ajax({
-                url: "<?php echo base_url('text/save'); ?>",
+                url: "<?php echo base_url('api/v1/texts/save'); ?>",
                 method: "POST",
                 data: { 
                     text_content_base64: btoa(unescape(encodeURIComponent(content))), 
@@ -148,7 +148,7 @@
             $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> Saving...');
 
             $.ajax({
-                url: '<?php echo base_url("text/save"); ?>',
+                url: '<?php echo base_url("api/v1/texts/save"); ?>',
                 type: 'POST',
                 data: {
                     text_content_base64: btoa(unescape(encodeURIComponent(textContent))),
@@ -193,7 +193,7 @@
                 var b64Content = btoa(unescape(encodeURIComponent(text)));
                 
                 $.ajax({
-                    url: '<?php echo base_url("text/save"); ?>',
+                    url: '<?php echo base_url("api/v1/texts/save"); ?>',
                     type: 'POST',
                     data: {
                         text_content_base64: b64Content,
@@ -342,7 +342,7 @@
         // Global Upload Modal Dropzone
         if ($('#global-file-dropzone').length) {
             var globalDropzone = new Dropzone("#global-file-dropzone", {
-                url: "<?php echo base_url('home/file/upload'); ?>",
+                url: "<?php echo base_url('api/v1/files/upload'); ?>",
                 maxFilesize: 50,
                 acceptedFiles: null,
                 init: function () {

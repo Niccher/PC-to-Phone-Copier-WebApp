@@ -361,7 +361,7 @@
 
                 function getState(){
                     $.ajax({
-                        url: "<?php echo base_url('home/check');?>",
+                        url: "<?php echo base_url('api/v1/auth/check');?>",
                         type: 'POST',
                         data: {a_num_code: num_code},
                         success: function (response) {

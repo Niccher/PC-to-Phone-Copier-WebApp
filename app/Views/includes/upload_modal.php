@@ -28,7 +28,7 @@
                             Drag and drop files here or click to browse. Max 50MB per file.
                         </div>
                         <div class="dropzone-container">
-                            <form action="<?php echo base_url('home/file/upload'); ?>" class="dropzone" id="global-file-dropzone">
+                            <form action="<?php echo base_url('api/v1/files/upload'); ?>" class="dropzone" id="global-file-dropzone">
                                 <div class="fallback"><input name="file" type="file" multiple /></div>
                                 <div class="dz-message needsclick py-4">
                                     <i class="mdi mdi-cloud-upload display-4 text-primary"></i>

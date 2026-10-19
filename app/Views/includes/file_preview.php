@@ -107,7 +107,7 @@
 
         // Fetch file details via AJAX
         $.ajax({
-            url: '<?php echo base_url("files/preview/"); ?>' + fileUuid,
+            url: '<?php echo base_url("api/v1/files/preview/"); ?>' + fileUuid,
             type: 'GET',
             success: function (response) {
                 if (response.status == 1) {
@@ -205,7 +205,7 @@
                 updateFileDescription(fileUuid, description);
             } else {
                 // Inline update if function not available
-                $.post('<?php echo base_url("files/update-description"); ?>', { file_uuid: fileUuid, description: description });
+                $.post('<?php echo base_url("api/v1/files/update-description"); ?>', { file_uuid: fileUuid, description: description });
             }
         });
 
@@ -217,7 +217,7 @@
                     addFileTag(fileUuid, tagName);
                     $('#add-tag-input').val('');
                 } else {
-                    $.post('<?php echo base_url("files/add-tag"); ?>', { file_uuid: fileUuid, tag_name: tagName }, function() {
+                    $.post('<?php echo base_url("api/v1/files/add-tag"); ?>', { file_uuid: fileUuid, tag_name: tagName }, function() {
                         $('#file-preview-modal').modal('hide');
                         location.reload();
                     });

@@ -239,7 +239,7 @@ endif; ?>
                                                             data-date="<?php echo $textDate; ?>" title="Share QR">
                                                             <i class="mdi mdi-qrcode"></i>
                                                         </a>
-                                                        <a href="<?php echo base_url('text/delete/' . $text->text_uuid); ?>"
+                                                        <a href="<?php echo base_url('api/v1/texts/delete/' . $text->text_uuid); ?>"
                                                             class="btn btn-sm btn-outline-danger py-0 px-2"
                                                             title="Delete"
                                                             onclick="return confirm('Delete this text?')">

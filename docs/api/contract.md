@@ -180,7 +180,7 @@ This document provides the canonical API contract for the P2P Copier REST API (`
 
 ## 4. Server-Sent Events (SSE)
 
-- **Endpoint**: `GET /api/events/stream`
+- **Endpoint**: `GET /api/v1/events/stream`
 - **Headers**: `Accept: text/event-stream`
 - **Events Emitted**:
   - `paired`: Emitted when Android pairs with the web session.
