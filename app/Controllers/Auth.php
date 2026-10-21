@@ -35,14 +35,28 @@ class Auth extends BaseController{
 		$config['white']        = [255, 255, 255];
 		$this->qr_scan->initialize($config);
 
+		/* Dynamic server base URL for mobile QR auto-configuration */
+		$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+		$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+		$serverUrl = $scheme . '://' . $host;
+
+		$qrPayload = json_encode([
+			'v'    => 1,
+			'srv'  => $serverUrl,
+			'code' => $data_num,
+			'sess' => bin2hex($data_alphanum),
+		]);
+
 		/* QR Data  */
-		$params['data']     = $data_alphanum;
-		$params['level']    = 'M'; // L M Q H
-		$params['size']     = 10; // 1 2 3 4 5 6 7 8 9 10
-		$params['savename'] = $dir . $save_name;
-		$params['filepath'] = $config['imagedir'] . $save_name;
-		$params['data_num'] =  $data_num;
-		$params['data_codes'] =  base64_encode($data_num . "---". $data_alphanum);
+		$params['data']       = $qrPayload;
+		$params['level']      = 'M'; // L M Q H
+		$params['size']       = 10; // 1 2 3 4 5 6 7 8 9 10
+		$params['savename']   = $dir . $save_name;
+		$params['filepath']   = $config['imagedir'] . $save_name;
+		$params['data_num']   = $data_num;
+		$params['server_url'] = $serverUrl;
+		$params['qr_payload'] = $qrPayload;
+		$params['data_codes'] = base64_encode($data_num . "---". $data_alphanum);
 		$this->qr_scan->generate($params);
 
 		$mod_visitors = new ModVisitors();

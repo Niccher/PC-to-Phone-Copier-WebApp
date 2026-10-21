@@ -74,56 +74,46 @@
                                 </div>
                                 <ul class="nav nav-tabs nav-bordered mb-3">
                                     <li class="nav-item">
-                                        <a href="#part_Code" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
-                                            <i class="mdi mdi-counter text-primary"></i>
-                                            Code
+                                        <a href="#part_Pairing" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
+                                            <i class="mdi mdi-cellphone-link text-primary me-1"></i>
+                                            Connect Mobile App
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#part_QR" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
-                                            <i class="mdi mdi-qrcode text-primary"></i>
-                                            Scan QR
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#part_History" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
-                                            <i class="mdi mdi-qrcode text-primary"></i>
-                                            Use previous Code
+                                        <a href="#part_History" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                            <i class="mdi mdi-history text-primary me-1"></i>
+                                            Use Previous Code
                                         </a>
                                     </li>
                                 </ul>
                                 <!-- end nav-->
                                 <div class="tab-content">
-                                    <div class="tab-pane show" id="part_Code">
-                                        <div class="row">
-                                            <div class="card-body text-center">
-                                                <span class="text-center text-black-50 h3">Activation Code</span>
-                                                <div class="row">
-                                                    <div class="col-sm-10 offset-1">
-                                                        <input type="text" class="form-control form-control-lg text-primary text-center fw-bolder" placeholder="Activation Code Here" value="<?php echo $data_num; ?>">
-                                                    </div>
+                                    <div class="tab-pane active" id="part_Pairing">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-5 text-center p-3">
+                                                <div class="bg-white p-2 rounded border shadow-sm d-inline-block">
+                                                    <img src="<?php echo base_url($filepath); ?>" class="img-fluid rounded" alt="Pairing QR Code" style="max-height: 230px;">
                                                 </div>
-                                                <ul class="card-pricing-features">
-                                                    <li class="text-muted fw-bolder h4 mt-4">
-                                                        Using the code above to activate your phone is easy and straightforward. Once the code is accepted, your phone will be activated and ready to use. If you have any questions or need help with the activation process.
-                                                    </li>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-soft-primary text-primary font-12" title="Detected WebApp Server Address">
+                                                        <i class="mdi mdi-server-network me-1"></i><?php echo esc($server_url ?? base_url()); ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7 p-3">
+                                                <h4 class="fw-bold text-dark mb-2">Instant 1-Tap QR Pairing</h4>
+                                                <p class="text-muted font-14 mb-3">
+                                                    Connect your mobile device to this desktop session in seconds with automatic server discovery:
+                                                </p>
+                                                <ul class="list-unstyled text-muted font-14 mb-0">
+                                                    <li class="mb-2"><i class="mdi mdi-check-circle text-success me-2"></i>Open the <strong>P2P Copier App</strong> on your Android phone</li>
+                                                    <li class="mb-2"><i class="mdi mdi-check-circle text-success me-2"></i>Tap <strong>Scan QR Code</strong> on the start screen</li>
+                                                    <li class="mb-2"><i class="mdi mdi-check-circle text-success me-2"></i>Point camera at the code to auto-connect and sync</li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- end preview-->
-                                    <div class="tab-pane active" id="part_QR">
-                                        <div class="row">
-                                            <div class="col-lg-5">
-                                                <img src="<?php echo base_url($filepath); ?>" class="img-fluid rounded border" alt="Here">
-                                            </div>
-                                            <div class="col-lg-7 d-flex align-items-center">
-                                                <p class="text-muted fw-bolder h4">
-                                                    Using your phone to scan this, will allow you to proceed with the next step. Simply open your phone's camera and point it at the code. Your phone should automatically recognize the code and prompt you to take the next step. Thank you for taking the time to.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- end preview code-->
                                     <div class="tab-pane" id="part_History">
                                         <div class="row">
                                             <div class="row">
