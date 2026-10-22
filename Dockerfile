@@ -1,4 +1,4 @@
-FROM php:8.4.27-apache
+FROM php:8.3.36-apache
 
 # Use official precompiled PHP extension installer binary (no compiling from source)
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/

@@ -152,7 +152,7 @@ fi
 
 if [ -f ".env" ]; then
     # App Settings
-    sed -i "s|^CI_ENVIRONMENT =.*|CI_ENVIRONMENT = production|" .env || true
+    sed -i "s|^CI_ENVIRONMENT =.*|CI_ENVIRONMENT = development|" .env || true
     sed -i "s|^app.baseURL =.*|app.baseURL = 'http://${DETECTED_IP}/'|" .env || true
 
     # Database Docker host alignment (shared-mysql inside compose network)
