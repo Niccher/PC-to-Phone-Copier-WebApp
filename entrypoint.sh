@@ -21,7 +21,7 @@ echo "MySQL is ready!"
 if [ ! -f "/var/www/html/vendor/codeigniter4/framework/system/bootstrap.php" ]; then
     echo "Installing/updating Composer dependencies..."
     cd /var/www/html
-    composer install --no-dev --optimize-autoloader --no-interaction || echo "WARNING: Composer install encountered an issue."
+    composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs || echo "WARNING: Composer install encountered an issue."
 fi
 
 # Run migrations (safe to run multiple times — only applies pending migrations)

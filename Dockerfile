@@ -23,8 +23,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project files
 COPY . /var/www/html
 
-# Install Composer dependencies (ensure lock sync with composer.json)
-RUN composer update aws/aws-sdk-php --no-dev --optimize-autoloader --no-interaction || composer install --no-dev --optimize-autoloader --no-interaction
+# Install Composer dependencies (bypass legacy lock requirements for PHP 8.4 runtime)
+RUN composer update aws/aws-sdk-php --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs || composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Set permissions for writable directory (create it if not exists)
 RUN mkdir -p /var/www/html/writable \
