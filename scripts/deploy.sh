@@ -199,7 +199,7 @@ log "MySQL database is fully healthy and accepting connections."
 section "8. Waiting for MinIO S3 Storage Readiness (:9000)"
 minio_attempts=20
 minio_count=0
-until docker compose exec -T minio mc ready local >/dev/null 2>&1 || curl -s -f -o /dev/null "http://127.0.0.1:9000/minio/health/live"; do
+until curl -s -f -o /dev/null "http://127.0.0.1:9000/minio/health/live" 2>/dev/null; do
     minio_count=$((minio_count + 1))
     if [ "$minio_count" -ge "$minio_attempts" ]; then
         warn "MinIO health check probe did not report ready in time; proceeding."

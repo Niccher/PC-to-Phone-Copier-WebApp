@@ -33,7 +33,7 @@ services:
       mysql:
         condition: service_healthy
       minio:
-        condition: service_healthy
+        condition: service_started
     networks:
       - shared-network
 
@@ -49,12 +49,6 @@ services:
       MINIO_ROOT_PASSWORD: minio_secure_password
     volumes:
       - minio-data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
     networks:
       - shared-network
 
@@ -63,10 +57,13 @@ services:
     container_name: shared-minio-init
     depends_on:
       minio:
-        condition: service_healthy
+        condition: service_started
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minio_admin minio_secure_password;
+      until /usr/bin/mc alias set myminio http://minio:9000 minio_admin minio_secure_password; do
+        echo 'Waiting for MinIO S3 API to become ready...';
+        sleep 2;
+      done;
       /usr/bin/mc mb --ignore-existing myminio/p2p-copier-files;
       /usr/bin/mc anonymous set download myminio/p2p-copier-files;
       exit 0;
