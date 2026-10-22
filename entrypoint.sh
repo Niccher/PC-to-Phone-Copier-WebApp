@@ -28,5 +28,41 @@ echo "Running database migrations..."
 cd /var/www/html
 php spark migrate --all 2>&1 || echo "WARNING: Migration encountered an issue. Check logs."
 
-echo "Migrations complete. Starting Apache..."
+# Ensure S3 / MinIO storage bucket exists and has download policy
+echo "Ensuring S3 bucket and download policy are initialized..."
+php -r '
+require "/var/www/html/vendor/autoload.php";
+try {
+    $s3 = new Aws\S3\S3Client([
+        "version"                 => "latest",
+        "region"                  => "us-east-1",
+        "endpoint"                => getenv("s3.endpoint") ?: "http://minio:9000",
+        "use_path_style_endpoint" => true,
+        "credentials"             => [
+            "key"    => getenv("s3.access_key") ?: "minio_admin",
+            "secret" => getenv("s3.secret_key") ?: "minio_secure_password",
+        ],
+    ]);
+    $bucket = getenv("s3.bucket") ?: "p2p-copier-files";
+    if (!$s3->doesBucketExist($bucket)) {
+        $s3->createBucket(["Bucket" => $bucket]);
+        echo "Created bucket: $bucket\n";
+    }
+    $policy = json_encode([
+        "Version"   => "2012-10-17",
+        "Statement" => [[
+            "Effect"    => "Allow",
+            "Principal" => "*",
+            "Action"    => ["s3:GetObject"],
+            "Resource"  => ["arn:aws:s3:::$bucket/*"]
+        ]]
+    ]);
+    $s3->putBucketPolicy(["Bucket" => $bucket, "Policy" => $policy]);
+    echo "S3 bucket $bucket verified and ready.\n";
+} catch (\Throwable $e) {
+    echo "Notice: S3 init check: " . $e->getMessage() . "\n";
+}
+' 2>&1 || true
+
+echo "Initialization complete. Starting Apache..."
 exec apache2-foreground

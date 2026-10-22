@@ -52,25 +52,6 @@ services:
     networks:
       - shared-network
 
-  minio-init:
-    image: cgr.dev/chainguard/minio-client:latest
-    container_name: shared-minio-init
-    depends_on:
-      minio:
-        condition: service_started
-    entrypoint: >
-      /bin/sh -c "
-      until /usr/bin/mc alias set myminio http://minio:9000 minio_admin minio_secure_password; do
-        echo 'Waiting for MinIO S3 API to become ready...';
-        sleep 2;
-      done;
-      /usr/bin/mc mb --ignore-existing myminio/p2p-copier-files;
-      /usr/bin/mc anonymous set download myminio/p2p-copier-files;
-      exit 0;
-      "
-    networks:
-      - shared-network
-
 volumes:
   mysql-data:
   minio-data:
