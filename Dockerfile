@@ -30,6 +30,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project files
 COPY . /var/www/html
 
+# Install Composer dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 # Set permissions for writable directory (create it if not exists)
 RUN mkdir -p /var/www/html/writable \
     && chown -R www-data:www-data /var/www/html/writable \

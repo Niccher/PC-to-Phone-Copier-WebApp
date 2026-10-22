@@ -17,9 +17,10 @@ done
 
 echo "MySQL is ready!"
 
-# Ensure Composer dependencies (including AWS S3 SDK) are installed
-if [ ! -d "/var/www/html/vendor/aws" ]; then
+# Ensure Composer dependencies (including CodeIgniter framework & AWS S3 SDK) are installed
+if [ ! -f "/var/www/html/vendor/codeigniter4/framework/system/bootstrap.php" ]; then
     echo "Installing/updating Composer dependencies..."
+    cd /var/www/html
     composer install --no-dev --optimize-autoloader --no-interaction || echo "WARNING: Composer install encountered an issue."
 fi
 

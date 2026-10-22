@@ -209,16 +209,11 @@ until curl -s -f -o /dev/null "http://127.0.0.1:9000/minio/health/live" 2>/dev/n
 done
 log "MinIO S3 storage is online."
 
-# ── 9. Run Database Migrations ────────────────────────────────
-section "9. Running Database Migrations via Spark"
-docker compose exec -T p2p-copier php spark migrate --all || warn "Spark migration finished with warnings."
-log "Database migrations evaluated."
-
-# ── 10. Wait for WebApp Server Readiness ──────────────────────
-section "10. Waiting for WebApp Server Readiness (:80)"
-web_attempts=20
+# ── 9. Wait for WebApp Server Readiness ──────────────────────
+section "9. Waiting for WebApp Server Readiness (:80)"
+web_attempts=30
 web_count=0
-until curl -s -f -o /dev/null "http://127.0.0.1:80/api/v1/ping" || curl -s -f -o /dev/null "http://127.0.0.1:80/"; do
+until curl -s -f -o /dev/null "http://127.0.0.1:80/api/v1/ping" 2>/dev/null || curl -s -f -o /dev/null "http://127.0.0.1:80/" 2>/dev/null; do
     web_count=$((web_count + 1))
     if [ "$web_count" -ge "$web_attempts" ]; then
         warn "HTTP probe did not return 200 OK immediately; Apache is running."
@@ -227,6 +222,11 @@ until curl -s -f -o /dev/null "http://127.0.0.1:80/api/v1/ping" || curl -s -f -o
     sleep 2
 done
 log "WebApp container is responding on port 80."
+
+# ── 10. Run Database Migrations ───────────────────────────────
+section "10. Running Database Migrations via Spark"
+docker compose exec -T p2p-copier php spark migrate --all || warn "Spark migration finished with warnings."
+log "Database migrations evaluated."
 
 # ── 11. Container Permissions Enforcement ─────────────────────
 section "11. Enforcing Container File Permissions"
