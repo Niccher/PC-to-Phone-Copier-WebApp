@@ -1,19 +1,12 @@
 FROM php:8.4.27-apache
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) intl mysqli pdo_mysql zip gd
+# Use official precompiled PHP extension installer binary (no compiling from source)
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Enable Apache rewrite module
+# Install precompiled PHP extensions & dependencies instantly
+RUN install-php-extensions intl mysqli pdo_mysql zip gd
+
+# Enable Apache rewrite and headers modules
 RUN a2enmod rewrite headers
 
 # Update Apache configuration for DocumentRoot
@@ -30,8 +23,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project files
 COPY . /var/www/html
 
-# Install Composer dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install Composer dependencies (ensure lock sync with composer.json)
+RUN composer update aws/aws-sdk-php --no-dev --optimize-autoloader --no-interaction || composer install --no-dev --optimize-autoloader --no-interaction
 
 # Set permissions for writable directory (create it if not exists)
 RUN mkdir -p /var/www/html/writable \
